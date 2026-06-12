@@ -94,6 +94,11 @@ function addonTable.Designer.BarMixin:Setup(details)
   self.rawWidth, self.rawHeight, self.borderWidth, self.borderHeight, self.lowerScale = addonTable.Display.ApplyStatusBar(details, self.statusBar, self.border, self.borderMask, self.background)
   self.details = details
 
+  if details.thresholdColors then
+    local color = details.thresholdColors[2].color
+    self.statusBar:GetStatusBarTexture():SetVertexColor(color.r, color.g, color.b)
+  end
+
   self.borderWrapper:SetFrameLevel(self.statusBar:GetFrameLevel() + 2)
 end
 

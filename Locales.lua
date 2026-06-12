@@ -61,6 +61,7 @@ L["CLASS"] = "Class"
 L["INSERT"] = "Insert"
 L["CHOOSE_AURA"] = "Choose Aura"
 L["CHOOSE_ABILITY"] = "Choose Ability"
+L["WRAP_IN_GROUP"] = "Wrap in group"
 
 L["LAYOUT"] = "Layout"
 L["TRANSPARENCY"] = "Transparency"
