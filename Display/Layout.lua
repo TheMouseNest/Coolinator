@@ -15,6 +15,7 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
   self.classPools = {
     stagger = addonTable.Display.GeneratePool(addonTable.Display.StaggerClassResourceStatusBar),
     icicles = addonTable.Display.GeneratePool(addonTable.Display.IciclesClassResourceStatusBar),
+    rage = addonTable.Display.GeneratePool(addonTable.Display.RageClassResourceStatusBar),
   }
 
 

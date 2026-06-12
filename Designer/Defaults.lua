@@ -68,7 +68,30 @@ addonTable.Designer.Defaults = {
         color = GetColor("6bcbff", 0.3),
       },
       border = {
-        asset = "Platy: Round Thin",
+        asset = "Cooli: 1px",
+        color = {r = 0, g = 0, b = 0},
+      },
+    },
+    ["rage"] = {
+      kind = "bar",
+      resource = {kind = "class", resource = "rage"},
+      width = 2,
+      height = 0.65,
+      scale = 1.5,
+      alpha = 1,
+      layout = "horizontal",
+      direction = "left",
+      icon = {show = true, position = "right"},
+      foreground = {
+        asset = "Cooli: Fade Right",
+        color = {r = 1, g = 0, b = 0},
+      },
+      background = {
+        asset = "Cooli: Solid White",
+        color = GetColor("ff9597", 0.3),
+      },
+      border = {
+        asset = "Cooli: 1px",
         color = {r = 0, g = 0, b = 0},
       },
     },

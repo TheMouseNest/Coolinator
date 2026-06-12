@@ -123,3 +123,53 @@ function addonTable.Display.IciclesClassResourceStatusBar:ApplySize()
   PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale)
   PixelUtil.SetSize(self.border, self.borderWidth * self.lowerScale, self.borderHeight * self.lowerScale)
 end
+
+addonTable.Display.RageClassResourceStatusBar = {}
+
+function addonTable.Display.RageClassResourceStatusBar:OnLoad()
+  self:SetScript("OnEvent", self.OnEvent)
+
+  self.statusBar = CreateFrame("StatusBar", nil, self)
+  self.statusBar:SetAllPoints()
+  self.statusBar:SetStatusBarTexture(LSM:Fetch("statusbar", "Cooli: Solid Transparency"))
+  self.statusBar:SetMinMaxValues(0, 5)
+
+  self.background = self.statusBar:CreateTexture(nil, "BACKGROUND")
+  self.background:SetAllPoints()
+  self.borderWrapper = CreateFrame("Frame", nil, self)
+  self.borderWrapper:SetAllPoints()
+  self.border = self.borderWrapper:CreateTexture(nil, "BORDER")
+  self.border:SetPoint("CENTER")
+  self.borderMask = self.statusBar:CreateMaskTexture()
+  self.borderMask:SetAllPoints()
+end
+
+function addonTable.Display.RageClassResourceStatusBar:OnEvent(eventName, ...)
+  self:Import()
+end
+
+function addonTable.Display.RageClassResourceStatusBar:Setup(details)
+  self:RegisterUnitEvent("UNIT_POWER_UPDATE", "player")
+  self:RegisterUnitEvent("UNIT_MAXPOWER", "player")
+
+  self.rawWidth, self.rawHeight, self.borderWidth, self.borderHeight, self.lowerScale = addonTable.Display.ApplyStatusBar(details, self.statusBar, self.border, self.borderMask, self.background)
+  self.details = details
+
+  self.borderWrapper:SetFrameLevel(self.statusBar:GetFrameLevel() + 2)
+
+  self:Import()
+end
+
+function addonTable.Display.RageClassResourceStatusBar:Disable()
+  self:UnregisterAllEvents()
+end
+
+function addonTable.Display.RageClassResourceStatusBar:Import()
+  self.statusBar:SetMinMaxValues(0, UnitPowerMax("player", Enum.PowerType.Rage))
+  self.statusBar:SetValue(UnitPower("player", Enum.PowerType.Rage))
+end
+
+function addonTable.Display.RageClassResourceStatusBar:ApplySize()
+  PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale)
+  PixelUtil.SetSize(self.border, self.borderWidth * self.lowerScale, self.borderHeight * self.lowerScale)
+end
