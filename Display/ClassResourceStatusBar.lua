@@ -157,6 +157,13 @@ function addonTable.Display.RageClassResourceStatusBar:Setup(details)
 
   self.borderWrapper:SetFrameLevel(self.statusBar:GetFrameLevel() + 2)
 
+  if self.details.thresholdColors then
+    self.curve = C_CurveUtil.CreateColorCurve()
+    for _, entry in ipairs(self.details.thresholdColors) do
+      self.curve:AddPoint(entry.limit, CreateColor(entry.color.r, entry.color.g, entry.color.b))
+    end
+  end
+
   self:Import()
 end
 
@@ -165,8 +172,12 @@ function addonTable.Display.RageClassResourceStatusBar:Disable()
 end
 
 function addonTable.Display.RageClassResourceStatusBar:Import()
-  self.statusBar:SetMinMaxValues(0, UnitPowerMax("player", Enum.PowerType.Rage))
-  self.statusBar:SetValue(UnitPower("player", Enum.PowerType.Rage))
+  local max = UnitPowerMax("player", Enum.PowerType.Rage)
+  local current = UnitPower("player", Enum.PowerType.Rage)
+  self.statusBar:SetMinMaxValues(0, max)
+  self.statusBar:SetValue(current)
+  local color = UnitPowerPercent("player", Enum.PowerType.Rage, nil, self.curve)
+  self.statusBar:GetStatusBarTexture():SetVertexColor(color.r, color.g, color.b)
 end
 
 function addonTable.Display.RageClassResourceStatusBar:ApplySize()

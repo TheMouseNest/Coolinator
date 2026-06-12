@@ -88,12 +88,17 @@ addonTable.Designer.Defaults = {
       },
       background = {
         asset = "Cooli: Solid White",
-        color = GetColor("ff9597", 0.3),
+        color = GetColor("ff787a", 0.3),
       },
       border = {
         asset = "Cooli: 1px",
         color = {r = 0, g = 0, b = 0},
       },
+      thresholdColors = {
+        {limit = 0.7, color = GetColor("760002")},
+        {limit = 0.9, color = GetColor("ff0004")},
+        {limit = 1, color = GetColor("e100ff")},
+      }
     },
     ["stagger"] = {
       kind = "bar",

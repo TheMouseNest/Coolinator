@@ -91,6 +91,7 @@ L["WARNING_COLOR"] = "Warning color"
 L["WARNING_COLOR_FADED"] = "Warning color faded"
 L["DANGER_COLOR"] = "Danger color"
 L["DANGER_COLOR_FADED"] = "Danger color faded"
+L["COLOR"] = "Color"
 
 L["PLEASE_RELOAD_TO_GET_COOLINATOR_WORKING_REASON_X"] = "Please reload to get Coolinator working. Reason (%s)"
 L["DUE_TO_AURA_BARS_CHANGING_RELOAD_REQUIRED"] = "Due to aura bars changing a reload is required for Coolinator function"
