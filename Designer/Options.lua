@@ -94,33 +94,51 @@ local function GenerateKindOptions(parent, options)
     tab.button = tabButton
     tabButton.kind = label
     tabButton.label = label
-    tabButton:SetScript("OnClick", function()
-      container:SetTab(tabButton.label)
-    end)
     tab.resourceSpecificSettings = {}
 
     tabMap[label] = tab
     table.insert(tabs, tab)
   end
+  local paths = {
+    ["*"] = {
+      ["*"] = {}
+    }
+  }
+  local tabsPool = CreateObjectPool(function()
+    return addonTable.CustomiseDialog.Components.GetTab(tabManager)
+  end, Pool_HideAndClearAnchors)
+  local wrappersPool = CreateFramePool("Frame", container)
+
   container:SetPoint("TOPLEFT", addonTable.Constants.ButtonFrameOffset, -25)
   container:SetPoint("BOTTOMRIGHT")
-  for _, tabDetails in ipairs(options["*"]["*"]) do
-    local tabButton = addonTable.CustomiseDialog.Components.GetTab(tabManager, tabDetails.label)
-    local c = CreateFrame("Frame", nil, container)
-    c:Hide()
-    c:SetPoint("TOP", 0, -30)
-    InitTab(c, tabButton, tabDetails.label)
-    c.allFrames = GenerateOptions(c, 0, 0, tabDetails.entries)
-    function c:UpdateOptions(details)
-      c.details = details
+  for k1, l1 in pairs(options) do
+    for k2, l2 in pairs(l1) do
+      for _, tabDetails in ipairs(l2) do
+        local c = CreateFrame("Frame", nil, container)
+        c.label = tabDetails.label
+        c:Hide()
+        c:SetPoint("LEFT")
+        c:SetPoint("RIGHT")
+        c.allFrames = GenerateOptions(c, 0, 0, tabDetails.entries)
+        function c:UpdateOptions(details)
+          c.details = details
 
-      for _, f in ipairs(c.allFrames) do
-        if f.getInitData then
-          f:Init(f.getInitData(c.details))
+          for _, f in ipairs(c.allFrames) do
+            if f.getInitData then
+              f:Init(f.getInitData(c.details))
+            end
+            if f.SetValue then
+              f:SetValue(f.Getter())
+            end
+          end
         end
-        if f.SetValue then
-          f:SetValue(f.Getter())
+        if not paths[k1] then
+          paths[k1] = {}
         end
+        if not paths[k1][k2] then
+          paths[k1][k2] = {}
+        end
+        table.insert(paths[k1][k2], c)
       end
     end
   end
@@ -129,15 +147,106 @@ local function GenerateKindOptions(parent, options)
     PanelTemplates_SelectTab(tabMap[label].button)
     for _, t in ipairs(tabs ) do
       t:Hide()
-      if t.button.label ~= label then
+      if t.children[1].label ~= label then
         PanelTemplates_DeselectTab(t.button)
       end
     end
     tabMap[label]:Show()
-    tabMap[label]:UpdateOptions(container.details)
+    for _, child in ipairs(tabMap[label].children) do
+      child:UpdateOptions(container.details)
+    end
+  end
+
+  local previousPath = ""
+
+  local function SetupPath(details)
+    local newPath = details.resource and (details.resource.kind .. "$" .. (details.resource.resource or "")) or "ALL"
+    if newPath == previousPath then
+      return
+    end
+    local rootListing = paths["*"]["*"]
+    for _, t in ipairs(tabs) do
+      for _, child in ipairs(t.children) do
+        child:Hide()
+      end
+    end
+    tabsPool:ReleaseAll()
+    wrappersPool:ReleaseAll()
+    tabs = {}
+    tabMap = {}
+    for _, entry in ipairs(rootListing) do
+      local wrapper = wrappersPool:Acquire()
+      wrapper.button = tabsPool:Acquire()
+      wrapper.button:SetText(entry.label)
+      wrapper.button:GetScript("OnShow")(wrapper.button) -- auto size
+      wrapper.button:Show()
+      wrapper:SetAllPoints()
+      wrapper.children = {entry}
+      entry:SetParent(wrapper)
+      entry:SetPoint("TOP", wrapper, 0, -35)
+      entry:Show()
+      entry:SetHeight(entry.allFrames[1]:GetTop() - entry.allFrames[#entry.allFrames]:GetBottom())
+      tabMap[entry.label] = wrapper
+      table.insert(tabs, wrapper)
+    end
+    if details.resource and paths[details.resource.kind] then
+      for _, entry in ipairs(paths[details.resource.kind]["*"] or {}) do
+        if tabMap[entry.label] then
+          local wrapper = tabMap[entry.label]
+          entry:SetTop("TOP", wrapper.children[#wrapper.children], "BOTTOM", 0, -30)
+          entry:Show()
+          table.insert(wrapper.children, entry)
+        else
+          local wrapper = wrappersPool:Acquire()
+          wrapper.button = tabsPool:Acquire()
+          wrapper.button:SetText(entry.label)
+          wrapper.button:GetScript("OnShow")(wrapper.button) -- auto size
+            wrapper.button:Show()
+          wrapper:SetAllPoints()
+          wrapper.children = {entry}
+          entry:SetParent(wrapper)
+          entry:Show()
+          entry:SetPoint("TOP", wrapper, 0, -35)
+          entry:SetHeight(entry.allFrames[1]:GetTop() - entry.allFrames[#entry.allFrames]:GetBottom())
+          tabMap[entry.label] = wrapper
+          table.insert(tabs, wrapper)
+        end
+      end
+      if paths[details.resource.kind][details.resource.resource] then
+        for _, entry in ipairs(paths[details.resource.kind][details.resource.resource] or {}) do
+          if tabMap[entry.label] then
+            local wrapper = tabMap[entry.label]
+            entry:SetTop("TOP", wrapper.children[#wrapper.children], "BOTTOM", 0, -30)
+            entry:Show()
+            table.insert(wrapper.children, entry)
+          else
+            local wrapper = wrappersPool:Acquire()
+            wrapper.button = tabsPool:Acquire()
+            wrapper.button:SetText(entry.label)
+            wrapper.button:GetScript("OnShow")(wrapper.button) -- auto size
+            wrapper.button:Show()
+            wrapper:SetAllPoints()
+            wrapper.children = {entry}
+            entry:SetParent(wrapper)
+            entry:Show()
+            entry:SetPoint("TOP", wrapper, 0, -35)
+            entry:SetHeight(entry.allFrames[1]:GetTop() - entry.allFrames[#entry.allFrames]:GetBottom())
+            tabMap[entry.label] = wrapper
+            table.insert(tabs, wrapper)
+          end
+        end
+      end
+    end
+    for _, t in ipairs(tabs) do
+      t.button:SetScript("OnClick", function()
+        container:SetTab(t.children[1].label)
+      end)
+    end
+    previousPath = newPath
   end
 
   function container:UpdateOptions(details)
+    SetupPath(details)
     container.details = details
     local any = false
     local lastTab
@@ -145,7 +254,9 @@ local function GenerateKindOptions(parent, options)
       if t:IsShown() then
         any = true
         PanelTemplates_SelectTab(t.button)
-        t:UpdateOptions(details)
+        for _, child in ipairs(t.children) do
+          child:UpdateOptions(details)
+        end
       end
       if not lastTab then
         t.button:SetPoint("TOPLEFT", 20, 0)
@@ -186,7 +297,16 @@ function addonTable.Designer.GenerateOptionsFromDetails(details)
   optionsFrames[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] = frame
 
   local function SetTitle()
-    frame:SetTitle(addonTable.Locales.CUSTOMISE_COOLINATOR_X:format(addonTable.Constants.KindToLabel[frame.details.kind]))
+    local label = addonTable.Constants.KindToLabel[frame.details.kind]
+    if frame.details.kind == "bar" and frame.details.resource then
+      label = label .. " - " .. addonTable.Constants.BarResourceLabelMap[frame.details.resource.kind]
+      if frame.details.resource.kind == "class" then
+        label = label .. " - " .. addonTable.Constants.BarClassResourceLabelMap[frame.details.resource.resource]
+      end
+    elseif frame.details.kind == "icon" then
+      label = label .. " - " .. addonTable.Constants.IconResourceLabelMap[frame.details.resource.kind]
+    end
+    frame:SetTitle(addonTable.Locales.CUSTOMISE_COOLINATOR_X:format(label))
   end
 
   local containers = {}
@@ -201,7 +321,7 @@ function addonTable.Designer.GenerateOptionsFromDetails(details)
       return
     end
     local any = false
-    SetTitle(frame.details)
+    SetTitle()
     for kind, c in pairs(containers) do
       c.details = frame.details
       if frame.details.kind == kind then

@@ -72,6 +72,81 @@ local function GetLabelsValuesBorders()
   return labels, values
 end
 
+local fullBarTextures = {
+  label = addonTable.Locales.TEXTURES,
+  entries = {
+    {
+      label = addonTable.Locales.BORDER,
+      kind = "dropdown",
+      getInitData = function(details)
+        return GetLabelsValuesBorders()
+      end,
+      setter = function(details, value)
+        details.border.asset = value
+      end,
+      getter = function(details)
+        return details.border.asset
+      end
+    },
+    {
+      label = addonTable.Locales.BORDER_COLOR,
+      kind = "colorPicker",
+      setter = function(details, value)
+        details.border.color = value
+      end,
+      getter = function(details)
+        return details.border.color
+      end,
+    },
+    {
+      label = addonTable.Locales.FOREGROUND,
+      kind = "dropdown",
+      getInitData = function()
+        return GetLabelsValuesBackgrounds()
+      end,
+      setter = function(details, value)
+        details.foreground.asset = value
+      end,
+      getter = function(details)
+        return details.foreground.asset
+      end
+    },
+    {
+      label = addonTable.Locales.FOREGROUND_COLOR,
+      kind = "colorPicker",
+      setter = function(details, value)
+        details.foreground.color = value
+      end,
+      getter = function(details)
+        return details.foreground.color
+      end,
+    },
+    {
+      label = addonTable.Locales.BACKGROUND,
+      kind = "dropdown",
+      getInitData = function()
+        return GetLabelsValuesBackgrounds()
+      end,
+      setter = function(details, value)
+        details.background.asset = value
+      end,
+      getter = function(details)
+        return details.background.asset
+      end
+    },
+    {
+      label = addonTable.Locales.BACKGROUND_COLOR,
+      kind = "colorPicker",
+      setter = function(details, value)
+        details.background.color = value
+      end,
+      getter = function(details)
+        return details.background.color
+      end,
+    },
+  }
+}
+
 addonTable.Designer.WidgetConfiguration = {
   ["icon"] = {
     ["*"] = {
@@ -184,6 +259,18 @@ addonTable.Designer.WidgetConfiguration = {
             },
           },
         },
+      },
+    },
+    ["aura"] = {
+      ["*"] = {
+        fullBarTextures,
+      },
+    },
+    ["class"] = {
+      ["icicles"] = {
+        fullBarTextures
+      },
+      ["stagger"] = {
         {
           label = addonTable.Locales.TEXTURES,
           entries = {
@@ -224,16 +311,6 @@ addonTable.Designer.WidgetConfiguration = {
               end
             },
             {
-              label = addonTable.Locales.FOREGROUND_COLOR,
-              kind = "colorPicker",
-              setter = function(details, value)
-                details.foreground.color = value
-              end,
-              getter = function(details)
-                return details.foreground.color
-              end,
-            },
-            {
               label = addonTable.Locales.BACKGROUND,
               kind = "dropdown",
               getInitData = function()
@@ -258,8 +335,109 @@ addonTable.Designer.WidgetConfiguration = {
             },
           }
         },
-      },
-    },
+        {
+          label = addonTable.Locales.THRESHOLDS,
+          entries = {
+            {
+              label = addonTable.Locales.SAFE,
+              kind = "slider",
+              min = 0, max = 400,
+              valuePattern = "%d%%",
+              setter = function(details, value)
+                details.thresholdColors[1].limit = value / 100
+              end,
+              getter = function(details)
+                return details.thresholdColors[1].limit
+              end,
+            },
+            {
+              label = addonTable.Locales.SAFE_COLOR,
+              kind = "colorPicker",
+              setter = function(details, value)
+                details.thresholdColors[1].color = value
+              end,
+              getter = function(details)
+                return details.thresholdColors[1].color
+              end,
+            },
+            {
+              label = addonTable.Locales.SAFE_COLOR_FADED,
+              kind = "colorPicker",
+              setter = function(details, value)
+                details.thresholdColors[1].fadedColor = value
+              end,
+              getter = function(details)
+                return details.thresholdColors[1].fadedColor
+              end,
+            },
+            {
+              label = addonTable.Locales.WARNING,
+              kind = "slider",
+              min = 0, max = 400,
+              valuePattern = "%d%%",
+              setter = function(details, value)
+                details.thresholdColors[2].limit = value / 100
+              end,
+              getter = function(details)
+                return details.thresholdColors[2].limit
+              end,
+            },
+            {
+              label = addonTable.Locales.WARNING_COLOR,
+              kind = "colorPicker",
+              setter = function(details, value)
+                details.thresholdColors[2].color = value
+              end,
+              getter = function(details)
+                return details.thresholdColors[2].color
+              end,
+            },
+            {
+              label = addonTable.Locales.WARNING_COLOR_FADED,
+              kind = "colorPicker",
+              setter = function(details, value)
+                details.thresholdColors[2].fadedColor = value
+              end,
+              getter = function(details)
+                return details.thresholdColors[2].fadedColor
+              end,
+            },
+            {
+              label = addonTable.Locales.DANGER,
+              kind = "slider",
+              min = 0, max = 400,
+              valuePattern = "%d%%",
+              setter = function(details, value)
+                details.thresholdColors[3].limit = value / 100
+              end,
+              getter = function(details)
+                return details.thresholdColors[3].limit
+              end,
+            },
+            {
+              label = addonTable.Locales.DANGER_COLOR,
+              kind = "colorPicker",
+              setter = function(details, value)
+                details.thresholdColors[3].color = value
+              end,
+              getter = function(details)
+                return details.thresholdColors[3].color
+              end,
+            },
+            {
+              label = addonTable.Locales.DANGER_COLOR_FADED,
+              kind = "colorPicker",
+              setter = function(details, value)
+                details.thresholdColors[3].fadedColor = value
+              end,
+              getter = function(details)
+                return details.thresholdColors[3].fadedColor
+              end,
+            },
+          }
+        },
+      }
+    }
   },
   ["group"] = {
     ["*"] = {

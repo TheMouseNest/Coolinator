@@ -19,7 +19,7 @@ addonTable.Designer.Defaults = {
   },
   AuraBar = {
     kind = "bar",
-    resource = {kind = "aura", spellID = data},
+    resource = {kind = "aura", spellID = 0},
     width = 1,
     height = 1,
     scale = 1.5,

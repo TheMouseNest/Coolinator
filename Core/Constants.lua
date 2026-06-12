@@ -153,6 +153,6 @@ addonTable.Constants.BarClassResourceLabelMap = {
 
 addonTable.Constants.IconResourceLabelMap = {
   ["aura"] = addonTable.Locales.AURA,
-  ["cooldown"] = addonTable.Locales.COOLDOWN,
+  ["ability"] = addonTable.Locales.ABILITY,
   ["item"] = addonTable.Locales.ITEM,
 }
