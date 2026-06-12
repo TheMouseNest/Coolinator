@@ -212,6 +212,7 @@ function addonTable.CustomiseDialog.Toggle()
     "CoolinatorCustomiseDialog" .. addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN),
     600, 830
   )
+  customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] = frame
 
   local containers = {}
   local lastTab

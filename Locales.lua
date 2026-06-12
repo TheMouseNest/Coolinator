@@ -86,8 +86,10 @@ L["SPEC_MISMATCH_IN_BLIZZARD_CDM"] = "Specialization data mismatch in Blizzard C
 
 L["SLASH_RESET"] = "reset"
 L["SLASH_DESIGN"] = "design"
+L["SLASH_REGEN"] = "regen"
 L["SLASH_RESET_HELP"] = "Reset all Coolinator settings, then reload."
 L["SLASH_DESIGN_HELP"] = "Enter/Leave Coolinator Designer mode"
+L["SLASH_REGEN_HELP"] = "Start afresh on the current character with your design"
 L["SLASH_HELP"] = "Open the Coolinator settings."
 L["SLASH_UNKNOWN_COMMAND"] = "Unknown command '%s'"
 

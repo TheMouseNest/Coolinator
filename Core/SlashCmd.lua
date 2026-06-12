@@ -99,11 +99,13 @@ local COMMANDS = {
   [addonTable.Locales.SLASH_RESET] = addonTable.SlashCmd.Reset,
   ["regenerate"] = addonTable.SlashCmd.RegenerateLayout,
   ["regen"] = addonTable.SlashCmd.RegenerateLayout,
+  [addonTable.Locales.SLASH_REGEN] = addonTable.SlashCmd.RegenerateLayout,
 }
 local HELP = {
   {"", addonTable.Locales.SLASH_HELP},
   {addonTable.Locales.SLASH_RESET, addonTable.Locales.SLASH_RESET_HELP},
   {addonTable.Locales.SLASH_DESIGN, addonTable.Locales.SLASH_DESIGN_HELP},
+  {addonTable.Locales.SLASH_REGEN, addonTable.Locales.SLASH_REGEN_HELP},
 }
 
 function addonTable.SlashCmd.Handler(input)
@@ -120,9 +122,9 @@ function addonTable.SlashCmd.Handler(input)
 
     for _, entry in ipairs(HELP) do
       if entry[1] == "" then
-        addonTable.Utilities.Message("/cool - " .. entry[2])
+        addonTable.Utilities.Message("/cooli - " .. entry[2])
       else
-        addonTable.Utilities.Message("/cool " .. entry[1] .. " - " .. entry[2])
+        addonTable.Utilities.Message("/cooli " .. entry[1] .. " - " .. entry[2])
       end
     end
   end
