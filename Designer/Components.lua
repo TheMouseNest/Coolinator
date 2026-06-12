@@ -24,7 +24,7 @@ function addonTable.Designer.IconMixin:OnLoad()
   self.BaseCooldown = CreateFrame("Cooldown", nil, self, "CooldownFrameTemplate")
   self.BaseCooldown:SetAllPoints()
   self.BaseCooldown:SetDrawEdge(false)
-	self.BaseCooldown:SetSwipeColor(0, 0, 0);
+	self.BaseCooldown:SetSwipeColor(0, 0, 0, 0.8);
   self.BaseCooldown:SetSwipeTexture("Interface/HUD/UI-HUD-CoolDownManager-Icon-Swipe")
 
   self.CountFrame = CreateFrame("Frame", nil, self)
@@ -38,16 +38,25 @@ end
 
 function addonTable.Designer.IconMixin:Setup(details)
   self.details = details
-  local texture = C_Spell.GetSpellTexture(details.resource.spellID)
+  local texture
+  if details.resource.spellID then
+    texture = C_Spell.GetSpellTexture(details.resource.spellID)
+  elseif details.resource.itemID then
+    texture = C_Item.GetItemIconByID(details.resource.itemID)
+  end
   self.Icon:SetTexture(texture)
   self.CountFrame.text:SetText("")
 
-  self.Icon:SetDesaturated(not addonTable.Utilities.IsSpellKnown(details.resource.spellID))
+  self.Icon:SetDesaturated(details.resource.spellID and not addonTable.Utilities.IsSpellKnown(details.resource.spellID) or false)
 end
 
 function addonTable.Designer.IconMixin:OnEnter()
   GameTooltip_SetDefaultAnchor(GameTooltip, self)
-  GameTooltip:SetSpellByID(self.details.resource.spellID)
+  if self.details.resource.spellID then
+    GameTooltip:SetSpellByID(self.details.resource.spellID)
+  elseif self.details.resource.itemID then
+    GameTooltip:SetItemByID(self.details.resource.itemID)
+  end
   if self.Icon:IsDesaturated() then
     GameTooltip:AddLine(RED_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.UNLEARNED))
     GameTooltip:Show()
