@@ -1,0 +1,84 @@
+---@class addonTableCoolinator
+local addonTable = select(2, ...)
+
+local function Announce()
+  addonTable.CallbackRegistry:TriggerEvent("Designer.Open")
+end
+
+local function GetSpellIconDialog(allGetter, activeGetter)
+  local frame = addonTable.CustomiseDialog.Components.GetContentFrame("CoolinatorDesignerAuraInsertDialog", 300, 350)
+  local container = CreateFrame("Frame", nil, frame)
+  container:SetPoint("TOPLEFT", addonTable.Constants.ButtonFrameOffset, -25)
+  container:SetPoint("BOTTOMRIGHT")
+  
+  frame.scrollBox = CreateFrame("Frame", nil, container, "WowScrollBoxList")
+  frame.scrollBox:SetPoint("TOPLEFT")
+  frame.scrollBox:SetPoint("BOTTOMRIGHT", -10, 0)
+  frame.scrollBar = CreateFrame("EventFrame", nil, container, "MinimalScrollBar")
+  frame.scrollBar:SetPoint("TOPRIGHT", -8, 0)
+  frame.scrollBar:SetPoint("BOTTOMRIGHT", -8, 0)
+  frame.view = CreateScrollBoxListGridView(6, 10, 10, 10, 10, 5, 5)
+  frame.view:SetElementSizeCalculator(function()
+    return 40, 40
+  end)
+  frame.view:SetElementInitializer("Button", function(button, data)
+    if not button.setup then
+      button.setup = true
+      button.Icon = button:CreateTexture()
+      button.Icon:SetAllPoints()
+      button.Highlight = button:CreateTexture(nil, "HIGHLIGHT")
+      button.Highlight:SetBlendMode("ADD")
+      button.Highlight:SetTexture("Interface/Buttons/ButtonHilight-Square")
+      button.Highlight:SetAllPoints()
+    end
+    button.Highlight:Hide()
+    button.Icon:SetDesaturated(not addonTable.Utilities.IsSpellKnown(data))
+    button.Icon:SetTexture(C_Spell.GetSpellTexture(data))
+    button:SetScript("OnClick", function()
+      frame.callback(data)
+      frame:Hide()
+    end)
+    button:SetScript("OnEnter", function()
+      button.Highlight:Show()
+      GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
+      GameTooltip:SetSpellByID(data)
+    end)
+    button:SetScript("OnLeave", function()
+      button.Highlight:Hide()
+      GameTooltip:Hide()
+    end)
+  end)
+  ScrollUtil.InitScrollBoxListWithScrollBar(frame.scrollBox, frame.scrollBar, frame.view)
+
+  function frame:Update(callback)
+    frame.callback = callback
+    local all = allGetter()
+    table.sort(all)
+    local seen = activeGetter()
+    all = tFilter(all, function(spell)
+      return not seen[spell]
+    end, true)
+    frame.view:SetDataProvider(CreateDataProvider(all))
+    frame:Show()
+  end
+
+  return frame
+end
+
+function addonTable.Designer.GetAuraDialog()
+  local dialog = GetSpellIconDialog(addonTable.Core.GetAllAuras, function()
+    return addonTable.Designer.GetActiveAuras(addonTable.Designer.GetCurrent())
+  end)
+  dialog:SetTitle(addonTable.Locales.CHOOSE_AURA)
+
+  return dialog
+end
+
+function addonTable.Designer.GetAbilityDialog()
+  local dialog = GetSpellIconDialog(addonTable.Core.GetAllAbilities, function()
+    return addonTable.Designer.GetActiveAbilities(addonTable.Designer.GetCurrent())
+  end)
+  dialog:SetTitle(addonTable.Locales.CHOOSE_ABILITY)
+
+  return dialog
+end

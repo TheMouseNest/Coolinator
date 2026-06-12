@@ -1,0 +1,125 @@
+---@class addonTableCoolinator
+local addonTable = select(2, ...)
+
+local LSM = LibStub("LibSharedMedia-3.0")
+
+addonTable.Display.StaggerClassResourceStatusBar = {}
+
+function addonTable.Display.StaggerClassResourceStatusBar:OnLoad()
+  self.statusBar = CreateFrame("StatusBar", nil, self)
+  self.statusBar:SetAllPoints()
+  self.statusBar:SetStatusBarTexture(LSM:Fetch("statusbar", "Cooli: Solid Transparency"))
+  self.fadedStatusBar = CreateFrame("StatusBar", nil, self)
+  self.fadedStatusBar:SetPoint("RIGHT", self.statusBar:GetStatusBarTexture(), "RIGHT")
+  self.fadedStatusBar:SetFillStyle(Enum.StatusBarFillStyle.Reverse)
+
+  self.background = self.statusBar:CreateTexture(nil, "BACKGROUND")
+  self.background:SetAllPoints()
+  self.borderWrapper = CreateFrame("Frame", nil, self)
+  self.borderWrapper:SetAllPoints()
+  self.border = self.borderWrapper:CreateTexture(nil, "BORDER")
+  self.border:SetPoint("CENTER")
+  self.borderMask = self.statusBar:CreateMaskTexture()
+  self.borderMask:SetAllPoints()
+
+  self.text = self.statusBar:CreateFontString()
+
+end
+
+function addonTable.Display.StaggerClassResourceStatusBar:OnUpdate()
+  local maxHealth = UnitHealthMax("player")
+  local limit = maxHealth * self.details.resource.options.multiplier
+  local current = UnitStagger("player")
+  if issecretvalue(current) then
+    return
+  end
+  self.statusBar:SetMinMaxValues(0, limit)
+  self.statusBar:SetValue(current)
+  self.fadedStatusBar:SetMinMaxValues(0, limit)
+  self.fadedStatusBar:SetValue(math.min(current, math.max(0.08 * maxHealth, current * 0.5)))
+  self.fadedStatusBar:SetAlphaFromBoolean(C_Spell.GetSpellCooldownDuration(119582):IsZero())
+  for _, threshold in ipairs(self.details.thresholdColors) do
+    if current/maxHealth <= threshold.limit then
+      self.statusBar:GetStatusBarTexture():SetVertexColor(threshold.color.r, threshold.color.g, threshold.color.b)
+      self.fadedStatusBar:GetStatusBarTexture():SetVertexColor(threshold.fadedColor.r, threshold.fadedColor.g, threshold.fadedColor.b)
+      break
+    end
+  end
+end
+
+function addonTable.Display.StaggerClassResourceStatusBar:Setup(details)
+  self:SetScript("OnUpdate", self.OnUpdate)
+
+  self.rawWidth, self.rawHeight, self.borderWidth, self.borderHeight, self.lowerScale = addonTable.Display.ApplyStatusBar(details, self.statusBar, self.border, self.borderMask, self.background)
+
+  self.fadedStatusBar:SetScale(1/self.lowerScale * details.scale)
+  local backgroundAsset = LSM:Fetch("statusbar", details.foreground.asset, true) or LSM:Fetch("statusbar", "Cooli: Solid White")
+  self.fadedStatusBar:SetStatusBarTexture(backgroundAsset)
+  self.fadedStatusBar:GetStatusBarTexture():RemoveMaskTexture(self.borderMask)
+  self.fadedStatusBar:GetStatusBarTexture():AddMaskTexture(self.borderMask)
+
+  self.fadedStatusBar:SetFrameLevel(self.statusBar:GetFrameLevel() + 1)
+  self.borderWrapper:SetFrameLevel(self.statusBar:GetFrameLevel() + 2)
+
+  self.details = details
+end
+
+function addonTable.Display.StaggerClassResourceStatusBar:ApplySize()
+  PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale)
+  PixelUtil.SetSize(self.fadedStatusBar, self.rawWidth * self.lowerScale, self.rawHeight * self.lowerScale)
+  PixelUtil.SetSize(self.border, self.borderWidth * self.lowerScale, self.borderHeight * self.lowerScale)
+end
+
+addonTable.Display.IciclesClassResourceStatusBar = {}
+
+function addonTable.Display.IciclesClassResourceStatusBar:OnLoad()
+  self:SetScript("OnEvent", self.OnEvent)
+
+  self.statusBar = CreateFrame("StatusBar", nil, self)
+  self.statusBar:SetAllPoints()
+  self.statusBar:SetStatusBarTexture(LSM:Fetch("statusbar", "Cooli: Solid Transparency"))
+  self.statusBar:SetMinMaxValues(0, 5)
+
+  self.background = self.statusBar:CreateTexture(nil, "BACKGROUND")
+  self.background:SetAllPoints()
+  self.borderWrapper = CreateFrame("Frame", nil, self)
+  self.borderWrapper:SetAllPoints()
+  self.border = self.borderWrapper:CreateTexture(nil, "BORDER")
+  self.border:SetPoint("CENTER")
+  self.borderMask = self.statusBar:CreateMaskTexture()
+  self.borderMask:SetAllPoints()
+
+  self.icicles = 0
+end
+
+function addonTable.Display.IciclesClassResourceStatusBar:OnEvent(eventName, ...)
+  if eventName == "UNIT_AURA" then
+    self:Import()
+  end
+end
+
+function addonTable.Display.IciclesClassResourceStatusBar:Setup(details)
+  self:RegisterUnitEvent("UNIT_AURA", "player")
+
+  self.rawWidth, self.rawHeight, self.borderWidth, self.borderHeight, self.lowerScale = addonTable.Display.ApplyStatusBar(details, self.statusBar, self.border, self.borderMask, self.background)
+  self.details = details
+
+  self.borderWrapper:SetFrameLevel(self.statusBar:GetFrameLevel() + 2)
+
+  self:Import()
+end
+
+function addonTable.Display.IciclesClassResourceStatusBar:Disable()
+  self:UnregisterEvent("UNIT_AURA")
+end
+
+function addonTable.Display.IciclesClassResourceStatusBar:Import()
+  local auraData = C_UnitAuras.GetUnitAuraBySpellID("player", 205473)
+  self.icicles = auraData and auraData.applications or 0
+  self.statusBar:SetValue(self.icicles)
+end
+
+function addonTable.Display.IciclesClassResourceStatusBar:ApplySize()
+  PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale)
+  PixelUtil.SetSize(self.border, self.borderWidth * self.lowerScale, self.borderHeight * self.lowerScale)
+end

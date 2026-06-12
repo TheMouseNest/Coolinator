@@ -1,0 +1,4 @@
+{
+  "libraries": ["Libs/"],
+  "ignore": [".release/"]
+}

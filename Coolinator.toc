@@ -1,0 +1,64 @@
+## Interface: 120000, 110207, 50503, 38000, 20505, 11508
+## Title: Coolinator
+## Version: @project-version@
+## Author: plusmouse
+## SavedVariables: COOLINATOR_CONFIG
+## SavedVariablesPerCharacter: COOLINATOR_CURRENT_PROFILE, COOLINATOR_LAST_INSTANCE
+## IconTexture: Interface\AddOns\Coolinator\Assets\logo.tga
+
+## Category: Buffs & Debuffs
+## Category-deDE: Buffs & Debuffs
+## Category-esES: Beneficios y Perjuicios
+## Category-esMX: Beneficios y Perjuicios
+## Category-frFR: Améliorations et Affaiblissements
+## Category-itIT: Benefici e penalità
+## Category-koKR: 버프 및 디버프
+## Category-ptBR: Bônus e Penalidades
+## Category-ruRU: Баффы и дебаффы
+## Category-zhCN: 增益和减益
+## Category-zhTW: 增益與減益
+
+Libs/LibStub/LibStub.lua
+Libs/CallbackHandler-1.0/CallbackHandler-1.0.lua
+Libs/LibSharedMedia-3.0/lib.xml
+Libs/LibEditModeOverride/LibEditModeOverride.xml
+
+Locales.lua
+
+Core/Objects.lua
+Core/Locales.lua
+Core/Constants.lua
+Core/Config.lua
+Core/Utilities.lua
+Core/Dialogs.lua
+Core/SlashCmd.lua
+Core/Fonts.lua
+Core/Migration.lua
+Core/Initialize.lua
+
+Core/ApplyLayout.lua
+Core/ImportDefaults.lua
+Core/SpellOverrides.lua
+
+Display/Templates.xml
+Display/Utilities.lua
+Display/Cooldown.lua
+Display/AuraStatusBar.lua
+Display/ClassResourceStatusBar.lua
+Display/BaseLayout.lua
+Display/Layout.lua
+
+Design.lua
+Assets.lua
+
+CustomiseDialog/Components.lua
+CustomiseDialog/Main.lua
+CustomiseDialog/Initialize.lua
+
+Designer/Components.lua
+Designer/Defaults.lua
+Designer/AddDialogs.lua
+Designer/Layout.lua
+Designer/WidgetConfiguration.lua
+Designer/Options.lua
+Designer/Initialize.lua
