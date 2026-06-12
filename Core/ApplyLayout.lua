@@ -168,14 +168,14 @@ function addonTable.Core.GetCDMMapping(activeOnly)
   return cdmMapping, all
 end
 
-local function TriggerReload(message)
-  addonTable.Dialogs.ShowConfirm(message, RELOADUI, CANCEL, ReloadUI)
+local function TriggerReload(reason)
+  addonTable.Dialogs.ShowConfirm(addonTable.Locales.PLEASE_RELOAD_TO_GET_COOLINATOR_WORKING_REASON_X:format(reason), RELOADUI, CANCEL, ReloadUI)
 end
 
 function addonTable.Core.GetCDMOrder(layout)
   local cdmData, tag = addonTable.Core.GetCDMData()
   if not cdmData then
-    TriggerReload("Please reload to get Coolinator working. Reason (0)")
+    TriggerReload(0)
     return
   end
   local id
@@ -187,17 +187,17 @@ function addonTable.Core.GetCDMOrder(layout)
     end
   end
   if not id then
-    TriggerReload("Please reload to get Coolinator working. Reason (1)")
+    TriggerReload(1)
     return
   end
 
   if cdmData[SAVE_FIELD_ID_ACTIVE_LAYOUT_NAMES][tag] ~= id then
-    TriggerReload("Please reload to get Coolinator working. Reason (2)")
+    TriggerReload(2)
     return
   end
 
   if cdmData[SAVE_FIELD_ID_LAYOUTS][tag][id][SAVE_FIELD_ID_COOLDOWN_ORDER] ~= nil or cdmData[SAVE_FIELD_ID_LAYOUTS][tag][id][SAVE_FIELD_ID_CATEGORY_OVERRIDES][-2] ~= nil then
-    TriggerReload("Please reload to get Coolinator working. Reason (3)")
+    TriggerReload(3)
     return
   end
 
@@ -207,13 +207,13 @@ function addonTable.Core.GetCDMOrder(layout)
 
   local aurasSaved = cdmData[SAVE_FIELD_ID_LAYOUTS][tag][id][SAVE_FIELD_ID_CATEGORY_OVERRIDES][Enum.CooldownViewerCategory.TrackedBuff]
   if aurasSaved == nil or #aurasSaved ~= (#ordered - #bars) then
-    TriggerReload("Please reload to get Coolinator working. Reason (4)")
+    TriggerReload(4)
   end
 
   local allBars = GetVisibleAurasOrdered(layout, cdmMappingAll)
 
   if #bars ~= #allBars then
-    TriggerReload("Please reload to get Coolinator working. Reason (5)")
+    TriggerReload(5)
     return
   end
 
@@ -225,7 +225,7 @@ function addonTable.Core.GetCDMOrder(layout)
   if bars ~= nil then
     for _, cdmID in ipairs(bars) do
       if tIndexOf(allBars, cdmID) == nil then
-        TriggerReload("Please reload to get Coolinator working. Reason (6)")
+        TriggerReload(6)
         return
       end
     end

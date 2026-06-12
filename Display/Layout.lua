@@ -127,10 +127,10 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
 
   elseif details.resource.kind == "aura" then
     local auraIndex = addonTable.State.auraOrder[addonTable.State.spellIDMap[spellID]]
-    if not auraIndex then
+    local aura = self.auraIcons[auraIndex]
+    if not aura then
       return
     end
-    local aura = self.auraIcons[auraIndex]
     local frame = self.auraWrappersPool:Acquire()
     frame.auraIndex = auraIndex
     frame:Show()
@@ -151,6 +151,9 @@ function addonTable.Display.LayoutManagerMixin:GetBar(details)
     end
     local auraIndex = addonTable.State.barOrder[addonTable.State.spellIDMap[details.resource.spellID]]
     local aura = self.auraBars[auraIndex]
+    if not aura then
+      return
+    end
     local monitor = self.auraStatusBarPool:Acquire()
     monitor.auraIndex = auraIndex
     monitor:Setup(aura, details)

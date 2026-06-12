@@ -52,6 +52,17 @@ local function TriggerUpdate()
   end)
 end
 
+local isBarsChanged = false
+addonTable.CallbackRegistry:RegisterCallback("AuraBarsChanged", function()
+  isBarsChanged = true
+  addonTable.Core.ApplyLayoutToCDM(addonTable.Core.GetCurrentDesign())
+end)
+addonTable.CallbackRegistry:RegisterCallback("Designer.Close", function()
+  if isBarsChanged then
+    addonTable.Dialogs.ShowConfirm(addonTable.Locales.DUE_TO_AURA_BARS_CHANGING_RELOAD_REQUIRED, RELOADUI, CANCEL, ReloadUI)
+  end
+end)
+
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
 frame:RegisterEvent("SPELLS_CHANGED")

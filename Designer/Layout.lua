@@ -123,6 +123,9 @@ local function DeleteRoot(root, shouldAnnounce)
     end
     addonTable.CallbackRegistry:TriggerEvent("Designer.Options", nil)
     Announce()
+    if root.details.kind == "bar" and root.details.resource.kind == "aura" then
+      addonTable.CallbackRegistry:TriggerEvent("AuraBarsChanged")
+    end
   end
 end
 
@@ -210,6 +213,7 @@ function addonTable.Designer.LayoutManagerMixin:AddEntryToInsert(rootDescription
         ImportStyle(new, origin)
       end
       inserter(new)
+      addonTable.CallbackRegistry:TriggerEvent("AuraBarsChanged")
     end)
   end)
   local resources = addonTable.Designer.GetAvailableClassResources()

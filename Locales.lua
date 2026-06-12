@@ -79,6 +79,9 @@ L["BACKGROUND_COLOR"] = "Background color"
 L["SELECT_GROUP"] = "Select Group"
 L["INSERT_END"] = "Insert End"
 
+L["PLEASE_RELOAD_TO_GET_COOLINATOR_WORKING_REASON_X"] = "Please reload to get Coolinator working. Reason (%s)"
+L["DUE_TO_AURA_BARS_CHANGING_RELOAD_REQUIRED"] = "Due to aura bars changing a reload is required for Coolinator function"
+
 L["OPTIONS"] = "Options"
 L["DELETE"] = "Delete"
 
