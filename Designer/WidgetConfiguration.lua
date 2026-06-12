@@ -348,7 +348,7 @@ addonTable.Designer.WidgetConfiguration = {
                 details.thresholdColors[1].limit = value / 100
               end,
               getter = function(details)
-                return details.thresholdColors[1].limit
+                return details.thresholdColors[1].limit * 100
               end,
             },
             {
@@ -380,7 +380,7 @@ addonTable.Designer.WidgetConfiguration = {
                 details.thresholdColors[2].limit = value / 100
               end,
               getter = function(details)
-                return details.thresholdColors[2].limit
+                return details.thresholdColors[2].limit * 100
               end,
             },
             {
@@ -412,7 +412,7 @@ addonTable.Designer.WidgetConfiguration = {
                 details.thresholdColors[3].limit = value / 100
               end,
               getter = function(details)
-                return details.thresholdColors[3].limit
+                return details.thresholdColors[3].limit * 100
               end,
             },
             {
@@ -446,13 +446,13 @@ addonTable.Designer.WidgetConfiguration = {
             {
               label = "1",
               kind = "slider",
-              min = 0, max = 400,
+              min = 0, max = 100,
               valuePattern = "%d%%",
               setter = function(details, value)
                 details.thresholdColors[1].limit = value / 100
               end,
               getter = function(details)
-                return details.thresholdColors[1].limit
+                return details.thresholdColors[1].limit * 100
               end,
             },
             {
@@ -468,13 +468,13 @@ addonTable.Designer.WidgetConfiguration = {
             {
               label = "2",
               kind = "slider",
-              min = 0, max = 400,
+              min = 0, max = 100,
               valuePattern = "%d%%",
               setter = function(details, value)
                 details.thresholdColors[2].limit = value / 100
               end,
               getter = function(details)
-                return details.thresholdColors[2].limit
+                return details.thresholdColors[2].limit * 100
               end,
             },
             {
@@ -490,13 +490,13 @@ addonTable.Designer.WidgetConfiguration = {
             {
               label = "3",
               kind = "slider",
-              min = 0, max = 400,
+              min = 0, max = 100,
               valuePattern = "%d%%",
               setter = function(details, value)
                 details.thresholdColors[3].limit = value / 100
               end,
               getter = function(details)
-                return details.thresholdColors[3].limit
+                return details.thresholdColors[3].limit * 100
               end,
             },
             {
