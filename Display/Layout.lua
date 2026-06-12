@@ -10,6 +10,7 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
     frame:Hide()
   end)
   self.cooldownPool = addonTable.Display.GeneratePool(addonTable.Display.CooldownMixin)
+  self.auraFromItemPool = addonTable.Display.GeneratePool(addonTable.Display.AuraFromItemMixin)
   self.auraStatusBarPool = addonTable.Display.GeneratePool(addonTable.Display.AuraStatusBarMixin)
   self.classPools = {
     stagger = addonTable.Display.GeneratePool(addonTable.Display.StaggerClassResourceStatusBar),
@@ -125,7 +126,7 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
     frame:UpdateSpellByID(spellID)
     return frame
 
-  elseif details.resource.kind == "aura" then
+  elseif details.resource.kind == "aura" and addonTable.State.spellIDMap[spellID] then
     local auraIndex = addonTable.State.auraOrder[addonTable.State.spellIDMap[spellID]]
     local aura = self.auraIcons[auraIndex]
     if not aura then
@@ -139,6 +140,10 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
     aura:ClearAllPoints()
     aura:SetPoint("CENTER", frame)
 
+    return frame
+  elseif details.resource.kind == "aura" and addonTable.Constants.AurasFromItems[spellID] then
+    local frame = self.auraFromItemPool:Acquire()
+    frame:Setup(details)
     return frame
   end
 end

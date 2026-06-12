@@ -23,6 +23,10 @@ function addonTable.Core.GetAllAuras()
     table.insert(result, GetSpellID(C_CooldownViewer.GetCooldownViewerCooldownInfo(aura)))
   end
 
+  for aura in pairs(addonTable.Constants.AurasFromItems) do
+    table.insert(result, aura)
+  end
+
   return result
 end
 

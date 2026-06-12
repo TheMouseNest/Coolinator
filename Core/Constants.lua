@@ -156,3 +156,17 @@ addonTable.Constants.IconResourceLabelMap = {
   ["ability"] = addonTable.Locales.ABILITY,
   ["item"] = addonTable.Locales.ITEM,
 }
+
+addonTable.Constants.AurasFromItems = {
+  -- Light's Potential
+  [1236616] = {
+    itemIDs = {
+      [241309] = true,
+      [241308] = true,
+      [245897] = true,
+      [245898] = true,
+    },
+    duration = 30,
+    deathPersistent = false,
+  },
+}

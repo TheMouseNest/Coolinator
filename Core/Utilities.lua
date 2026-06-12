@@ -56,6 +56,9 @@ function addonTable.Utilities.PurgeKey(t, k)
 end
 
 function addonTable.Utilities.IsSpellKnown(spellID)
+  if addonTable.Constants.AurasFromItems[spellID] then
+    return spellID
+  end
   local mapped = addonTable.State.spellIDMap[spellID]
   if mapped then
     local isKnown = C_CooldownViewer.GetCooldownViewerCooldownInfo(mapped).isKnown

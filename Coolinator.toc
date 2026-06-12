@@ -45,6 +45,7 @@ Display/Utilities.lua
 Display/Cooldown.lua
 Display/AuraStatusBar.lua
 Display/ClassResourceStatusBar.lua
+Display/AuraFromItem.lua
 Display/BaseLayout.lua
 Display/Layout.lua
 
