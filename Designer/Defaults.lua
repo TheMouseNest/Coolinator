@@ -7,6 +7,14 @@ local function GetColor(rgb, a)
 end
 
 addonTable.Designer.Defaults = {
+  Group = {
+    kind = "group",
+    layout = "horizontal",
+    padding = 0.2,
+    alpha = 1,
+    scale = 1,
+    entries = {}
+  },
   AuraIcon = {
     kind = "icon",
     resource = {kind = "aura", spellID = 0},

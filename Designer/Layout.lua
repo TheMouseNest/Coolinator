@@ -137,9 +137,11 @@ local function DeleteRoot(root, shouldAnnounce)
     end
     local details = root.details
     addonTable.CallbackRegistry:TriggerEvent("Designer.Options", nil)
-    Announce()
-    if CheckChildren(details, function(d) return d.kind == "bar" and d.resource.kind == "aura" end) then
-      addonTable.CallbackRegistry:TriggerEvent("AuraBarsChanged")
+    if shouldAnnounce then
+      Announce()
+      if CheckChildren(details, function(d) return d.kind == "bar" and d.resource.kind == "aura" end) then
+        addonTable.CallbackRegistry:TriggerEvent("AuraBarsChanged")
+      end
     end
   end
 end
@@ -178,6 +180,16 @@ function addonTable.Designer.LayoutManagerMixin:AddHandlers(root)
             table.insert(parentDetails.entries, (tIndexOf(parentDetails.entries, root.details) + 1) or 1, new)
             Announce()
             addonTable.CallbackRegistry:TriggerEvent("Designer.Options", new)
+          end)
+        end
+        if parentDetails then
+          rootDescription:CreateButton(addonTable.Locales.WRAP_IN_GROUP, function()
+            local new = CopyTable(addonTable.Designer.Defaults.Group)
+            local index = tIndexOf(parentDetails.entries, root.details)
+            local details = root.details
+            table.insert(new.entries, details)
+            parentDetails.entries[index] = new
+            Announce()
           end)
         end
       end)
@@ -345,18 +357,10 @@ function addonTable.Designer.LayoutManagerMixin:UpdateSelection()
           end)
           local group = rootDescription:CreateButton(addonTable.Locales.GROUP_WITH)
           self:AddEntryToInsert(group, frame.details, function(new)
-            table.insert(parentDetails.entries, {
-              kind = "group",
-              layout = "horizontal",
-              padding = 0.2,
-              alpha = 1,
-              scale = 1,
-              entries = {
-                new
-              }
-            })
+            local g = CopyTable(addonTable.Designer.Defaults.Group)
+            table.insert(g.entries, new)
             Announce()
-            addonTable.CallbackRegistry:TriggerEvent("Designer.Options", new)
+            addonTable.CallbackRegistry:TriggerEvent("Designer.Options", g)
           end)
         end)
       end)
