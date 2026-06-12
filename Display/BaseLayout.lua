@@ -114,6 +114,7 @@ function addonTable.Display.BaseLayoutManagerMixin:GetGroup(details)
       end
     end
     wrapper:SetAlpha(1)
+    wrapper:SetScale(1)
   end
 
   return wrapper
