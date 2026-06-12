@@ -40,7 +40,7 @@ function addonTable.Core.GetCDMData()
   raw = raw:match("^%d%|(.*)$")
   if raw then
     local cdmData = C_EncodingUtil.DeserializeCBOR(C_EncodingUtil.DecompressString(C_EncodingUtil.DecodeBase64(raw), Enum.CompressionMethod.Deflate))
-    assert(cdmData[1] == 4, "Layout has changed")
+    assert(cdmData[1] == 4, "Layout has changed" .. tostring(cdmData[1]))
 
     return cdmData, tag
   end
