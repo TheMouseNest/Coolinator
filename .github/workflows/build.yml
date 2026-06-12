@@ -24,7 +24,7 @@ jobs:
 
     - uses: BigWigsMods/packager@master
       with:
-        args: -p 1572542
+        args: -p 1572542 -a 5NR83lK3
       env:
         CF_API_KEY: ${{ secrets.plusmouse_curseforge }}
         WAGO_API_TOKEN: ${{ secrets.plusmouse_wago }}
