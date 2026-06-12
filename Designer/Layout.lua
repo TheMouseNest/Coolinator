@@ -111,6 +111,19 @@ function addonTable.Designer.LayoutManagerMixin:Delayout()
   self.wrappersPool:ReleaseAll()
 end
 
+local function CheckChildren(details, checker)
+  if checker(details) then
+    return true
+  elseif details.kind == "group" then
+    for _, entry in ipairs(details.entries) do
+      if CheckChildren(entry, checker) then
+        return true
+      end
+    end
+  end
+  return false
+end
+
 local function DeleteRoot(root, shouldAnnounce)
   if root.details.layout == "standalone" then
     return
@@ -122,9 +135,10 @@ local function DeleteRoot(root, shouldAnnounce)
     if #parentDetails.entries == 0 and parentDetails.layout ~= "standalone" then
       DeleteRoot(root:GetParent(), false)
     end
+    local details = root.details
     addonTable.CallbackRegistry:TriggerEvent("Designer.Options", nil)
     Announce()
-    if root.details.kind == "bar" and root.details.resource.kind == "aura" then
+    if CheckChildren(details, function(d) return d.kind == "bar" and d.resource.kind == "aura" end) then
       addonTable.CallbackRegistry:TriggerEvent("AuraBarsChanged")
     end
   end
