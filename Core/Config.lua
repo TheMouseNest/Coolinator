@@ -220,7 +220,7 @@ function addonTable.Config.ChangeProfile(newProfileName, comparisonData)
   local changedOptions = {}
   local refreshState = {}
   local newProfile = COOLINATOR_CONFIG.Profiles[newProfileName]
-  oldProfile = comparisonData or addonTable.Config.CurrentProfile
+  local oldProfile = comparisonData or addonTable.Config.CurrentProfile
 
   for name, value in pairs(oldProfile) do
     if value ~= newProfile[name] then

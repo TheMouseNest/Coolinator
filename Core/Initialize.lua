@@ -9,7 +9,7 @@ local hidden = CreateFrame("Frame")
 hidden:Hide()
 addonTable.hiddenFrame = hidden
 
-local function AutoGenerateLayout()
+function addonTable.Core.AutoGenerateLayout()
   local spec = addonTable.Utilities.GetSpecID()
   local designs = addonTable.Config.Get(addonTable.Config.Options.DESIGNS)
   if not designs[spec] then
@@ -38,7 +38,7 @@ local function TriggerUpdate()
       return
     end
 
-    AutoGenerateLayout()
+    addonTable.Core.AutoGenerateLayout()
     addonTable.SpellEquivalence = addonTable.Core.GenerateSpellOverrides()
     local layout = addonTable.Core.GetCurrentDesign()
     if layout then
@@ -62,6 +62,11 @@ addonTable.CallbackRegistry:RegisterCallback("Designer.Close", function()
     addonTable.Dialogs.ShowConfirm(addonTable.Locales.DUE_TO_AURA_BARS_CHANGING_RELOAD_REQUIRED, RELOADUI, CANCEL, ReloadUI)
   end
 end)
+addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, name)
+  if name == addonTable.Config.Options.DESIGNS or name == addonTable.Config.Options.DESIGN_ASSIGNMENTS then
+    TriggerUpdate()
+  end
+end)
 
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
@@ -75,7 +80,7 @@ frame:SetScript("OnEvent", function(_, eventName, data)
 end)
 
 EventUtil.ContinueAfterAllEvents(function()
-  AutoGenerateLayout()
+  addonTable.Core.AutoGenerateLayout()
   addonTable.SpellEquivalence = addonTable.Core.GenerateSpellOverrides()
   C_Timer.After(0.1, function()
     local layout = addonTable.Core.GetCurrentDesign()
