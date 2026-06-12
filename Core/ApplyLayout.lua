@@ -34,12 +34,18 @@ local SAVE_FIELD_ID_COOLDOWN_ORDER = 1;
 local SAVE_FIELD_ID_CATEGORY_OVERRIDES = 2;
 local SAVE_FIELD_ID_ALERT_OVERRIDES = 3;
 
-function addonTable.Core.GetCDMData()
+function addonTable.Core.GetCDMData(doNotTryAgain)
   local tag = CooldownViewerUtil.GetCurrentClassAndSpecTag()
   local raw = C_CooldownViewer.GetLayoutData()
   raw = raw:match("^%d%|(.*)$")
   if raw then
     local cdmData = C_EncodingUtil.DeserializeCBOR(C_EncodingUtil.DecompressString(C_EncodingUtil.DecodeBase64(raw), Enum.CompressionMethod.Deflate))
+    if cdmData[1] < 4 then
+      CooldownViewerSettings.dataSerialization:WriteData()
+      if not doNotTryAgain then
+        return addonTable.Core.GetCDMData(true)
+      end
+    end
     assert(cdmData[1] == 4, "Layout has changed" .. tostring(cdmData[1]))
 
     return cdmData, tag
