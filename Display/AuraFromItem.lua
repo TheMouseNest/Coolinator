@@ -51,7 +51,6 @@ end
 
 function addonTable.Display.AuraFromItemMixin:OnEvent(eventName, _, _, spellID)
   if eventName == "UNIT_SPELLCAST_SUCCEEDED" then
-    print(spellID, self.details.resource.spellID)
     if spellID == self.details.resource.spellID then
       self.BaseCooldown:SetCooldown(GetTime(), self.data.duration)
       self:Show()
