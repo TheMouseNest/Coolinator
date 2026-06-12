@@ -196,6 +196,10 @@ function addonTable.Designer.LayoutManagerMixin:AddHandlers(root)
             local index = tIndexOf(parentDetails.entries, root.details)
             local details = root.details
             table.insert(new.entries, details)
+            if details.anchor then
+              new.anchor = details.anchor
+              details.anchor = nil
+            end
             parentDetails.entries[index] = new
             Announce()
           end)
