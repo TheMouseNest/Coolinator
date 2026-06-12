@@ -2,7 +2,7 @@
 local addonTable = select(2, ...)
 
 local function Announce()
-  addonTable.CallbackRegistry:TriggerEvent("Designer.Open")
+  addonTable.CallbackRegistry:TriggerEvent("Designer.Layout")
 end
 
 local function GetSpellIconDialog(allGetter, activeGetter)

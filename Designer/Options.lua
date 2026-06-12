@@ -2,7 +2,7 @@
 local addonTable = select(2, ...)
 
 local function Announce()
-  addonTable.CallbackRegistry:TriggerEvent("Designer.Open")
+  addonTable.CallbackRegistry:TriggerEvent("Designer.Layout")
 end
 
 local function GenerateOptions(parent, yOffset, xOffset, entries)
@@ -162,10 +162,10 @@ local function GenerateKindOptions(parent, options)
   return container
 end
 
-local options = {}
+local optionsFrames = {}
 function addonTable.Designer.GenerateOptionsFromDetails(details)
-  if options[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] then
-    local frame = options[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)]
+  if optionsFrames[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] then
+    local frame = optionsFrames[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)]
     local oldDetails = frame.details
     frame.details = details
     if frame.details and (frame.details ~= oldDetails or not frame:IsShown()) then
@@ -183,10 +183,10 @@ function addonTable.Designer.GenerateOptionsFromDetails(details)
   )
   frame:ClearAllPoints()
   frame:SetPoint("TOPLEFT", 10, -10)
-  options[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] = frame
+  optionsFrames[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] = frame
 
-  local function SetTitle(details)
-    frame:SetTitle(addonTable.Locales.CUSTOMISE_COOLINATOR_X:format(addonTable.Constants.KindToLabel[details.kind]))
+  local function SetTitle()
+    frame:SetTitle(addonTable.Locales.CUSTOMISE_COOLINATOR_X:format(addonTable.Constants.KindToLabel[frame.details.kind]))
   end
 
   local containers = {}
@@ -216,6 +216,10 @@ function addonTable.Designer.GenerateOptionsFromDetails(details)
       frame:Hide()
     end
   end
+
+  addonTable.CallbackRegistry:RegisterCallback("Designer.Close", function()
+    frame:Hide()
+  end)
 
   frame:SetScript("OnHide", function()
     for kind, c in pairs(containers) do

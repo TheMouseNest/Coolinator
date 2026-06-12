@@ -23,11 +23,14 @@ addonTable.Constants.Events = {
   "SettingChanged",
   "RefreshStateChange",
 
+  "AuraBarsChanged",
+
   "Layout",
+
   "Designer.Open",
   "Designer.Close",
   "Designer.Options",
-  "AuraBarsChanged"
+  "Designer.Layout",
 }
 
 addonTable.Constants.RefreshReason = {

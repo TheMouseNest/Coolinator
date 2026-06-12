@@ -2,7 +2,7 @@
 local addonTable = select(2, ...)
 
 local function Announce()
-  addonTable.CallbackRegistry:TriggerEvent("Designer.Open")
+  addonTable.CallbackRegistry:TriggerEvent("Designer.Layout")
 end
 
 addonTable.Designer.LayoutManagerMixin = CreateFromMixins(addonTable.Display.BaseLayoutManagerMixin)
@@ -80,6 +80,7 @@ function addonTable.Designer.LayoutManagerMixin:OnLoad()
   self.dragButton:SetSize(40, 40)
 
   addonTable.CallbackRegistry:RegisterCallback("Designer.Open", self.Layout, self)
+  addonTable.CallbackRegistry:RegisterCallback("Designer.Layout", self.Layout, self)
   addonTable.CallbackRegistry:RegisterCallback("Designer.Close", self.Delayout, self)
 
   addonTable.CallbackRegistry:RegisterCallback("Designer.Options", self.MarkSelected, self)
