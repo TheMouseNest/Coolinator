@@ -197,7 +197,8 @@ function addonTable.Designer.LayoutManagerMixin:AddHandlers(root)
             local details = root.details
             table.insert(new.entries, details)
             if details.anchor then
-              new.anchor = details.anchor
+              local point, _, relativePoint, x, y = unpack(details.anchor)
+              new.anchor = {point, "UIParent", relativePoint, x / details.scale, y / details.scale}
               details.anchor = nil
             end
             parentDetails.entries[index] = new
@@ -416,7 +417,7 @@ function addonTable.Designer.LayoutManagerMixin:UpdateSelection()
       self.dragButton:SetScript("OnDragStop", function()
         frame:StopMovingOrSizing()
         local point, _, relativePoint, x, y = frame:GetPoint(1)
-        frame.details.anchor = {point, "UIParent", relativePoint, x, y}
+        frame.details.anchor = {point, "UIParent", relativePoint, x * frame.details.scale, y * frame.details.scale}
       end)
       frame:SetMovable(true)
       self.dragButton:RegisterForDrag("LeftButton")
