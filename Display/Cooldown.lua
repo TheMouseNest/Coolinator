@@ -26,7 +26,7 @@ function addonTable.Display.CooldownMixin:OnLoad()
   self.BaseCooldown = CreateFrame("Cooldown", nil, self, "CooldownFrameTemplate")
   self.BaseCooldown:SetAllPoints(self.Icon)
   self.BaseCooldown:SetDrawEdge(false)
-	self.BaseCooldown:SetSwipeColor(0, 0, 0);
+	self.BaseCooldown:SetSwipeColor(0, 0, 0, 0.8);
   self.BaseCooldown:SetSwipeTexture("Interface/HUD/UI-HUD-CoolDownManager-Icon-Swipe")
 
   self.CountFrame = CreateFrame("Frame", nil, self)
