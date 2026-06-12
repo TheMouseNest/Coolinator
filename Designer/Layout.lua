@@ -78,6 +78,14 @@ function addonTable.Designer.LayoutManagerMixin:OnLoad()
   self.deleteButton = GetButton(self, "Interface/AddOns/Coolinator/Assets/Buttons/cross.png")
   self.dragButton = GetButton(self, "Interface/AddOns/Coolinator/Assets/Buttons/drag.png")
   self.dragButton:SetSize(40, 40)
+  self.popoutStandaloneButton = GetButton(self, "Interface/AddOns/Coolinator/Assets/Buttons/popout.png")
+  self.popoutStandaloneButton:SetScript("OnEnter", function()
+    GameTooltip:SetOwner(self.popoutStandaloneButton, "ANCHOR_LEFT")
+    GameTooltip:SetText(addonTable.Locales.POPOUT_STANDALONE)
+  end)
+  self.popoutStandaloneButton:SetScript("OnLeave", function()
+    GameTooltip:Hide()
+  end)
 
   addonTable.CallbackRegistry:RegisterCallback("Designer.Open", self.Layout, self)
   addonTable.CallbackRegistry:RegisterCallback("Designer.Layout", self.Layout, self)
@@ -283,6 +291,7 @@ function addonTable.Designer.LayoutManagerMixin:UpdateSelection()
   self.insertInParent:Hide()
   self.deleteButton:Hide()
   self.dragButton:Hide()
+  self.popoutStandaloneButton:Hide()
   local frame = self:GetForDetails(self.selection, self.root)
   if frame then
     local selector = self.selectorPool:Acquire()
@@ -378,6 +387,21 @@ function addonTable.Designer.LayoutManagerMixin:UpdateSelection()
       self.deleteButton:SetScript("OnLeave", function()
         frame:SetAlpha(frame.details.alpha)
         GameTooltip:Hide()
+      end)
+
+      self.popoutStandaloneButton:Show()
+      self.popoutStandaloneButton:SetPoint("BOTTOM", self.insertInParent, "TOP", 0, 2)
+      self.popoutStandaloneButton:SetScript("OnClick", function()
+        local details = frame.details
+        DeleteRoot(frame, false)
+        if frame.details.kind ~= "group" then
+          local tmp = CopyTable(addonTable.Designer.Defaults.Group)
+          table.insert(tmp.entries, details)
+          details = tmp
+        end
+        details.anchor = {"BOTTOM", "UIParent", "CENTER", 0, 0}
+        table.insert(self.root.details.entries, details)
+        Announce()
       end)
     else
       self.dragButton:Show()
