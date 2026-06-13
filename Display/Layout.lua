@@ -12,11 +12,10 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
   self.cooldownPool = addonTable.Display.GeneratePool(addonTable.Display.CooldownMixin)
   self.auraFromItemPool = addonTable.Display.GeneratePool(addonTable.Display.AuraFromItemMixin)
   self.auraStatusBarPool = addonTable.Display.GeneratePool(addonTable.Display.AuraStatusBarMixin)
-  self.classPools = {
-    stagger = addonTable.Display.GeneratePool(addonTable.Display.StaggerClassResourceStatusBar),
-    icicles = addonTable.Display.GeneratePool(addonTable.Display.IciclesClassResourceStatusBar),
-    rage = addonTable.Display.GeneratePool(addonTable.Display.RageClassResourceStatusBar),
-  }
+  self.classPools = {}
+  for key, mixin in pairs(addonTable.Display.ClassResourceStatusBar) do
+    self.classPools[key] = addonTable.Display.GeneratePool(mixin)
+  end
 
 
   addonTable.CallbackRegistry:RegisterCallback("Layout", self.Layout, self)

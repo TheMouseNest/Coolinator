@@ -3,9 +3,34 @@ local addonTable = select(2, ...)
 
 local LSM = LibStub("LibSharedMedia-3.0")
 
-addonTable.Display.StaggerClassResourceStatusBar = {}
+addonTable.Display.ClassResourceStatusBar = {}
 
-function addonTable.Display.StaggerClassResourceStatusBar:OnLoad()
+local function GenerateStatusBar(self)
+  self:SetScript("OnEvent", self.OnEvent)
+
+  self.statusBar = CreateFrame("StatusBar", nil, self)
+  self.statusBar:SetAllPoints()
+  self.statusBar:SetStatusBarTexture(LSM:Fetch("statusbar", "Cooli: Solid Transparency"))
+  self.statusBar:SetMinMaxValues(0, 5)
+
+  self.background = self.statusBar:CreateTexture(nil, "BACKGROUND")
+  self.background:SetAllPoints()
+  self.borderWrapper = CreateFrame("Frame", nil, self)
+  self.borderWrapper:SetAllPoints()
+  self.border = self.borderWrapper:CreateTexture(nil, "BORDER")
+  self.border:SetPoint("CENTER")
+  self.borderMask = self.statusBar:CreateMaskTexture()
+  self.borderMask:SetAllPoints()
+end
+
+local function SizeStatusBar(self)
+  PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale)
+  PixelUtil.SetSize(self.border, self.borderWidth * self.lowerScale, self.borderHeight * self.lowerScale)
+end
+
+addonTable.Display.ClassResourceStatusBar.stagger = {}
+
+function addonTable.Display.ClassResourceStatusBar.stagger:OnLoad()
   self.statusBar = CreateFrame("StatusBar", nil, self)
   self.statusBar:SetAllPoints()
   self.statusBar:SetStatusBarTexture(LSM:Fetch("statusbar", "Cooli: Solid Transparency"))
@@ -26,7 +51,7 @@ function addonTable.Display.StaggerClassResourceStatusBar:OnLoad()
 
 end
 
-function addonTable.Display.StaggerClassResourceStatusBar:OnUpdate()
+function addonTable.Display.ClassResourceStatusBar.stagger:OnUpdate()
   local maxHealth = UnitHealthMax("player")
   local limit = maxHealth * self.details.resource.options.multiplier
   local current = UnitStagger("player")
@@ -47,7 +72,7 @@ function addonTable.Display.StaggerClassResourceStatusBar:OnUpdate()
   end
 end
 
-function addonTable.Display.StaggerClassResourceStatusBar:Setup(details)
+function addonTable.Display.ClassResourceStatusBar.stagger:Setup(details)
   self:SetScript("OnUpdate", self.OnUpdate)
 
   self.rawWidth, self.rawHeight, self.borderWidth, self.borderHeight, self.lowerScale = addonTable.Display.ApplyStatusBar(details, self.statusBar, self.border, self.borderMask, self.background)
@@ -64,41 +89,27 @@ function addonTable.Display.StaggerClassResourceStatusBar:Setup(details)
   self.details = details
 end
 
-function addonTable.Display.StaggerClassResourceStatusBar:ApplySize()
+function addonTable.Display.ClassResourceStatusBar.stagger:ApplySize()
   PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale)
   PixelUtil.SetSize(self.fadedStatusBar, self.rawWidth * self.lowerScale, self.rawHeight * self.lowerScale)
   PixelUtil.SetSize(self.border, self.borderWidth * self.lowerScale, self.borderHeight * self.lowerScale)
 end
 
-addonTable.Display.IciclesClassResourceStatusBar = {}
+addonTable.Display.ClassResourceStatusBar.icicles = {}
 
-function addonTable.Display.IciclesClassResourceStatusBar:OnLoad()
-  self:SetScript("OnEvent", self.OnEvent)
-
-  self.statusBar = CreateFrame("StatusBar", nil, self)
-  self.statusBar:SetAllPoints()
-  self.statusBar:SetStatusBarTexture(LSM:Fetch("statusbar", "Cooli: Solid Transparency"))
-  self.statusBar:SetMinMaxValues(0, 5)
-
-  self.background = self.statusBar:CreateTexture(nil, "BACKGROUND")
-  self.background:SetAllPoints()
-  self.borderWrapper = CreateFrame("Frame", nil, self)
-  self.borderWrapper:SetAllPoints()
-  self.border = self.borderWrapper:CreateTexture(nil, "BORDER")
-  self.border:SetPoint("CENTER")
-  self.borderMask = self.statusBar:CreateMaskTexture()
-  self.borderMask:SetAllPoints()
+function addonTable.Display.ClassResourceStatusBar.icicles:OnLoad()
+  GenerateStatusBar(self)
 
   self.icicles = 0
 end
 
-function addonTable.Display.IciclesClassResourceStatusBar:OnEvent(eventName, ...)
+function addonTable.Display.ClassResourceStatusBar.icicles:OnEvent(eventName, ...)
   if eventName == "UNIT_AURA" then
     self:Import()
   end
 end
 
-function addonTable.Display.IciclesClassResourceStatusBar:Setup(details)
+function addonTable.Display.ClassResourceStatusBar.icicles:Setup(details)
   self:RegisterUnitEvent("UNIT_AURA", "player")
 
   self.rawWidth, self.rawHeight, self.borderWidth, self.borderHeight, self.lowerScale = addonTable.Display.ApplyStatusBar(details, self.statusBar, self.border, self.borderMask, self.background)
@@ -109,78 +120,69 @@ function addonTable.Display.IciclesClassResourceStatusBar:Setup(details)
   self:Import()
 end
 
-function addonTable.Display.IciclesClassResourceStatusBar:Disable()
+function addonTable.Display.ClassResourceStatusBar.icicles:Disable()
   self:UnregisterEvent("UNIT_AURA")
 end
 
-function addonTable.Display.IciclesClassResourceStatusBar:Import()
+function addonTable.Display.ClassResourceStatusBar.icicles:Import()
   local auraData = C_UnitAuras.GetUnitAuraBySpellID("player", 205473)
   self.icicles = auraData and auraData.applications or 0
   self.statusBar:SetValue(self.icicles)
 end
 
-function addonTable.Display.IciclesClassResourceStatusBar:ApplySize()
-  PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale)
-  PixelUtil.SetSize(self.border, self.borderWidth * self.lowerScale, self.borderHeight * self.lowerScale)
-end
+addonTable.Display.ClassResourceStatusBar.icicles.ApplySize = SizeStatusBar
 
-addonTable.Display.RageClassResourceStatusBar = {}
+local function GenerateBarForResource(primaryResource, label)
+  addonTable.Display.ClassResourceStatusBar[label] = {}
+  local mixin = addonTable.Display.ClassResourceStatusBar[label]
 
-function addonTable.Display.RageClassResourceStatusBar:OnLoad()
-  self:SetScript("OnEvent", self.OnEvent)
+  mixin.OnLoad = GenerateStatusBar
 
-  self.statusBar = CreateFrame("StatusBar", nil, self)
-  self.statusBar:SetAllPoints()
-  self.statusBar:SetStatusBarTexture(LSM:Fetch("statusbar", "Cooli: Solid Transparency"))
-  self.statusBar:SetMinMaxValues(0, 5)
+  function mixin:OnEvent(eventName, ...)
+    self:Import()
+  end
 
-  self.background = self.statusBar:CreateTexture(nil, "BACKGROUND")
-  self.background:SetAllPoints()
-  self.borderWrapper = CreateFrame("Frame", nil, self)
-  self.borderWrapper:SetAllPoints()
-  self.border = self.borderWrapper:CreateTexture(nil, "BORDER")
-  self.border:SetPoint("CENTER")
-  self.borderMask = self.statusBar:CreateMaskTexture()
-  self.borderMask:SetAllPoints()
-end
+  function mixin:Setup(details)
+    self:RegisterUnitEvent("UNIT_POWER_UPDATE", "player")
+    self:RegisterUnitEvent("UNIT_MAXPOWER", "player")
 
-function addonTable.Display.RageClassResourceStatusBar:OnEvent(eventName, ...)
-  self:Import()
-end
+    self.rawWidth, self.rawHeight, self.borderWidth, self.borderHeight, self.lowerScale = addonTable.Display.ApplyStatusBar(details, self.statusBar, self.border, self.borderMask, self.background)
+    self.details = details
 
-function addonTable.Display.RageClassResourceStatusBar:Setup(details)
-  self:RegisterUnitEvent("UNIT_POWER_UPDATE", "player")
-  self:RegisterUnitEvent("UNIT_MAXPOWER", "player")
+    self.borderWrapper:SetFrameLevel(self.statusBar:GetFrameLevel() + 2)
 
-  self.rawWidth, self.rawHeight, self.borderWidth, self.borderHeight, self.lowerScale = addonTable.Display.ApplyStatusBar(details, self.statusBar, self.border, self.borderMask, self.background)
-  self.details = details
+    if self.details.thresholdColors then
+      self.curve = C_CurveUtil.CreateColorCurve()
+      for _, entry in ipairs(self.details.thresholdColors) do
+        self.curve:AddPoint(entry.limit, CreateColor(entry.color.r, entry.color.g, entry.color.b))
+      end
+    end
 
-  self.borderWrapper:SetFrameLevel(self.statusBar:GetFrameLevel() + 2)
+    self:Import()
+  end
 
-  if self.details.thresholdColors then
-    self.curve = C_CurveUtil.CreateColorCurve()
-    for _, entry in ipairs(self.details.thresholdColors) do
-      self.curve:AddPoint(entry.limit, CreateColor(entry.color.r, entry.color.g, entry.color.b))
+  function mixin:Disable()
+    self:UnregisterAllEvents()
+  end
+
+  function mixin:Import()
+    local max = UnitPowerMax("player", primaryResource)
+    local current = UnitPower("player", primaryResource)
+    self.statusBar:SetMinMaxValues(0, max)
+    self.statusBar:SetValue(current)
+    if self.details.thresholdColors then
+      local color = UnitPowerPercent("player", primaryResource, nil, self.curve)
+      self.statusBar:GetStatusBarTexture():SetVertexColor(color.r, color.g, color.b)
     end
   end
 
-  self:Import()
+  mixin.ApplySize = SizeStatusBar
 end
 
-function addonTable.Display.RageClassResourceStatusBar:Disable()
-  self:UnregisterAllEvents()
-end
-
-function addonTable.Display.RageClassResourceStatusBar:Import()
-  local max = UnitPowerMax("player", Enum.PowerType.Rage)
-  local current = UnitPower("player", Enum.PowerType.Rage)
-  self.statusBar:SetMinMaxValues(0, max)
-  self.statusBar:SetValue(current)
-  local color = UnitPowerPercent("player", Enum.PowerType.Rage, nil, self.curve)
-  self.statusBar:GetStatusBarTexture():SetVertexColor(color.r, color.g, color.b)
-end
-
-function addonTable.Display.RageClassResourceStatusBar:ApplySize()
-  PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale)
-  PixelUtil.SetSize(self.border, self.borderWidth * self.lowerScale, self.borderHeight * self.lowerScale)
-end
+GenerateBarForResource(Enum.PowerType.Energy, "energy")
+GenerateBarForResource(Enum.PowerType.Mana, "mana")
+GenerateBarForResource(Enum.PowerType.Rage, "rage")
+GenerateBarForResource(Enum.PowerType.RunicPower, "runic-power")
+GenerateBarForResource(Enum.PowerType.Fury, "fury")
+GenerateBarForResource(Enum.PowerType.Pain, "pain")
+GenerateBarForResource(Enum.PowerType.LunarPower, "lunar-power")
