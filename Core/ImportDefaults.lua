@@ -70,7 +70,7 @@ function addonTable.Core.GenerateDefaultCDMLayout()
         direction = "right",
         padding = 0.1,
         alpha = 1,
-        scale = 1,
+        scale = 0.8,
         entries = {},
       },
       {
@@ -79,7 +79,7 @@ function addonTable.Core.GenerateDefaultCDMLayout()
         direction = "right",
         padding = 0.1,
         alpha = 1,
-        scale = 1,
+        scale = 1.25,
         entries = {},
       },
       {
@@ -95,11 +95,11 @@ function addonTable.Core.GenerateDefaultCDMLayout()
   }
 
   for _, id in ipairs(spellUtility) do
-    table.insert(result.entries[1].entries, {kind = "icon", resource = {kind = "ability", spellID = GetSpellID(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))}, height = 1, scale = 0.8, alpha = 1})
+    table.insert(result.entries[1].entries, {kind = "icon", resource = {kind = "ability", spellID = GetSpellID(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))}, height = 1, scale = 1, alpha = 1})
   end
 
   for _, id in ipairs(spellEssential) do
-    table.insert(result.entries[2].entries, {kind = "icon", resource = {kind = "ability", spellID = GetSpellID(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))}, height = 1, scale = 1.25, alpha = 1})
+    table.insert(result.entries[2].entries, {kind = "icon", resource = {kind = "ability", spellID = GetSpellID(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))}, height = 1, scale = 1, alpha = 1})
   end
 
   for _, id in ipairs(auraTracked) do
