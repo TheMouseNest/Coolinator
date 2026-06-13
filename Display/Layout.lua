@@ -145,6 +145,7 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
     return frame
   elseif details.resource.kind == "aura" and addonTable.Constants.AurasFromItems[spellID] then
     local frame = self.auraFromItemPool:Acquire()
+    frame:Show()
     frame:Setup(details)
     return frame
   end
@@ -163,6 +164,7 @@ function addonTable.Display.LayoutManagerMixin:GetBar(details)
     end
     local monitor = self.auraStatusBarPool:Acquire()
     monitor.auraIndex = auraIndex
+    monitor:Show()
     monitor:Setup(aura, details)
     return monitor
   elseif details.resource.kind == "class" then
@@ -171,6 +173,7 @@ function addonTable.Display.LayoutManagerMixin:GetBar(details)
       return
     end
     local bar = self.classPools[details.resource.resource]:Acquire()
+    bar:Show()
     bar:Setup(details)
     return bar
   end
