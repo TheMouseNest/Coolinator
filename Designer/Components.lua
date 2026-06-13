@@ -61,19 +61,10 @@ function addonTable.Designer.IconMixin:OnEnter()
     GameTooltip:AddLine(RED_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.UNLEARNED))
     GameTooltip:Show()
   end
-
-  local parent = self:GetParent()
-  if parent:GetScript("OnEnter") then
-    parent:GetScript("OnEnter")(parent)
-  end
 end
 
 function addonTable.Designer.IconMixin:OnLeave()
   GameTooltip:Hide()
-  local parent = self:GetParent()
-  if parent:GetScript("OnLeave") then
-    parent:GetScript("OnLeave")(parent)
-  end
 end
 
 function addonTable.Designer.IconMixin:ApplySize()
@@ -117,9 +108,16 @@ function addonTable.Designer.BarMixin:ApplySize()
 end
 
 function addonTable.Designer.BarMixin:OnEnter()
+  GameTooltip_SetDefaultAnchor(GameTooltip, self)
+  if self.details.resource.spellID then
+    GameTooltip:SetSpellByID(self.details.resource.spellID)
+  elseif self.details.resource.itemID then
+    GameTooltip:SetItemByID(self.details.resource.itemID)
+  end
 end
 
 function addonTable.Designer.BarMixin:OnLeave()
+  GameTooltip:Hide()
 end
 
 addonTable.Designer.BarWithIconMixin = CreateFromMixins(addonTable.Designer.BarMixin)
