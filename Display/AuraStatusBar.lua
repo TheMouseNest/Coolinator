@@ -70,6 +70,8 @@ function addonTable.Display.AuraStatusBarMixin:Setup(sourceWidget, details)
 
   widgets.duration:SetScale(2)
 
+  widgets.icon:SetShown(details.icon.show)
+
   self.details = details
 end
 
