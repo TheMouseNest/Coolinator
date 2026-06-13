@@ -103,6 +103,7 @@ function addonTable.Designer.LayoutManagerMixin:GetBar(details)
     bar = self.barPool:Acquire()
   end
   bar:Setup(details)
+  bar:Show()
   return bar
 end
 
