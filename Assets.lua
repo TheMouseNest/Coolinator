@@ -26,7 +26,7 @@ addonTable.Assets.BarBordersSliced = {
 }
 
 addonTable.Assets.BarMasks = {
-  ["Cooli: Solid"] = {file = "Interface/AddOns/Platynator/Assets/Special/white.png", width = 10, height = 10},
+  ["Cooli: Solid"] = {file = "Interface/AddOns/Coolinator/Assets/Special/white.png", width = 10, height = 10},
 }
 
 function addonTable.Assets.Initialize()
