@@ -96,12 +96,15 @@ function addonTable.Display.AuraStatusBarMixin:ApplySize()
 
   self.widgets.icon:ClearAllPoints()
   self.widgets.statusBar:ClearAllPoints()
+  self.widgets.duration:ClearAllPoints()
   if self.details.layout == "horizontal" then
     self.widgets.icon:SetPoint(self.details.icon.position == "left" and "LEFT" or "RIGHT")
     self.widgets.statusBar:SetPoint(self.details.icon.position == "left" and "RIGHT" or "LEFT")
+    self.widgets.duration:SetPoint("RIGHT", self.widgets.statusBar, -8, 0)
   else
     self.widgets.icon:SetPoint(self.details.icon.position == "left" and "BOTTOM" or "TOP")
     self.widgets.statusBar:SetPoint(self.details.icon.position == "left" and "TOP" or "BOTTOM")
+    self.widgets.duration:SetPoint("BOTTOM", self.widgets.statusBar, 0, 8)
   end
 
   self.widgets.source:SetAllPoints(self)
