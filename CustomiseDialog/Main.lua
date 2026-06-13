@@ -197,8 +197,28 @@ local function SetupGeneral(parent)
   return container
 end
 
+local function SetupDesigner(parent)
+  local container = CreateFrame("Frame", nil, parent)
+
+  local shown = false
+  local enableDesigner = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.ENABLE, 28, function(value)
+    shown = not shown
+    if shown then
+      addonTable.CallbackRegistry:TriggerEvent("Designer.Open")
+      addonTable.Dialogs.ShowAcknowledge(addonTable.Locales.EDIT_THE_ICONS_AND_BARS_ONSCREEN)
+      container:GetParent():Hide()
+    else
+      addonTable.CallbackRegistry:TriggerEvent("Designer.Close")
+    end
+  end)
+  enableDesigner:SetPoint("TOP")
+
+  return container
+end
+
 local TabSetups = {
   {callback = SetupGeneral, name = addonTable.Locales.GENERAL},
+  {callback = SetupDesigner, name = addonTable.Locales.DESIGNER},
 }
 
 function addonTable.CustomiseDialog.Toggle()
