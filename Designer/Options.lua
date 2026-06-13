@@ -341,6 +341,12 @@ function addonTable.Designer.GenerateOptionsFromDetails(details)
     frame:Hide()
   end)
 
+  addonTable.CallbackRegistry:RegisterCallback("Designer.Layout", function()
+    if frame:IsVisible() then
+      frame:Update()
+    end
+  end)
+
   frame:SetScript("OnHide", function()
     for kind, c in pairs(containers) do
       c:Hide()

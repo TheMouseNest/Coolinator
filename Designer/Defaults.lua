@@ -13,6 +13,7 @@ addonTable.Designer.Defaults = {
     padding = 0.2,
     alpha = 1,
     scale = 1,
+    alignment = "CENTER",
     entries = {}
   },
   AuraIcon = {

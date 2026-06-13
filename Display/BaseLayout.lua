@@ -70,10 +70,14 @@ function addonTable.Display.BaseLayoutManagerMixin:GetGroup(details)
   end
 
   if details.layout == "horizontal" then
+    local point = "LEFT"
+    if details.alignment ~= "CENTER" then
+      point = details.alignment .. point
+    end
     local maxHeight = 0
     local width = 0
     for _, child in ipairs(wrapper.children) do
-      PixelUtil.SetPoint(child, "LEFT", wrapper, "LEFT", width / child:GetScale(), 0)
+      PixelUtil.SetPoint(child, point, wrapper, point, width / child:GetScale(), 0)
       if child.ApplySize then
         child:ApplySize()
       end
@@ -88,10 +92,14 @@ function addonTable.Display.BaseLayoutManagerMixin:GetGroup(details)
     wrapper:SetAlpha(details.alpha)
     wrapper:SetScale(details.scale)
   elseif details.layout == "vertical" then
+    local point = "BOTTOM"
+    if details.alignment ~= "CENTER" then
+      point = point .. details.alignment
+    end
     local height = 0
     local maxWidth = 0
     for _, child in ipairs(wrapper.children) do
-      PixelUtil.SetPoint(child, "BOTTOM", wrapper, "BOTTOM", 0, height / child:GetScale())
+      PixelUtil.SetPoint(child, point, wrapper, point, 0, height / child:GetScale())
       if child.ApplySize then
         child:ApplySize()
       end

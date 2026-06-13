@@ -579,10 +579,46 @@ addonTable.Designer.WidgetConfiguration = {
                 }
               end,
               setter = function(details, value)
+                if details.layout ~= value then
+                  details.alignment = "CENTER"
+                end
                 details.layout = value
               end,
               getter = function(details)
                 return details.layout
+              end,
+            },
+            {
+              label = addonTable.Locales.ALIGNMENT,
+              kind = "dropdown",
+              getInitData = function(details)
+                if details.layout == "vertical" then
+                  return {
+                    addonTable.Locales.LEFT,
+                    addonTable.Locales.CENTER,
+                    addonTable.Locales.RIGHT,
+                  }, {
+                    "LEFT",
+                    "CENTER",
+                    "RIGHT",
+                  }
+                else
+                  return {
+                    addonTable.Locales.TOP,
+                    addonTable.Locales.CENTER,
+                    addonTable.Locales.BOTTOM,
+                  }, {
+                    "TOP",
+                    "CENTER",
+                    "BOTTOM",
+                  }
+                end
+              end,
+              setter = function(details, value)
+                details.alignment = value
+              end,
+              getter = function(details)
+                return details.alignment
               end,
             },
             {

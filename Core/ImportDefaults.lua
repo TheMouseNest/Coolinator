@@ -63,6 +63,7 @@ function addonTable.Core.GenerateDefaultCDMLayout()
     padding = 0.2,
     alpha = 1,
     scale = 1,
+    alignment = "CENTER",
     entries = {
       {
         kind = "group",
@@ -71,6 +72,7 @@ function addonTable.Core.GenerateDefaultCDMLayout()
         padding = 0.1,
         alpha = 1,
         scale = 0.8,
+        alignment = "CENTER",
         entries = {},
       },
       {
@@ -80,6 +82,7 @@ function addonTable.Core.GenerateDefaultCDMLayout()
         padding = 0.1,
         alpha = 1,
         scale = 1.25,
+        alignment = "CENTER",
         entries = {},
       },
       {
@@ -89,6 +92,7 @@ function addonTable.Core.GenerateDefaultCDMLayout()
         padding = 0.1,
         alpha = 1,
         scale = 1,
+        alignment = "CENTER",
         entries = {},
       },
     }
@@ -111,6 +115,7 @@ function addonTable.Core.GenerateDefaultCDMLayout()
     layout = "vertical",
     padding = 0.2,
     alpha = 1,
+    alignment = "CENTER",
     scale = 1,
     entries = {
     }
@@ -170,6 +175,7 @@ function addonTable.Core.GenerateDefaultCDMLayout()
 
   return {
     kind = "group",
+    version = 1,
     layout = "standalone",
     entries = {
       result
