@@ -1,0 +1,13 @@
+ignore:
+  - README.md
+  - tmp
+  - scripts
+  - annotations.lua
+  - AssetsRaw
+plain-copy:
+  - Core
+  - Display
+  - Assets
+  - CustomiseDialog
+  - Designer
+  - Libs
