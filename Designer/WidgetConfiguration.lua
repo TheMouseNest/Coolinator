@@ -414,14 +414,24 @@ addonTable.Designer.WidgetConfiguration = {
             {
               label = addonTable.Locales.ICON_POSITION,
               kind = "dropdown",
-              getInitData = function()
-                return {
-                  addonTable.Locales.LEFT,
-                  addonTable.Locales.RIGHT,
-                }, {
-                  "left",
-                  "right"
-                }
+              getInitData = function(details)
+                if details.layout == "horizontal" then
+                  return {
+                    addonTable.Locales.LEFT,
+                    addonTable.Locales.RIGHT,
+                  }, {
+                    "left",
+                    "right"
+                  }
+                else
+                  return {
+                    addonTable.Locales.TOP,
+                    addonTable.Locales.BOTTOM,
+                  }, {
+                    "right",
+                    "left"
+                  }
+                end
               end,
               setter = function(details, value)
                 details.icon.position = value
