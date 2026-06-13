@@ -66,11 +66,21 @@ function addonTable.Utilities.IsSpellKnown(spellID)
       return spellID
     end
   end
-  if not C_SpellBook.IsSpellKnown(spellID, Enum.SpellBookSpellBank.Player) and not C_SpellBook.IsSpellKnown(spellID, Enum.SpellBookSpellBank.Pet) then
-    spellID = addonTable.SpellEquivalence[spellID]
-    if not spellID or not C_SpellBook.IsSpellKnown(spellID, Enum.SpellBookSpellBank.Player) and not C_SpellBook.IsSpellKnown(spellID, Enum.SpellBookSpellBank.Pet) then
-      return nil
+  if C_SpellBook.IsSpellKnown(spellID, Enum.SpellBookSpellBank.Player) or C_SpellBook.IsSpellKnown(spellID, Enum.SpellBookSpellBank.Pet) then
+    return spellID
+  end
+  local newSpellID = addonTable.SpellEquivalence[spellID]
+  if newSpellID then
+    if C_SpellBook.IsSpellKnown(newSpellID, Enum.SpellBookSpellBank.Player) or C_SpellBook.IsSpellKnown(newSpellID, Enum.SpellBookSpellBank.Pet) then
+      return newSpellID
     end
   end
-  return spellID
+  newSpellID = C_Spell.GetOverrideSpell(spellID)
+  if newSpellID then
+    if C_SpellBook.IsSpellKnown(newSpellID, Enum.SpellBookSpellBank.Player) or C_SpellBook.IsSpellKnown(newSpellID, Enum.SpellBookSpellBank.Pet) then
+      return newSpellID
+    end
+  end
+
+  return nil
 end

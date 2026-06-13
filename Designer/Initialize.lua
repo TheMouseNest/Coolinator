@@ -50,9 +50,9 @@ function addonTable.Designer.GetActiveAbilities(design)
       Mixin(result, addonTable.Designer.GetActiveAbilities(entry))
     end
   elseif design.kind == "bar" and design.resource.kind == "ability" then
-    result[design.resource.spellID] = true
+    result[C_Spell.GetBaseSpell(design.resource.spellID)] = true
   elseif design.kind == "icon" and design.resource.kind == "ability" then
-    result[design.resource.spellID] = true
+    result[C_Spell.GetBaseSpell(design.resource.spellID)] = true
   end
   
   return result
