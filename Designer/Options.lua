@@ -193,7 +193,7 @@ local function GenerateKindOptions(parent, options)
       for _, entry in ipairs(paths[details.resource.kind]["*"] or {}) do
         if tabMap[entry.label] then
           local wrapper = tabMap[entry.label]
-          entry:SetTop("TOP", wrapper.children[#wrapper.children], "BOTTOM", 0, -30)
+          entry:SetPoint("TOP", wrapper.children[#wrapper.children], "BOTTOM", 0, -30)
           entry:Show()
           table.insert(wrapper.children, entry)
         else
@@ -207,16 +207,16 @@ local function GenerateKindOptions(parent, options)
           entry:SetParent(wrapper)
           entry:Show()
           entry:SetPoint("TOP", wrapper, 0, -35)
-          entry:SetHeight(entry.allFrames[1]:GetTop() - entry.allFrames[#entry.allFrames]:GetBottom())
           tabMap[entry.label] = wrapper
           table.insert(tabs, wrapper)
         end
+        entry:SetHeight(entry.allFrames[1]:GetTop() - entry.allFrames[#entry.allFrames]:GetBottom())
       end
       if paths[details.resource.kind][details.resource.resource] then
         for _, entry in ipairs(paths[details.resource.kind][details.resource.resource] or {}) do
           if tabMap[entry.label] then
             local wrapper = tabMap[entry.label]
-            entry:SetTop("TOP", wrapper.children[#wrapper.children], "BOTTOM", 0, -30)
+            entry:SetPoint("TOP", wrapper.children[#wrapper.children], "BOTTOM", 0, -30)
             entry:Show()
             table.insert(wrapper.children, entry)
           else
@@ -230,10 +230,10 @@ local function GenerateKindOptions(parent, options)
             entry:SetParent(wrapper)
             entry:Show()
             entry:SetPoint("TOP", wrapper, 0, -35)
-            entry:SetHeight(entry.allFrames[1]:GetTop() - entry.allFrames[#entry.allFrames]:GetBottom())
             tabMap[entry.label] = wrapper
             table.insert(tabs, wrapper)
           end
+          entry:SetHeight(entry.allFrames[1]:GetTop() - entry.allFrames[#entry.allFrames]:GetBottom())
         end
       end
     end

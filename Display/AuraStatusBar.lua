@@ -74,31 +74,33 @@ function addonTable.Display.AuraStatusBarMixin:Setup(sourceWidget, details)
 end
 
 function addonTable.Display.AuraStatusBarMixin:ApplySize()
-  local iconSize
-  if self.details.layout == "vertical" then
-    iconSize = self.rawWidth * self.details.scale
-    PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale + (self.borderHeight - self.rawHeight) / 2 + 1 + iconSize)
+  if self.details.icon.show then
+    local iconSize
+    if self.details.layout == "vertical" then
+      iconSize = self.rawWidth * self.details.scale
+      PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale + (self.widgets.borderHeight - self.rawHeight) / 2 + 1 + iconSize)
+    else
+      iconSize = self.rawHeight * self.details.scale
+      PixelUtil.SetSize(self, self.rawWidth * self.details.scale + (self.widgets.borderWidth - self.rawWidth) / 2 + 1 + iconSize, self.rawHeight * self.details.scale)
+    end
+    PixelUtil.SetSize(self.widgets.icon, iconSize, iconSize)
   else
-    iconSize = self.rawHeight * self.details.scale
-    PixelUtil.SetSize(self, self.rawWidth * self.details.scale + (self.borderWidth - self.rawWidth) / 2 + 1 + iconSize, self.rawHeight * self.details.scale)
+    PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale)
   end
   PixelUtil.SetSize(self.widgets.statusBar, self.rawWidth * self.lowerScale, self.rawHeight * self.lowerScale)
   PixelUtil.SetSize(self.widgets.border, self.borderWidth * self.lowerScale, self.borderHeight * self.lowerScale)
 
-  PixelUtil.SetSize(self.widgets.icon, iconSize, iconSize)
-  PixelUtil.SetSize(self.widgets.icon.Applications, iconSize, 10)
   PixelUtil.SetPoint(self.widgets.icon.Applications, "BOTTOMRIGHT", self.widgets.icon, "BOTTOMRIGHT", -5, 5)
 
   self.widgets.icon:ClearAllPoints()
   self.widgets.statusBar:ClearAllPoints()
   if self.details.layout == "horizontal" then
-    self.widgets.icon:SetPoint("LEFT")
-    self.widgets.statusBar:SetPoint("RIGHT")
+    self.widgets.icon:SetPoint(self.details.icon.position == "left" and "LEFT" or "RIGHT")
+    self.widgets.statusBar:SetPoint(self.details.icon.position == "left" and "RIGHT" or "LEFT")
   else
-    self.widgets.icon:SetPoint("TOP")
-    self.widgets.statusBar:SetPoint("BOTTOM")
+    self.widgets.icon:SetPoint(self.details.icon.position == "left" and "BOTTOM" or "TOP")
+    self.widgets.statusBar:SetPoint(self.details.icon.position == "left" and "TOP" or "BOTTOM")
   end
 
-  self.widgets.source:ClearAllPoints()
   self.widgets.source:SetAllPoints(self)
 end

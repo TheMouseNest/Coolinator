@@ -139,32 +139,36 @@ end
 function addonTable.Designer.BarWithIconMixin:Setup(details)
   addonTable.Designer.BarMixin.Setup(self, details)
 
-  if details.resource then
+  self.icon.Icon:SetShown(self.details.icon.show)
+  if details.resource and self.details.icon.show then
     self.icon.Icon:SetTexture(C_Spell.GetSpellTexture(details.resource.spellID))
   end
 end
 
 function addonTable.Designer.BarWithIconMixin:ApplySize()
-  local iconSize
-  if self.details.layout == "vertical" then
-    iconSize = self.rawWidth * self.details.scale
-    PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale + (self.borderHeight - self.rawHeight) / 2 + 1 + iconSize)
+  if self.details.icon.show then
+    local iconSize
+    if self.details.layout == "vertical" then
+      iconSize = self.rawWidth * self.details.scale
+      PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale + (self.borderHeight - self.rawHeight) / 2 + 1 + iconSize)
+    else
+      iconSize = self.rawHeight * self.details.scale
+      PixelUtil.SetSize(self, self.rawWidth * self.details.scale + (self.borderWidth - self.rawWidth) / 2 + 1 + iconSize, self.rawHeight * self.details.scale)
+    end
+    PixelUtil.SetSize(self.icon, iconSize, iconSize)
   else
-    iconSize = self.rawHeight * self.details.scale
-    PixelUtil.SetSize(self, self.rawWidth * self.details.scale + (self.borderWidth - self.rawWidth) / 2 + 1 + iconSize, self.rawHeight * self.details.scale)
+    PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale)
   end
   PixelUtil.SetSize(self.statusBar, self.rawWidth * self.lowerScale, self.rawHeight * self.lowerScale)
   PixelUtil.SetSize(self.border, self.borderWidth * self.lowerScale, self.borderHeight * self.lowerScale)
 
-  PixelUtil.SetSize(self.icon, iconSize, iconSize)
-
   self.icon:ClearAllPoints()
   self.statusBar:ClearAllPoints()
   if self.details.layout == "horizontal" then
-    self.icon:SetPoint("LEFT")
-    self.statusBar:SetPoint("RIGHT")
+    self.icon:SetPoint(self.details.icon.position == "left" and "LEFT" or "RIGHT")
+    self.statusBar:SetPoint(self.details.icon.position == "left" and "RIGHT" or "LEFT")
   else
-    self.icon:SetPoint("TOP")
-    self.statusBar:SetPoint("BOTTOM")
+    self.icon:SetPoint(self.details.icon.position == "left" and "BOTTOM" or "TOP")
+    self.statusBar:SetPoint(self.details.icon.position == "left" and "TOP" or "BOTTOM")
   end
 end

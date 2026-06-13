@@ -327,6 +327,40 @@ addonTable.Designer.WidgetConfiguration = {
     },
     ["aura"] = {
       ["*"] = {
+        {
+          label = addonTable.Locales.GENERAL,
+          entries = {
+            {
+              label = addonTable.Locales.SHOW_ICON,
+              kind = "checkbox",
+              setter = function(details, value)
+                details.icon.show = value
+              end,
+              getter = function(details)
+                return details.icon.show
+              end,
+            },
+            {
+              label = addonTable.Locales.ICON_POSITION,
+              kind = "dropdown",
+              getInitData = function()
+                return {
+                  addonTable.Locales.LEFT,
+                  addonTable.Locales.RIGHT,
+                }, {
+                  "left",
+                  "right"
+                }
+              end,
+              setter = function(details, value)
+                details.icon.position = value
+              end,
+              getter = function(details)
+                return details.icon.position
+              end,
+            },
+          }
+        },
         fullBarTextures,
       },
     },
