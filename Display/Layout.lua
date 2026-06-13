@@ -136,7 +136,7 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
     local frame = self.auraWrappersPool:Acquire()
     frame.auraIndex = auraIndex
     frame:Show()
-    frame:SetSize(addonTable.Design.nativeSize - 4, addonTable.Design.nativeSize - 4)
+    frame:SetSize(addonTable.Constants.nativeSize - 4, addonTable.Constants.nativeSize - 4)
     aura:SetParent(frame)
     aura:ClearAllPoints()
     aura:SetPoint("CENTER", frame)

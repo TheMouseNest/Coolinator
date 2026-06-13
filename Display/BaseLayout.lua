@@ -32,7 +32,7 @@ local function AnchorStandalone(widget, anchor)
 end
 
 function addonTable.Display.BaseLayoutManagerMixin:GetGroup(details)
-  local offsetSize = addonTable.Design.nativeSize - 4
+  local offsetSize = addonTable.Constants.nativeSize - 4
 
   local wrapper = self.wrappersPool:Acquire()
   wrapper.children = {}

@@ -3,11 +3,11 @@ local addonTable = select(2, ...)
 
 addonTable.Display.CooldownMixin = {}
 function addonTable.Display.CooldownMixin:OnLoad()
-  self:SetSize(addonTable.Design.nativeSize - 4, addonTable.Design.nativeSize - 4)
+  self:SetSize(addonTable.Constants.nativeSize - 4, addonTable.Constants.nativeSize - 4)
   self:SetFlattensRenderLayers(true)
 
   self.Icon = self:CreateTexture()
-  self.Icon:SetSize(addonTable.Design.nativeSize, addonTable.Design.nativeSize)
+  self.Icon:SetSize(addonTable.Constants.nativeSize, addonTable.Constants.nativeSize)
   self.Icon:SetPoint("CENTER")
   local mask = self:CreateMaskTexture()
   mask:SetAtlas("UI-HUD-CoolDownManager-Mask")

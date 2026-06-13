@@ -18,6 +18,8 @@ addonTable.Constants = {
   FontFamilies = {"roman", "korean", "simplifiedchinese", "traditionalchinese", "russian"},
 
   DefaultName = "DEFAULT",
+
+  nativeSize = 40,
 }
 addonTable.Constants.Events = {
   "SettingChanged",

@@ -49,7 +49,6 @@ Display/AuraFromItem.lua
 Display/BaseLayout.lua
 Display/Layout.lua
 
-Design.lua
 Assets.lua
 
 CustomiseDialog/Components.lua

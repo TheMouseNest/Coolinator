@@ -355,21 +355,21 @@ function addonTable.Designer.LayoutManagerMixin:AddHandlers(root)
         if not point or point == root then
           if group.details.layout == "vertical" then
             self.insertVertical:Show()
-            self.insertVertical:SetPoint("TOP", group, "TOP", 0, 4 - group.details.padding * (addonTable.Design.nativeSize - 4))
+            self.insertVertical:SetPoint("TOP", group, "TOP", 0, 4 - group.details.padding * (addonTable.Constants.nativeSize - 4))
             self.insertVertical:SetSize(group:GetWidth(), 8)
           else
             self.insertHorizontal:Show()
-            self.insertHorizontal:SetPoint("RIGHT", group, "RIGHT", 4 - group.details.padding * (addonTable.Design.nativeSize - 4), 0)
+            self.insertHorizontal:SetPoint("RIGHT", group, "RIGHT", 4 - group.details.padding * (addonTable.Constants.nativeSize - 4), 0)
             self.insertHorizontal:SetSize(8, group:GetHeight())
           end
         else
           if group.details.layout == "vertical" then
             self.insertVertical:Show()
-            self.insertVertical:SetPoint("TOP", point, "BOTTOM", 0, 4 - group.details.padding * (addonTable.Design.nativeSize - 4))
+            self.insertVertical:SetPoint("TOP", point, "BOTTOM", 0, 4 - group.details.padding * (addonTable.Constants.nativeSize - 4))
             self.insertVertical:SetSize(group:GetWidth(), 8)
           else
             self.insertHorizontal:Show()
-            self.insertHorizontal:SetPoint("RIGHT", point, "LEFT", 4 - group.details.padding * (addonTable.Design.nativeSize - 4), 0)
+            self.insertHorizontal:SetPoint("RIGHT", point, "LEFT", 4 - group.details.padding * (addonTable.Constants.nativeSize - 4), 0)
             self.insertHorizontal:SetSize(8, group:GetHeight())
           end
         end
