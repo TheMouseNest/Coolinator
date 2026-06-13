@@ -90,7 +90,7 @@ function addonTable.Designer.GetPotionEffectDialog()
   end, function()
     return addonTable.Designer.GetActiveAuras(addonTable.Designer.GetCurrent())
   end)
-  dialog:SetTitle(addonTable.Locales.CHOOSE_POTION)
+  dialog:SetTitle(addonTable.Locales.CHOOSE_POTION_EFFECT)
 
   return dialog
 end
