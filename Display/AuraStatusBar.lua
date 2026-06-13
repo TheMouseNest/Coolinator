@@ -78,10 +78,10 @@ function addonTable.Display.AuraStatusBarMixin:ApplySize()
     local iconSize
     if self.details.layout == "vertical" then
       iconSize = self.rawWidth * self.details.scale
-      PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale + (self.widgets.borderHeight - self.rawHeight) / 2 + 1 + iconSize)
+      PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale + (self.borderHeight - self.rawHeight) / 2 + 1 + iconSize)
     else
       iconSize = self.rawHeight * self.details.scale
-      PixelUtil.SetSize(self, self.rawWidth * self.details.scale + (self.widgets.borderWidth - self.rawWidth) / 2 + 1 + iconSize, self.rawHeight * self.details.scale)
+      PixelUtil.SetSize(self, self.rawWidth * self.details.scale + (self.borderWidth - self.rawWidth) / 2 + 1 + iconSize, self.rawHeight * self.details.scale)
     end
     PixelUtil.SetSize(self.widgets.icon, iconSize, iconSize)
   else
