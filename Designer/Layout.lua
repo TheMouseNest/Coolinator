@@ -19,6 +19,23 @@ local function GetSelectorMarker(frame, isHover)
   return frame
 end
 
+local function GetInsertionMarker(frame, atlas)
+  local texture = frame:CreateTexture()
+  texture:SetAtlas(atlas)
+  texture:SetAllPoints()
+
+  return frame
+end
+
+local function ImportStyle(new, old)
+  assert(new.resource.kind == old.resource.kind)
+  for key, val in pairs(old) do
+    if key ~= "kind" and key ~= "resource" then
+      new[key] = type(val) == "table" and CopyTable(val) or val
+    end
+  end
+end
+
 local function GetButton(frame, asset)
   local button = CreateFrame("Button", nil, frame)
   button:SetNormalTexture("Interface/AddOns/Coolinator/Assets/Buttons/dark-up.png")
@@ -52,9 +69,13 @@ function addonTable.Designer.LayoutManagerMixin:OnLoad()
   self.barPool = addonTable.Display.GeneratePool(addonTable.Designer.BarMixin, "")
   self.barIconPool = addonTable.Display.GeneratePool(addonTable.Designer.BarWithIconMixin, "")
   self.selectorPool = CreateFramePool("Frame", UIParent, nil, nil, false, GetSelectorMarker)
-  self.hoverMarker = CreateFrame("Frame", nil, UIParent)
+  self.hoverMarker = GetSelectorMarker(CreateFrame("Frame", nil, UIParent), true)
   self.hoverMarker:SetFrameLevel(9999)
-  GetSelectorMarker(self.hoverMarker, true)
+
+  self.insertVertical = GetInsertionMarker(CreateFrame("Frame", nil, UIParent), "CDM-horizontal")
+  self.insertVertical:SetFrameLevel(9999)
+  self.insertHorizontal = GetInsertionMarker(CreateFrame("Frame", nil, UIParent), "CDM-vertical")
+  self.insertHorizontal:SetFrameLevel(9999)
 
   self.auraFrame = addonTable.Designer.GetAuraDialog()
   self.abilityFrame = addonTable.Designer.GetAbilityDialog()
@@ -119,6 +140,9 @@ function addonTable.Designer.LayoutManagerMixin:Delayout()
   self.barPool:ReleaseAll()
   self.barIconPool:ReleaseAll()
   self.wrappersPool:ReleaseAll()
+
+  self.insertHorizontal:Hide()
+  self.insertVertical:Hide()
 end
 
 local function CheckChildren(details, checker)
@@ -156,7 +180,101 @@ local function DeleteRoot(root, shouldAnnounce)
   end
 end
 
+local function DoesRootOverlapSufficiently(root, group)
+  local topExtension = root:GetTop()*root:GetEffectiveScale() - group:GetTop()*group:GetEffectiveScale()
+  local bottomExtension = group:GetBottom()*group:GetEffectiveScale() - root:GetBottom()*root:GetEffectiveScale()
+  local rightExtension = root:GetRight()*root:GetEffectiveScale() - group:GetRight()*group:GetEffectiveScale()
+  local leftExtension = group:GetLeft()*group:GetEffectiveScale() - root:GetLeft()*root:GetEffectiveScale()
+  local heightMargin = root:GetHeight()*root:GetEffectiveScale() * 0.4
+  local widthMargin = root:GetHeight()*root:GetEffectiveScale() * 0.4
+  local isTaller = root:GetHeight()*root:GetEffectiveScale() >= group:GetHeight()*group:GetEffectiveScale() * 0.8
+  local isWider = root:GetWidth()*root:GetEffectiveScale() >= group:GetWidth()*group:GetEffectiveScale() * 0.8
+  local widthDifference = (root:GetWidth()*root:GetEffectiveScale() - group:GetWidth()*group:GetEffectiveScale()) * 0.6
+  local heightDifference = (root:GetHeight()*root:GetEffectiveScale() - group:GetHeight()*group:GetEffectiveScale()) * 0.6
+  return (
+    (topExtension < heightMargin and bottomExtension < heightMargin) or
+    isTaller and (
+      (topExtension >= 0 and topExtension < heightMargin and bottomExtension < 0) or
+      (bottomExtension >= 0 and bottomExtension < heightMargin and topExtension < 0) or
+      topExtension <= heightDifference and bottomExtension <= heightDifference
+    )
+  ) and (
+    (rightExtension < widthMargin and leftExtension < widthMargin) or
+    isWider and (
+      (rightExtension >= 0 and rightExtension < widthMargin and leftExtension < 0) or
+      (leftExtension >=0 and leftExtension < widthMargin and rightExtension < 0) or
+      leftExtension <= widthDifference and rightExtension <= widthDifference
+    )
+  )
+end
+function addonTable.Designer.LayoutManagerMixin:GetDeepestGroupOverlapping(root, currentGroup)
+  if currentGroup.details.kind ~= "group" then
+    return nil
+  end
+  for _, g in ipairs(currentGroup.children) do
+    if g.details.kind == "group" and g:Intersects(root) and (DoesRootOverlapSufficiently(root, g) or currentGroup.details.layout == "standalone") then
+      local nested = self:GetDeepestGroupOverlapping(root, g)
+      if nested and DoesRootOverlapSufficiently(root, nested) then
+        return nested
+      else
+        return g
+      end
+    end
+  end
+
+  return nil
+end
+
+function addonTable.Designer.LayoutManagerMixin:GetInsertionPointFromGroup(root, group)
+  local startIndex, endIndex
+  for index, child in ipairs(group.children) do
+    if child:Intersects(root) and child.details ~= root.details then
+      local mod
+      if group.details.layout == "horizontal" then
+        mod = child:GetRight()*child:GetEffectiveScale()<root:GetRight()*root:GetEffectiveScale() and 1 or 0
+      elseif group.details.layout == "vertical" then
+        mod = child:GetTop()*child:GetEffectiveScale()<root:GetTop()*root:GetEffectiveScale() and 1 or 0
+      end
+      if startIndex == nil then
+        startIndex = index + mod
+        endIndex = index + mod
+      else
+        endIndex = index + mod
+      end
+    end
+  end
+
+  if startIndex == nil then
+    return nil
+  end
+
+  return startIndex + math.floor((endIndex - startIndex) / 2)
+end
+
+function addonTable.Designer.LayoutManagerMixin:InsertRootAt(root)
+  local group = self:GetDeepestGroupOverlapping(root, self.root)
+  if not group then
+    Announce()
+    return
+  end
+  local insertIndex = self:GetInsertionPointFromGroup(root, group)
+  if not insertIndex then
+    Announce()
+    return
+  end
+  local details = root.details
+  local groupDetails = group.details
+  local oldIndex = tIndexOf(groupDetails.entries, details)
+  if oldIndex and oldIndex < insertIndex then
+    insertIndex = insertIndex - 1
+  end
+  DeleteRoot(root, false)
+  table.insert(groupDetails.entries, insertIndex, details)
+  Announce()
+end
+
 function addonTable.Designer.LayoutManagerMixin:AddHandlers(root)
+  root:SetFrameLevel(root:GetParent():GetFrameLevel() + 1)
   root:SetAlpha(root.details.alpha or 1)
   root:SetScript("OnEnter", function()
     if root.OnEnter then
@@ -171,7 +289,12 @@ function addonTable.Designer.LayoutManagerMixin:AddHandlers(root)
     end
     self.hoverMarker:Hide()
   end)
+  root.isMoving = nil
   root:SetScript("OnMouseUp", function(_, button)
+    if root.isMoving then
+      root.isMoving = nil
+      return
+    end
     if button == "LeftButton" then
       if root.details == self.selection then
         addonTable.CallbackRegistry:TriggerEvent("Designer.Options", nil)
@@ -210,18 +333,59 @@ function addonTable.Designer.LayoutManagerMixin:AddHandlers(root)
       end)
     end
   end)
+  if root.details.kind ~= "group" then
+    root:SetMovable(true)
+    root:RegisterForDrag("LeftButton")
+    root:SetScript("OnDragStart", function()
+      root:SetFrameLevel(5000)
+      root.isMoving = true
+      root:StartMoving()
+      root:SetScript("OnUpdate", function()
+        self.insertHorizontal:Hide()
+        self.insertVertical:Hide()
+        local group = self:GetDeepestGroupOverlapping(root, self.root)
+        if not group then
+          return
+        end
+        local insertIndex = self:GetInsertionPointFromGroup(root, group)
+        if not insertIndex then
+          return
+        end
+        local point = group.children[insertIndex]
+        if not point or point == root then
+          if group.details.layout == "vertical" then
+            self.insertVertical:Show()
+            self.insertVertical:SetPoint("TOP", group, "TOP", 0, 4 - group.details.padding * (addonTable.Design.nativeSize - 4))
+            self.insertVertical:SetSize(group:GetWidth(), 8)
+          else
+            self.insertHorizontal:Show()
+            self.insertHorizontal:SetPoint("RIGHT", group, "RIGHT", 4 - group.details.padding * (addonTable.Design.nativeSize - 4), 0)
+            self.insertHorizontal:SetSize(8, group:GetHeight())
+          end
+        else
+          if group.details.layout == "vertical" then
+            self.insertVertical:Show()
+            self.insertVertical:SetPoint("TOP", point, "BOTTOM", 0, 4 - group.details.padding * (addonTable.Design.nativeSize - 4))
+            self.insertVertical:SetSize(group:GetWidth(), 8)
+          else
+            self.insertHorizontal:Show()
+            self.insertHorizontal:SetPoint("RIGHT", point, "LEFT", 4 - group.details.padding * (addonTable.Design.nativeSize - 4), 0)
+            self.insertHorizontal:SetSize(8, group:GetHeight())
+          end
+        end
+      end)
+    end)
+    root:SetScript("OnDragStop", function()
+      root:StopMovingOrSizing()
+      root:SetScript("OnDragStart", nil)
+      root:SetScript("OnDragStop", nil) -- Necessary to prevent OnDragStop firing twice (second time is when hiden in relayout)
+      root:SetScript("OnUpdate", nil)
+      self:InsertRootAt(root)
+    end)
+  end
   if root.details.kind == "group" then
     for _, entry in ipairs(root.children) do
       self:AddHandlers(entry)
-    end
-  end
-end
-
-local function ImportStyle(new, old)
-  assert(new.resource.kind == old.resource.kind)
-  for key, val in pairs(old) do
-    if key ~= "kind" and key ~= "resource" then
-      new[key] = type(val) == "table" and CopyTable(val) or val
     end
   end
 end
