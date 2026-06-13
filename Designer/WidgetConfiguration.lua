@@ -210,6 +210,77 @@ local barTextureNoForegroundColor = {
     },
   }
 }
+local classBarThresholds = {
+  label = addonTable.Locales.THRESHOLDS,
+  entries = {
+    {
+      label = "1",
+      kind = "slider",
+      min = 0, max = 100,
+      valuePattern = "%d%%",
+      setter = function(details, value)
+        details.thresholdColors[1].limit = value / 100
+      end,
+      getter = function(details)
+        return details.thresholdColors[1].limit * 100
+      end,
+    },
+    {
+      label = addonTable.Locales.COLOR,
+      kind = "colorPicker",
+      setter = function(details, value)
+        details.thresholdColors[1].color = value
+      end,
+      getter = function(details)
+        return details.thresholdColors[1].color
+      end,
+    },
+    {
+      label = "2",
+      kind = "slider",
+      min = 0, max = 100,
+      valuePattern = "%d%%",
+      setter = function(details, value)
+        details.thresholdColors[2].limit = value / 100
+      end,
+      getter = function(details)
+        return details.thresholdColors[2].limit * 100
+      end,
+    },
+    {
+      label = addonTable.Locales.COLOR,
+      kind = "colorPicker",
+      setter = function(details, value)
+        details.thresholdColors[2].color = value
+      end,
+      getter = function(details)
+        return details.thresholdColors[2].color
+      end,
+    },
+    {
+      label = "3",
+      kind = "slider",
+      min = 0, max = 100,
+      valuePattern = "%d%%",
+      setter = function(details, value)
+        details.thresholdColors[3].limit = value / 100
+      end,
+      getter = function(details)
+        return details.thresholdColors[3].limit * 100
+      end,
+    },
+    {
+      label = addonTable.Locales.COLOR,
+      kind = "colorPicker",
+      setter = function(details, value)
+        details.thresholdColors[3].color = value
+      end,
+      getter = function(details)
+        return details.thresholdColors[3].color
+      end,
+    },
+  }
+}
 
 addonTable.Designer.WidgetConfiguration = {
   ["icon"] = {
@@ -474,77 +545,31 @@ addonTable.Designer.WidgetConfiguration = {
       },
       ["rage"] = {
         barTextureNoForegroundColor,
-        {
-          label = addonTable.Locales.THRESHOLDS,
-          entries = {
-            {
-              label = "1",
-              kind = "slider",
-              min = 0, max = 100,
-              valuePattern = "%d%%",
-              setter = function(details, value)
-                details.thresholdColors[1].limit = value / 100
-              end,
-              getter = function(details)
-                return details.thresholdColors[1].limit * 100
-              end,
-            },
-            {
-              label = addonTable.Locales.COLOR,
-              kind = "colorPicker",
-              setter = function(details, value)
-                details.thresholdColors[1].color = value
-              end,
-              getter = function(details)
-                return details.thresholdColors[1].color
-              end,
-            },
-            {
-              label = "2",
-              kind = "slider",
-              min = 0, max = 100,
-              valuePattern = "%d%%",
-              setter = function(details, value)
-                details.thresholdColors[2].limit = value / 100
-              end,
-              getter = function(details)
-                return details.thresholdColors[2].limit * 100
-              end,
-            },
-            {
-              label = addonTable.Locales.COLOR,
-              kind = "colorPicker",
-              setter = function(details, value)
-                details.thresholdColors[2].color = value
-              end,
-              getter = function(details)
-                return details.thresholdColors[2].color
-              end,
-            },
-            {
-              label = "3",
-              kind = "slider",
-              min = 0, max = 100,
-              valuePattern = "%d%%",
-              setter = function(details, value)
-                details.thresholdColors[3].limit = value / 100
-              end,
-              getter = function(details)
-                return details.thresholdColors[3].limit * 100
-              end,
-            },
-            {
-              label = addonTable.Locales.COLOR,
-              kind = "colorPicker",
-              setter = function(details, value)
-                details.thresholdColors[3].color = value
-              end,
-              getter = function(details)
-                return details.thresholdColors[3].color
-              end,
-            },
-          }
-        },
+        classBarThresholds,
+      },
+      ["energy"] = {
+        barTextureNoForegroundColor,
+        classBarThresholds,
+      },
+      ["mana"] = {
+        barTextureNoForegroundColor,
+        classBarThresholds,
+      },
+      ["runic-power"] = {
+        barTextureNoForegroundColor,
+        classBarThresholds,
+      },
+      ["pain"] = {
+        barTextureNoForegroundColor,
+        classBarThresholds,
+      },
+      ["fury"] = {
+        barTextureNoForegroundColor,
+        classBarThresholds,
+      },
+      ["lunar-power"] = {
+        barTextureNoForegroundColor,
+        classBarThresholds,
       },
     }
   },
