@@ -73,7 +73,6 @@ function addonTable.Display.BaseLayoutManagerMixin:GetGroup(details)
     local maxHeight = 0
     local width = 0
     for _, child in ipairs(wrapper.children) do
-      child:Show()
       PixelUtil.SetPoint(child, "LEFT", wrapper, "LEFT", width / child:GetScale(), 0)
       if child.ApplySize then
         child:ApplySize()
@@ -92,7 +91,6 @@ function addonTable.Display.BaseLayoutManagerMixin:GetGroup(details)
     local height = 0
     local maxWidth = 0
     for _, child in ipairs(wrapper.children) do
-      child:Show()
       PixelUtil.SetPoint(child, "BOTTOM", wrapper, "BOTTOM", 0, height / child:GetScale())
       if child.ApplySize then
         child:ApplySize()
@@ -108,7 +106,6 @@ function addonTable.Display.BaseLayoutManagerMixin:GetGroup(details)
     wrapper:SetScale(details.scale)
   else -- standalone
     for _, child in ipairs(wrapper.children) do
-      child:Show()
       if child.ApplySize then
         child:ApplySize()
       end
@@ -116,6 +113,7 @@ function addonTable.Display.BaseLayoutManagerMixin:GetGroup(details)
     wrapper:SetAlpha(1)
     wrapper:SetScale(1)
   end
+  wrapper:Show()
 
   return wrapper
 end

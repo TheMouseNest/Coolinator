@@ -91,6 +91,7 @@ end
 function addonTable.Display.LayoutManagerMixin:Delayout()
   self.cooldownPool:ReleaseAll()
   self.auraWrappersPool:ReleaseAll()
+  self.auraFromItemPool:ReleaseAll()
   for _, pool in pairs(self.classPools) do
     pool:ReleaseAll()
   end

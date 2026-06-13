@@ -58,6 +58,7 @@ function addonTable.Designer.LayoutManagerMixin:OnLoad()
 
   self.auraFrame = addonTable.Designer.GetAuraDialog()
   self.abilityFrame = addonTable.Designer.GetAbilityDialog()
+  self.potionFrame = addonTable.Designer.GetPotionEffectDialog()
   self.movementArrows = {left = GetArrow(UIParent, math.pi / 2), right = GetArrow(UIParent, -math.pi/2), down = GetArrow(UIParent, math.pi), up = GetArrow(UIParent, 0)}
   self.selectParentButton = GetButton(self, "Interface/AddOns/Coolinator/Assets/Buttons/chain.png")
   self.selectParentButton:SetScript("OnEnter", function()
@@ -254,6 +255,16 @@ function addonTable.Designer.LayoutManagerMixin:AddEntryToInsert(rootDescription
       end
       inserter(new)
       addonTable.CallbackRegistry:TriggerEvent("AuraBarsChanged")
+    end)
+  end)
+  rootDescription:CreateButton(addonTable.Locales.POTION_EFFECT, function()
+    self.potionFrame:Update(function(data)
+      local new = CopyTable(addonTable.Designer.Defaults.AuraIcon)
+      new.resource.spellID = data
+      if origin.kind == "icon" and origin.resource.kind == "aura" then
+        ImportStyle(new, origin)
+      end
+      inserter(new)
     end)
   end)
   local resources = addonTable.Designer.GetAvailableClassResources()

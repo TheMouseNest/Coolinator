@@ -82,3 +82,15 @@ function addonTable.Designer.GetAbilityDialog()
 
   return dialog
 end
+
+function addonTable.Designer.GetPotionEffectDialog()
+  local all = GetKeysArray(addonTable.Constants.AurasFromItems)
+  local dialog = GetSpellIconDialog(function()
+    return all
+  end, function()
+    return addonTable.Designer.GetActiveAuras(addonTable.Designer.GetCurrent())
+  end)
+  dialog:SetTitle(addonTable.Locales.CHOOSE_POTION)
+
+  return dialog
+end

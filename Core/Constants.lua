@@ -169,4 +169,60 @@ addonTable.Constants.AurasFromItems = {
     duration = 30,
     deathPersistent = false,
   },
+  -- Light's Preservation
+  [1235568] = {
+    itemIDs = {
+      [241287] = true,
+      [241286] = true,
+    },
+    duration = 30,
+    deathPersistent = false,
+  },
+  -- Shrouded in Void
+  [1236551] = {
+    itemIDs = {
+      [241303] = 12, -- 12s
+      [241302] = 18, -- 18s
+    },
+    duration = -1,
+    deathPersistent = false,
+  },
+  -- Potion of Recklessness
+  [1236994] = {
+    itemIDs = {
+      [241289] = true,
+      [241288] = true,
+    },
+    duration = 30,
+    deathPersistent = false,
+  },
+  -- Potion of Zealotry
+  [1238443] = {
+    itemIDs = {
+      [245900] = true,
+      [245901] = true,
+      [241297] = true,
+      [241296] = true,
+    },
+    duration = 30,
+    deathPersistent = false,
+  },
+  -- Draught of Rampant Abandon
+  [1236998] = {
+    itemIDs = {
+      [241293] = true,
+      [241292] = true,
+    },
+    duration = 30,
+    deathPersistent = false,
+  },
+  -- Enlightened
+  [1236652] = {
+    itemIDs = {
+      [241339] = 6,
+      [241338] = 13,
+    },
+    duration = -1,
+    deathPersistent = false,
+  }
 }
