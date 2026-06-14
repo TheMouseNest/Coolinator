@@ -325,16 +325,20 @@ function addonTable.Designer.LayoutManagerMixin:InsertRootAt(root)
     return
   end
   local insertIndex = self:GetInsertionPointFromGroup(root, group)
-  assert(insertIndex)
   local altIndex, newIndex, layout = self:GetInsertDirection(root, group)
+  local groupDetails = group.details
   local rootDetails = root.details
+  local rootIndex = tIndexOf(groupDetails.entries, rootDetails)
   DeleteRoot(root, false)
   if layout and layout ~= group.details.layout then
     local childDetails = group.children[altIndex].details
     if childDetails.kind == "group" and childDetails.layout == layout then
-      table.insert(childDetails.entries, newIndex == 2 and #childDetails.entries + 1 or 1, rootDetails)
+      insertIndex = newIndex == 2 and #childDetails.entries + 1 or 1
+      if rootIndex and rootIndex < insertIndex then
+        insertIndex = insertIndex - 1
+      end
+      table.insert(childDetails.entries, insertIndex, rootDetails)
     else
-      local groupDetails = group.details
       if #groupDetails.entries == 1 then
         groupDetails.layout = layout
         table.insert(groupDetails.entries, newIndex, rootDetails)
@@ -346,13 +350,13 @@ function addonTable.Designer.LayoutManagerMixin:InsertRootAt(root)
         groupDetails.entries[altIndex] = new
       end
     end
-  else
-    local groupDetails = group.details
-    local oldIndex = tIndexOf(groupDetails.entries, rootDetails)
-    if oldIndex and oldIndex < insertIndex then
+  elseif insertIndex then
+    if rootIndex and rootIndex < insertIndex then
       insertIndex = insertIndex - 1
     end
     table.insert(groupDetails.entries, insertIndex,  rootDetails)
+  else
+    table.insert(groupDetails.entries, rootIndex,  rootDetails)
   end
   Announce()
 end
@@ -437,7 +441,7 @@ function addonTable.Designer.LayoutManagerMixin:AddHandlers(root)
         local point = group.children[insertIndex]
         if layout ~= group.details.layout then
           anchorFrame = group.children[altIndex]
-        elseif point == root or not point then
+        elseif not point then
           anchorFrame = group
           layout = group.details.layout
         end
@@ -451,7 +455,7 @@ function addonTable.Designer.LayoutManagerMixin:AddHandlers(root)
             self.insertHorizontal:SetPoint("RIGHT", anchorFrame, newIndex == 1 and "LEFT" or "RIGHT", 4 - group.details.padding * (addonTable.Constants.nativeSize - 4), 0)
             self.insertHorizontal:SetSize(8, anchorFrame:GetHeight())
           end
-        else
+        elseif point ~= root then
           if group.details.layout == "vertical" then
             self.insertVertical:Show()
             self.insertVertical:SetPoint("TOP", point, "BOTTOM", 0, 4 - group.details.padding * (addonTable.Constants.nativeSize - 4))
