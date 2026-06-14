@@ -15,7 +15,9 @@ function addonTable.Designer.GenerateEditable(callback)
         designs[text] = CopyTable(designs[addonTable.Constants.DefaultName])
         assignments[specID] = text
         addonTable.CallbackRegistry:TriggerEvent("Designer.Open")
-        callback()
+        if callback then
+          callback()
+        end
       end
     end)
   end
