@@ -328,14 +328,22 @@ function addonTable.Designer.LayoutManagerMixin:InsertRootAt(root)
     Announce()
     return
   end
+  if root:GetParent() == group and #group.details.entries == 1 then
+    if group.details.anchor then
+      local point, _, relativePoint, x, y = root:GetPoint(1)
+      group.details.anchor = {point, "UIParent", relativePoint, x * root:GetEffectiveScale() / self.root:GetEffectiveScale(), y * root:GetEffectiveScale() / self.root:GetEffectiveScale()}
+    end
+    Announce()
+    return
+  end
   local insertIndex = self:GetInsertionPointFromGroup(root, group)
   local altIndex, newIndex, layout = self:GetInsertDirection(root, group)
   local groupDetails = group.details
   local rootDetails = root.details
   local rootIndex = tIndexOf(groupDetails.entries, rootDetails)
   DeleteRoot(root, false)
-  if layout and layout ~= group.details.layout then
-    local childDetails = group.children[altIndex].details
+  if layout and layout ~= groupDetails.layout then
+    local childDetails = groupDetails.entries[altIndex]
     if childDetails.kind == "group" and childDetails.layout == layout then
       insertIndex = newIndex == 2 and #childDetails.entries + 1 or 1
       if rootIndex and rootIndex < insertIndex then
