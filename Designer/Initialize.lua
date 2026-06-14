@@ -1,7 +1,7 @@
 ---@class addonTableCoolinator
 local addonTable = select(2, ...)
 
-function addonTable.Designer.GenerateEditable()
+function addonTable.Designer.GenerateEditable(callback)
   local specID = addonTable.Utilities.GetSpecID()
   local assignments = addonTable.Config.Get(addonTable.Config.Options.DESIGN_ASSIGNMENTS)
   if assignments[specID] and assignments[specID] ~= addonTable.Constants.DefaultName then
@@ -15,6 +15,7 @@ function addonTable.Designer.GenerateEditable()
         designs[text] = CopyTable(designs[addonTable.Constants.DefaultName])
         assignments[specID] = text
         addonTable.CallbackRegistry:TriggerEvent("Designer.Open")
+        callback()
       end
     end)
   end

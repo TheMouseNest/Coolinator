@@ -201,13 +201,19 @@ local function SetupDesigner(parent)
   local container = CreateFrame("Frame", nil, parent)
 
   local shown = false
+  local callback = function()
+    addonTable.CallbackRegistry:TriggerEvent("Designer.Open")
+    addonTable.Dialogs.ShowAcknowledge(addonTable.Locales.EDIT_THE_ICONS_AND_BARS_ONSCREEN)
+    container:GetParent():Hide()
+    shown = true
+  end
   local enableDesigner = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.ENABLE, 28, function(value)
-    shown = not shown
-    if shown then
-      addonTable.CallbackRegistry:TriggerEvent("Designer.Open")
-      addonTable.Dialogs.ShowAcknowledge(addonTable.Locales.EDIT_THE_ICONS_AND_BARS_ONSCREEN)
-      container:GetParent():Hide()
-    else
+    if not shown then
+      if addonTable.Designer.GenerateEditable(callback) then
+        callback()
+      end
+    elseif shown then
+      shown = false
       addonTable.CallbackRegistry:TriggerEvent("Designer.Close")
     end
   end)
