@@ -46,7 +46,7 @@ function addonTable.Core.GetCDMData(doNotTryAgain)
         return addonTable.Core.GetCDMData(true)
       end
     end
-    assert(cdmData[1] == 4, "Layout has changed" .. tostring(cdmData[1]))
+    assert(cdmData[1] == 4, "Layout has changed, contact developer - " .. tostring(cdmData[1]))
 
     return cdmData, tag
   end
@@ -95,7 +95,7 @@ function addonTable.Core.ApplyLayoutToCDM(layout)
     },
   }
 
-  local cdmData = {
+  local emptyData = {
     [1] = 4,
     [2] = {},
     [3] = {},
@@ -103,9 +103,15 @@ function addonTable.Core.ApplyLayoutToCDM(layout)
   }
 
   local saved, wantedTag = addonTable.Core.GetCDMData()
-  cdmData = saved or cdmData
+  local cdmData = saved or emptyData
 
   assert(cdmData[1] == 4, "Layout format changed, contact developer")
+
+  for key, value in pairs(emptyData) do
+    if cdmData[key] == nil then
+      cdmData[key] = value
+    end
+  end
 
   local layoutName = addonTable.Core.GetCDMLayoutName()
 
