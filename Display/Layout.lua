@@ -116,9 +116,12 @@ function addonTable.Display.LayoutManagerMixin:Layout()
 end
 
 function addonTable.Display.LayoutManagerMixin:GetIcon(details)
-  local spellID = addonTable.Utilities.IsSpellKnown(details.resource.spellID)
-  if not spellID then
-    return
+  local spellID
+  if details.resource.spellID then
+    spellID = addonTable.Utilities.IsSpellKnown(details.resource.spellID)
+    if not spellID then
+      return
+    end
   end
   if details.resource.kind == "ability" then
     local frame = self.cooldownPool:Acquire()
@@ -146,6 +149,15 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
     local frame = self.auraFromItemPool:Acquire()
     frame:Show()
     frame:Setup(details)
+    return frame
+  elseif details.resource.kind == "item" then
+    if C_Item.GetItemCount(details.resource.itemID) < 1 then
+      return
+    end
+    local frame = self.cooldownPool:Acquire()
+    frame:Show()
+    frame:Enable()
+    frame:UpdateItemByID(details.resource.itemID)
     return frame
   end
 end

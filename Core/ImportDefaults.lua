@@ -80,6 +80,12 @@ function addonTable.Core.GetAllAbilities()
   return result
 end
 
+function addonTable.Core.GetAllItems()
+  return {
+    245897, 245898, 241309, 241308, 241305, 241304, 241307, 241306, 241287, 241286, 241303, 241302, 241301, 241300, 241295, 241294, 241289, 241288, 245900, 245901, 241297, 241296, 241299, 241298, 263974, 241293, 241292, 241339, 241338, 258138
+  }
+end
+
 --- Generates default CDM layout for current spec
 function addonTable.Core.GenerateDefaultCDMLayout()
   local spellEssential = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.Essential, true)

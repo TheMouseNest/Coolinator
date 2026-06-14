@@ -78,6 +78,7 @@ function addonTable.Designer.LayoutManagerMixin:OnLoad()
   self.insertHorizontal:SetFrameLevel(9999)
 
   self.auraFrame = addonTable.Designer.GetAuraDialog()
+  self.itemFrame = addonTable.Designer.GetItemDialog()
   self.abilityFrame = addonTable.Designer.GetAbilityDialog()
   self.potionFrame = addonTable.Designer.GetPotionEffectDialog()
   self.movementArrows = {left = GetArrow(UIParent, math.pi / 2), right = GetArrow(UIParent, -math.pi/2), down = GetArrow(UIParent, math.pi), up = GetArrow(UIParent, 0)}
@@ -519,6 +520,16 @@ function addonTable.Designer.LayoutManagerMixin:AddEntryToInsert(rootDescription
       local new = CopyTable(addonTable.Designer.Defaults.AuraIcon)
       new.resource.spellID = data
       if origin.kind == "icon" and origin.resource.kind == "aura" then
+        ImportStyle(new, origin)
+      end
+      inserter(new)
+    end)
+  end)
+  rootDescription:CreateButton(addonTable.Locales.ITEM, function()
+    self.itemFrame:Update(function(data)
+      local new = CopyTable(addonTable.Designer.Defaults.ItemIcon)
+      new.resource.itemID = data
+      if origin.kind == "icon" and origin.resource.kind == "item" then
         ImportStyle(new, origin)
       end
       inserter(new)

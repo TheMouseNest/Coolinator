@@ -5,7 +5,11 @@ local function Announce()
   addonTable.CallbackRegistry:TriggerEvent("Designer.Layout")
 end
 
-local function GetSpellIconDialog(allGetter, activeGetter)
+local Kind = {
+  Spell = 1,
+  Item = 2,
+}
+local function GetSpellIconDialog(allGetter, activeGetter, kind)
   local frame = addonTable.CustomiseDialog.Components.GetContentFrame("CoolinatorDesignerAuraInsertDialog", 300, 350)
   local container = CreateFrame("Frame", nil, frame)
   container:SetPoint("TOPLEFT", addonTable.Constants.ButtonFrameOffset, -25)
@@ -32,8 +36,13 @@ local function GetSpellIconDialog(allGetter, activeGetter)
       button.Highlight:SetAllPoints()
     end
     button.Highlight:Hide()
-    button.Icon:SetDesaturated(not addonTable.Utilities.IsSpellKnown(data))
-    button.Icon:SetTexture(C_Spell.GetSpellTexture(data))
+    if kind == Kind.Spell then
+      button.Icon:SetDesaturated(not addonTable.Utilities.IsSpellKnown(data))
+      button.Icon:SetTexture(C_Spell.GetSpellTexture(data))
+    else
+      button.Icon:SetDesaturated(C_Item.GetItemCount(data) == 0)
+      button.Icon:SetTexture(C_Item.GetItemIconByID(data))
+    end
     button:SetScript("OnClick", function()
       frame.callback(data)
       frame:Hide()
@@ -41,7 +50,11 @@ local function GetSpellIconDialog(allGetter, activeGetter)
     button:SetScript("OnEnter", function()
       button.Highlight:Show()
       GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
-      GameTooltip:SetSpellByID(data)
+      if kind == Kind.Spell then
+        GameTooltip:SetSpellByID(data)
+      else
+        GameTooltip:SetItemByID(data)
+      end
     end)
     button:SetScript("OnLeave", function()
       button.Highlight:Hide()
@@ -55,8 +68,8 @@ local function GetSpellIconDialog(allGetter, activeGetter)
     local all = allGetter()
     table.sort(all)
     local seen = activeGetter()
-    all = tFilter(all, function(spell)
-      return not seen[spell]
+    all = tFilter(all, function(data)
+      return not seen[data]
     end, true)
     frame.view:SetDataProvider(CreateDataProvider(all))
     frame:Show()
@@ -68,7 +81,7 @@ end
 function addonTable.Designer.GetAuraDialog()
   local dialog = GetSpellIconDialog(addonTable.Core.GetAllAuras, function()
     return addonTable.Designer.GetActiveAuras(addonTable.Designer.GetCurrent())
-  end)
+  end, Kind.Spell)
   dialog:SetTitle(addonTable.Locales.CHOOSE_AURA)
 
   return dialog
@@ -77,7 +90,7 @@ end
 function addonTable.Designer.GetAbilityDialog()
   local dialog = GetSpellIconDialog(addonTable.Core.GetAllAbilities, function()
     return addonTable.Designer.GetActiveAbilities(addonTable.Designer.GetCurrent())
-  end)
+  end, Kind.Spell)
   dialog:SetTitle(addonTable.Locales.CHOOSE_ABILITY)
 
   return dialog
@@ -89,8 +102,20 @@ function addonTable.Designer.GetPotionEffectDialog()
     return all
   end, function()
     return addonTable.Designer.GetActiveAuras(addonTable.Designer.GetCurrent())
-  end)
+  end, Kind.Spell)
   dialog:SetTitle(addonTable.Locales.CHOOSE_POTION_EFFECT)
+
+  return dialog
+end
+
+function addonTable.Designer.GetItemDialog()
+  local all = addonTable.Core.GetAllItems()
+  local dialog = GetSpellIconDialog(function()
+    return all
+  end, function()
+    return addonTable.Designer.GetActiveItems(addonTable.Designer.GetCurrent())
+  end, Kind.Item)
+  dialog:SetTitle(addonTable.Locales.CHOOSE_ITEM)
 
   return dialog
 end

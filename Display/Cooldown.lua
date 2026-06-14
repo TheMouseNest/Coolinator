@@ -164,4 +164,10 @@ function addonTable.Display.CooldownMixin:UpdateItemByID(itemID)
   self.BaseCooldown:SetCooldown(start, duration)
   self.CountFrame.text:SetText("")
   self.Icon:SetTexture(C_Item.GetItemIconByID(itemID))
+
+  if C_Item.GetItemCount(itemID) == 0 then
+    C_Timer.After(0, function()
+      addonTable.CallbackRegistry:TriggerEvent("Layout")
+    end)
+  end
 end

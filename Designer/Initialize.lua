@@ -61,6 +61,21 @@ function addonTable.Designer.GetActiveAbilities(design)
   return result
 end
 
+function addonTable.Designer.GetActiveItems(design)
+  local result = {}
+  if design.kind == "group" then
+    for _, entry in ipairs(design.entries) do
+      Mixin(result, addonTable.Designer.GetActiveItems(entry))
+    end
+  elseif design.kind == "bar" and design.resource.kind == "item" then
+    result[design.resource.itemID] = true
+  elseif design.kind == "icon" and design.resource.kind == "item" then
+    result[design.resource.itemID] = true
+  end
+
+  return result
+end
+
 function addonTable.Designer.GetAvailableClassResources()
   return addonTable.Constants.ClassResources[addonTable.Utilities.GetSpecID()]
 end

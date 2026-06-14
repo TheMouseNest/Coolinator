@@ -41,13 +41,13 @@ function addonTable.Designer.IconMixin:Setup(details)
   local texture
   if details.resource.spellID then
     texture = C_Spell.GetSpellTexture(details.resource.spellID)
+    self.Icon:SetDesaturated(not addonTable.Utilities.IsSpellKnown(details.resource.spellID) or false)
   elseif details.resource.itemID then
     texture = C_Item.GetItemIconByID(details.resource.itemID)
+    self.Icon:SetDesaturated(C_Item.GetItemCount(details.resource.itemID) == 0)
   end
   self.Icon:SetTexture(texture)
   self.CountFrame.text:SetText("")
-
-  self.Icon:SetDesaturated(details.resource.spellID and not addonTable.Utilities.IsSpellKnown(details.resource.spellID) or false)
 end
 
 function addonTable.Designer.IconMixin:OnEnter()

@@ -57,6 +57,11 @@ addonTable.Designer.Defaults = {
     resource = {kind = "ability", spellID = 0},
     height = 1, scale = 1, alpha = 1
   },
+  ItemIcon = {
+    kind = "icon",
+    resource = {kind = "item", itemID = 0},
+    height = 1, scale = 1, alpha = 1
+  },
   AuraBar = {
     kind = "bar",
     resource = {kind = "aura", spellID = 0},
