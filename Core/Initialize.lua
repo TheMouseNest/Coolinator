@@ -76,8 +76,10 @@ frame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 frame:SetScript("OnEvent", function(_, eventName, data1, data2)
   if eventName == "ADDON_LOADED" and data1 == "Coolinator" then
     addonTable.Core.Initialize()
-  elseif eventName == "SPELLS_CHANGED" and addonTable.State then
+  elseif eventName == "TRAIT_CONFIG_UPDATED" and addonTable.State then
     TriggerUpdate()
+  elseif eventName == "SPELLS_CHANGED" and addonTable.State then
+    addonTable.CallbackRegistry:TriggerEvent("UpdateSpellIcons")
   elseif eventName == "PLAYER_ENTERING_WORLD" and not data1 and not data2 then
     addonTable.CallbackRegistry:TriggerEvent("Layout")
   elseif eventName == "PLAYER_EQUIPMENT_CHANGED" then

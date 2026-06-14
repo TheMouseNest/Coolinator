@@ -121,6 +121,12 @@ function addonTable.Display.CooldownMixin:Enable()
   self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
   self:RegisterEvent("SPELL_RANGE_CHECK_UPDATE")
   self:RegisterEvent("SPELL_UPDATE_USABLE")
+
+  addonTable.CallbackRegistry:RegisterCallback("UpdateSpellIcons", function()
+    if self.spellID then
+      self.Icon:SetTexture(C_Spell.GetSpellTexture(self.spellID))
+    end
+  end, self)
 end
 
 function addonTable.Display.CooldownMixin:Disable()
@@ -131,6 +137,7 @@ function addonTable.Display.CooldownMixin:Disable()
   self.spellID = nil
 
   self:UnregisterAllEvents()
+  addonTable.CallbackRegistry:UnregisterCallback("UpdateSpellIcons", self)
 end
 
 function addonTable.Display.CooldownMixin:UpdateSpellByID(spellID, activationOff)
