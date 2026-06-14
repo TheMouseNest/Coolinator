@@ -38,6 +38,7 @@ L["TEXTURES"] = "Textures"
 L["ENABLE"] = "Enable"
 L["DESIGNER"] = "Designer"
 L["EDIT_THE_ICONS_AND_BARS_ONSCREEN"] = "Edit the icons and bars onscreen by clicking on them"
+L["INCOMPATIBLE_WIDGET_TYPE"] = "Incompatible widget type"
 
 L["ENTER_PROFILE_NAME"] = "Enter Profile Name:"
 L["PROFILES"] = "Profiles"

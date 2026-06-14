@@ -273,12 +273,32 @@ local function GenerateKindOptions(parent, options)
   return container
 end
 
+local function GetMetaDetails(detailsList)
+  if #detailsList <= 1 then
+    return detailsList[1]
+  end
+  local detailsMeta = {
+    __newindex = function(tbl, index, value)
+      for _, d in ipairs(detailsList) do
+        d[index] = value
+      end
+    end,
+    __index = function(tbl, index)
+      return detailsList[1][index]
+    end
+  }
+  local details = {}
+  setmetatable(details, detailsMeta)
+
+  return details
+end
+
 local optionsFrames = {}
-function addonTable.Designer.GenerateOptionsFromDetails(details)
+function addonTable.Designer.GenerateOptionsFromDetails(detailsList)
   if optionsFrames[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] then
     local frame = optionsFrames[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)]
     local oldDetails = frame.details
-    frame.details = details
+    frame.details = GetMetaDetails(detailsList)
     if frame.details and (frame.details ~= oldDetails or not frame:IsShown()) then
       frame:Show()
       frame:Update()
@@ -353,7 +373,7 @@ function addonTable.Designer.GenerateOptionsFromDetails(details)
     end
   end)
 
-  frame.details = details
+  frame.details = GetMetaDetails(detailsList)
 
   frame:Show()
   frame:Update()
