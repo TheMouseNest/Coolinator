@@ -548,7 +548,7 @@ function addonTable.Designer.LayoutManagerMixin:AddEntryToInsert(rootDescription
     self.equipmentFrame:Update(function(data)
       local new = CopyTable(addonTable.Designer.Defaults.EquipmentIcon)
       new.resource.equipmentSlot = data
-      if origin.kind == "icon" and origin.resource.kind == "item" then
+      if origin.kind == "icon" and origin.resource.kind == "equipment" then
         ImportStyle(new, origin)
       end
       inserter(new)
