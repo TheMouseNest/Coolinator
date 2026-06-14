@@ -159,6 +159,16 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
     frame:Enable()
     frame:UpdateItemByID(details.resource.itemID)
     return frame
+  elseif details.resource.kind == "equipment" then
+    local location = ItemLocation:CreateFromEquipmentSlot(details.resource.equipmentSlot)
+    if not C_Item.DoesItemExist(location) then
+      return
+    end
+    local frame = self.cooldownPool:Acquire()
+    frame:Show()
+    frame:Enable()
+    frame:UpdateItemByEquipmentSlot(details.resource.equipmentSlot)
+    return frame
   end
 end
 

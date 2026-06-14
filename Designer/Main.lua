@@ -76,6 +76,21 @@ function addonTable.Designer.GetActiveItems(design)
   return result
 end
 
+function addonTable.Designer.GetActiveEquipment(design)
+  local result = {}
+  if design.kind == "group" then
+    for _, entry in ipairs(design.entries) do
+      Mixin(result, addonTable.Designer.GetActiveEquipment(entry))
+    end
+  elseif design.kind == "bar" and design.resource.kind == "equipment" then
+    result[design.resource.equipmentSlot] = true
+  elseif design.kind == "icon" and design.resource.kind == "equipment" then
+    result[design.resource.equipmentSlot] = true
+  end
+
+  return result
+end
+
 function addonTable.Designer.GetAvailableClassResources()
   return addonTable.Constants.ClassResources[addonTable.Utilities.GetSpecID()]
 end

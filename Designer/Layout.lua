@@ -81,6 +81,7 @@ function addonTable.Designer.LayoutManagerMixin:OnLoad()
   self.itemFrame = addonTable.Designer.GetItemDialog()
   self.abilityFrame = addonTable.Designer.GetAbilityDialog()
   self.potionFrame = addonTable.Designer.GetPotionEffectDialog()
+  self.equipmentFrame = addonTable.Designer.GetEquipmentDialog()
   self.movementArrows = {left = GetArrow(UIParent, math.pi / 2), right = GetArrow(UIParent, -math.pi/2), down = GetArrow(UIParent, math.pi), up = GetArrow(UIParent, 0)}
   self.selectParentButton = GetButton(self, "Interface/AddOns/Coolinator/Assets/Buttons/chain.png")
   self.selectParentButton:SetScript("OnEnter", function()
@@ -537,6 +538,16 @@ function addonTable.Designer.LayoutManagerMixin:AddEntryToInsert(rootDescription
     self.itemFrame:Update(function(data)
       local new = CopyTable(addonTable.Designer.Defaults.ItemIcon)
       new.resource.itemID = data
+      if origin.kind == "icon" and origin.resource.kind == "item" then
+        ImportStyle(new, origin)
+      end
+      inserter(new)
+    end)
+  end)
+  rootDescription:CreateButton(addonTable.Locales.EQUIPMENT, function()
+    self.equipmentFrame:Update(function(data)
+      local new = CopyTable(addonTable.Designer.Defaults.EquipmentIcon)
+      new.resource.equipmentSlot = data
       if origin.kind == "icon" and origin.resource.kind == "item" then
         ImportStyle(new, origin)
       end

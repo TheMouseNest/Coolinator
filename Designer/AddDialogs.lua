@@ -8,6 +8,7 @@ end
 local Kind = {
   Spell = 1,
   Item = 2,
+  Equipment = 3,
 }
 local function GetSpellIconDialog(allGetter, activeGetter, kind)
   local frame = addonTable.CustomiseDialog.Components.GetContentFrame("CoolinatorDesignerAuraInsertDialog", 300, 350)
@@ -39,9 +40,15 @@ local function GetSpellIconDialog(allGetter, activeGetter, kind)
     if kind == Kind.Spell then
       button.Icon:SetDesaturated(not addonTable.Utilities.IsSpellKnown(data))
       button.Icon:SetTexture(C_Spell.GetSpellTexture(data))
-    else
+    elseif kind == Kind.Item then
       button.Icon:SetDesaturated(C_Item.GetItemCount(data) == 0)
       button.Icon:SetTexture(C_Item.GetItemIconByID(data))
+    elseif kind == Kind.Equipment then
+      local location = ItemLocation:CreateFromEquipmentSlot(data)
+      button.Icon:SetDesaturated(not C_Item.DoesItemExist(location))
+      button.Icon:SetTexture(C_Item.DoesItemExist(location) and C_Item.GetItemIcon(location) or C_Item.GetItemIconByID(0))
+    else
+      assert(false)
     end
     button:SetScript("OnClick", function()
       frame.callback(data)
@@ -52,8 +59,16 @@ local function GetSpellIconDialog(allGetter, activeGetter, kind)
       GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
       if kind == Kind.Spell then
         GameTooltip:SetSpellByID(data)
-      else
+      elseif kind == Kind.Item then
         GameTooltip:SetItemByID(data)
+      elseif kind == Kind.Equipment then
+        if button.Icon:IsDesaturated() then
+          GameTooltip:SetText(C_Item.GetItemInventorySlotInfo(data))
+          GameTooltip:AddLine(addonTable.Locales.NOTHING_IN_SLOT)
+          GameTooltip:Show()
+        else
+          GameTooltip:SetInventoryItem("player", data)
+        end
       end
     end)
     button:SetScript("OnLeave", function()
@@ -116,6 +131,18 @@ function addonTable.Designer.GetItemDialog()
     return addonTable.Designer.GetActiveItems(addonTable.Designer.GetCurrent())
   end, Kind.Item)
   dialog:SetTitle(addonTable.Locales.CHOOSE_ITEM)
+
+  return dialog
+end
+
+function addonTable.Designer.GetEquipmentDialog()
+  local all = addonTable.Core.GetAllEquipment()
+  local dialog = GetSpellIconDialog(function()
+    return all
+  end, function()
+    return addonTable.Designer.GetActiveEquipment(addonTable.Designer.GetCurrent())
+  end, Kind.Equipment)
+  dialog:SetTitle(addonTable.Locales.CHOOSE_EQUIPMENT)
 
   return dialog
 end

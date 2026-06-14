@@ -157,6 +157,7 @@ addonTable.Constants.IconResourceLabelMap = {
   ["aura"] = addonTable.Locales.AURA,
   ["ability"] = addonTable.Locales.ABILITY,
   ["item"] = addonTable.Locales.ITEM,
+  ["equipment"] = addonTable.Locales.EQUIPMENT,
 }
 
 addonTable.Constants.AurasFromItems = {

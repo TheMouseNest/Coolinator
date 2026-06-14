@@ -45,6 +45,10 @@ function addonTable.Designer.IconMixin:Setup(details)
   elseif details.resource.itemID then
     texture = C_Item.GetItemIconByID(details.resource.itemID)
     self.Icon:SetDesaturated(C_Item.GetItemCount(details.resource.itemID) == 0)
+  elseif details.resource.equipmentSlot then
+    local location = ItemLocation:CreateFromEquipmentSlot(details.resource.equipmentSlot)
+    texture = C_Item.GetItemIcon(location)
+    self.Icon:SetDesaturated(not C_Item.DoesItemExist(location))
   end
   self.Icon:SetTexture(texture)
   self.CountFrame.text:SetText("")
@@ -56,6 +60,8 @@ function addonTable.Designer.IconMixin:OnEnter()
     GameTooltip:SetSpellByID(self.details.resource.spellID)
   elseif self.details.resource.itemID then
     GameTooltip:SetItemByID(self.details.resource.itemID)
+  elseif self.details.resource.equipmentSlot then
+    GameTooltip:SetInventoryItem("player", self.details.resource.equipmentSlot)
   end
   if self.Icon:IsDesaturated() then
     GameTooltip:AddLine(RED_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.UNLEARNED))
@@ -112,7 +118,11 @@ function addonTable.Designer.BarMixin:OnEnter()
   if self.details.resource.spellID then
     GameTooltip:SetSpellByID(self.details.resource.spellID)
   elseif self.details.resource.itemID then
-    GameTooltip:SetItemByID(self.details.resource.itemID)
+    if self.details.resource.itemID > 0 then
+      GameTooltip:SetItemByID(self.details.resource.itemID)
+    else
+      GameTooltip:SetItemByID(-self.details.resource.itemID)
+    end
   end
 end
 

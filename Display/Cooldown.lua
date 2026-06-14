@@ -56,6 +56,8 @@ function addonTable.Display.CooldownMixin:OnEnter()
     GameTooltip:SetSpellByID(self.spellID)
   elseif self.itemID then
     GameTooltip:SetSpellByID(select(2, C_Item.GetItemSpell(self.itemID)))
+  elseif self.equipmentSlot then
+    GameTooltip:SetInventoryItem("player", self.equipmentSlot)
   end
 end
 
@@ -69,6 +71,8 @@ function addonTable.Display.CooldownMixin:OnEvent(eventName, data, ...)
       self:UpdateSpellByID(self.spellID, true)
     elseif self.itemID then
       self:UpdateItemByID(self.itemID)
+    elseif self.equipmentSlot then
+      self:UpdateItemByEquipmentSlot(self.equipmentSlot)
     end
   elseif eventName == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" and data == self.spellID then
     self:SetActivationAlert(true)
@@ -132,6 +136,7 @@ end
 function addonTable.Display.CooldownMixin:UpdateSpellByID(spellID, activationOff)
   self.spellID = spellID
   self.itemID = nil
+  self.equipmentSlot = nil
 
   local chargeDuration = C_Spell.GetSpellChargeDuration(spellID)
   if chargeDuration then
@@ -167,18 +172,40 @@ end
 function addonTable.Display.CooldownMixin:UpdateItemByID(itemID)
   self.spellID = nil
   self.itemID = itemID
+  self.equipmentSlot = nil
 
   self.ChargesCooldown:Clear()
-  local start, duration, enable = C_Item.GetItemCooldown(itemID)
+  local start, duration, enable = C_Item.GetItemCooldown(self.itemID)
   self.BaseCooldown:SetCooldown(start, duration)
   self.CountFrame.text:SetText("")
-  self.Icon:SetTexture(C_Item.GetItemIconByID(itemID))
+  self.Icon:SetTexture(C_Item.GetItemIconByID(self.itemID))
 
-  if C_Item.GetItemCount(itemID) == 0 then
+  if C_Item.GetItemCount(self.itemID) == 0 then
     C_Timer.After(0, function()
       addonTable.CallbackRegistry:TriggerEvent("Layout")
     end)
   end
+
+  self.NotUsable:Hide()
+end
+
+function addonTable.Display.CooldownMixin:UpdateItemByEquipmentSlot(equipmentSlot)
+  self.spellID = nil
+  self.itemID = nil
+  self.equipmentSlot = equipmentSlot
+
+  local location = ItemLocation:CreateFromEquipmentSlot(equipmentSlot)
+  if not C_Item.DoesItemExist(location) then
+    C_Timer.After(0, function()
+      addonTable.CallbackRegistry:TriggerEvent("Layout")
+    end)
+  end
+
+  self.ChargesCooldown:Clear()
+  local start, duration, enable = GetInventoryItemCooldown("player", equipmentSlot)
+  self.BaseCooldown:SetCooldown(start, duration)
+  self.CountFrame.text:SetText("")
+  self.Icon:SetTexture(C_Item.GetItemIcon(location))
 
   self.NotUsable:Hide()
 end
