@@ -754,6 +754,8 @@ function addonTable.Designer.LayoutManagerMixin:UpdateSelection()
 end
 
 function addonTable.Designer.LayoutManagerMixin:Layout()
+  self.pending = true
+
   self.currentLayout = addonTable.Designer.GetCurrent()
 
   self:Delayout()
@@ -768,4 +770,6 @@ function addonTable.Designer.LayoutManagerMixin:Layout()
   self:UpdateSelection()
 
   self:AddHandlers(wrapper)
+
+  self.pending = false
 end

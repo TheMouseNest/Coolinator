@@ -225,6 +225,7 @@ end
 local TabSetups = {
   {callback = SetupGeneral, name = addonTable.Locales.GENERAL},
   {callback = SetupDesigner, name = addonTable.Locales.DESIGNER},
+  --{callback = SetupBehaviour, name = addonTable.Locales.BEHAVIOUR},
 }
 
 function addonTable.CustomiseDialog.Toggle()

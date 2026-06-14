@@ -62,8 +62,8 @@ addonTable.CallbackRegistry:RegisterCallback("Designer.Close", function()
     addonTable.Dialogs.ShowConfirm(addonTable.Locales.DUE_TO_AURA_BARS_CHANGING_RELOAD_REQUIRED, RELOADUI, CANCEL, ReloadUI)
   end
 end)
-addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, name)
-  if name == addonTable.Config.Options.DESIGNS or name == addonTable.Config.Options.DESIGN_ASSIGNMENTS then
+addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, refreshState)
+  if refreshState[addonTable.Constants.Design] then
     TriggerUpdate()
   end
 end)

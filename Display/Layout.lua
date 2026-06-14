@@ -5,6 +5,9 @@ addonTable.Display.LayoutManagerMixin = CreateFromMixins(addonTable.Display.Base
 function addonTable.Display.LayoutManagerMixin:OnLoad()
   addonTable.Display.BaseLayoutManagerMixin.OnLoad(self)
   self.auraWrappersPool = CreateFramePool("Frame", UIParent, nil, function(_, frame)
+    frame:SetScript("OnShow", nil)
+    frame:SetScript("OnHide", nil)
+    frame:SetScript("OnSizeChanged", nil)
     frame:SetParent(UIParent)
     frame:ClearAllPoints()
     frame:Hide()
@@ -28,10 +31,32 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
     self:Layout()
   end)
 
+  local hookedAuras = {}
   local function CacheIcons()
     local result = {}
 	  for itemFrame in BuffIconCooldownViewer.itemFramePool:EnumerateActive() do
 	    result[itemFrame.layoutIndex] = itemFrame
+      if not hookedAuras[itemFrame] then
+        hooksecurefunc(itemFrame, "Show", function()
+          local parent = itemFrame:GetParent()
+          if self.auraWrappersPool:IsActive(parent) then
+            parent:Show()
+          end
+        end)
+        hooksecurefunc(itemFrame, "Hide", function()
+          local parent = itemFrame:GetParent()
+          if self.auraWrappersPool:IsActive(parent) then
+            parent:Hide()
+          end
+        end)
+        hooksecurefunc(itemFrame, "SetShown", function(_, value)
+          local parent = itemFrame:GetParent()
+          if self.auraWrappersPool:IsActive(parent) then
+            parent:SetShown(value)
+          end
+        end)
+        hookedAuras[itemFrame] = true
+      end
 	  end
 	  self.auraIcons = result
   end
@@ -101,6 +126,8 @@ function addonTable.Display.LayoutManagerMixin:Layout()
   if self.disabled then
     return
   end
+  self.pending = true
+
   self.currentLayout = addonTable.Core.GetCurrentDesign()
 
   self:Delayout()
@@ -113,6 +140,8 @@ function addonTable.Display.LayoutManagerMixin:Layout()
 
   wrapper:SetParent(UIParent)
   wrapper:Show()
+
+  self.pending = false
 end
 
 function addonTable.Display.LayoutManagerMixin:GetIcon(details)
@@ -138,11 +167,11 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
     end
     local frame = self.auraWrappersPool:Acquire()
     frame.auraIndex = auraIndex
-    frame:Show()
-    frame:SetSize(addonTable.Constants.nativeSize - 4, addonTable.Constants.nativeSize - 4)
     aura:SetParent(frame)
     aura:ClearAllPoints()
     aura:SetPoint("CENTER", frame)
+    frame:SetShown(aura:IsShown())
+    frame:SetSize(addonTable.Constants.nativeSize - 4, addonTable.Constants.nativeSize - 4)
 
     return frame
   elseif details.resource.kind == "aura" and addonTable.Constants.AurasFromItems[spellID] then
