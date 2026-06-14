@@ -227,19 +227,28 @@ end
 
 function addonTable.Designer.LayoutManagerMixin:GetInsertionPointFromGroup(root, group)
   local startIndex, endIndex
-  for index, child in ipairs(group.children) do
-    if child:Intersects(root) and child.details ~= root.details then
-      local mod
-      if group.details.layout == "horizontal" then
-        mod = child:GetRight()*child:GetEffectiveScale()<root:GetRight()*root:GetEffectiveScale() and 1 or 0
-      elseif group.details.layout == "vertical" then
-        mod = child:GetTop()*child:GetEffectiveScale()<root:GetTop()*root:GetEffectiveScale() and 1 or 0
+  if group.details.layout == "vertical" then
+    for index, child in ipairs(group.children) do
+      if root:GetBottom()*root:GetEffectiveScale() <= child:GetTop()*child:GetEffectiveScale() and root:GetTop()*root:GetEffectiveScale() >= child:GetBottom()*child:GetEffectiveScale() and child.details ~= root.details then
+        local mod = child:GetTop()*child:GetEffectiveScale()<root:GetTop()*root:GetEffectiveScale() and 1 or 0
+        if startIndex == nil then
+          startIndex = index + mod
+          endIndex = index + mod
+        else
+          endIndex = index + mod
+        end
       end
-      if startIndex == nil then
-        startIndex = index + mod
-        endIndex = index + mod
-      else
-        endIndex = index + mod
+    end
+  else
+    for index, child in ipairs(group.children) do
+      if root:GetLeft()*root:GetEffectiveScale() <= child:GetRight()*child:GetEffectiveScale() and root:GetRight()*root:GetEffectiveScale() >= child:GetLeft()*child:GetEffectiveScale() and child.details ~= root.details then
+        local mod = child:GetRight()*child:GetEffectiveScale()<root:GetRight()*root:GetEffectiveScale() and 1 or 0
+        if startIndex == nil then
+          startIndex = index + mod
+          endIndex = index + mod
+        else
+          endIndex = index + mod
+        end
       end
     end
   end
@@ -251,25 +260,100 @@ function addonTable.Designer.LayoutManagerMixin:GetInsertionPointFromGroup(root,
   return startIndex + math.floor((endIndex - startIndex) / 2)
 end
 
+function addonTable.Designer.LayoutManagerMixin:GetInsertDirection(root, group)
+  local startIndex, endIndex
+  if group.details.layout == "vertical" then
+    for index, child in ipairs(group.children) do
+      if root:GetBottom()*root:GetEffectiveScale() <= child:GetTop()*child:GetEffectiveScale() and root:GetTop()*root:GetEffectiveScale() >= child:GetBottom()*child:GetEffectiveScale() and child.details ~= root.details then
+        if startIndex == nil then
+          startIndex = index
+          endIndex = index
+        else
+          endIndex = index
+        end
+      end
+    end
+  else
+    for index, child in ipairs(group.children) do
+      if root:GetLeft()*root:GetEffectiveScale() <= child:GetRight()*child:GetEffectiveScale() and root:GetRight()*root:GetEffectiveScale() >= child:GetLeft()*child:GetEffectiveScale() and child.details ~= root.details then
+        if startIndex == nil then
+          startIndex = index
+          endIndex = index
+        else
+          endIndex = index
+        end
+      end
+    end
+  end
+  if startIndex == nil then
+    return nil
+  end
+  local index = startIndex + math.floor((endIndex - startIndex) / 2)
+
+  local child = group.children[index]
+  local topOverlap = child:GetTop()*child:GetEffectiveScale() - root:GetBottom()*root:GetEffectiveScale()
+  local bottomOverlap = root:GetTop()*root:GetEffectiveScale() - child:GetBottom()*child:GetEffectiveScale()
+  local rightOverlap = child:GetRight()*child:GetEffectiveScale() - root:GetLeft()*root:GetEffectiveScale()
+  local leftOverlap = root:GetRight()*root:GetEffectiveScale() - child:GetLeft()*child:GetEffectiveScale()
+  local heightMargin = math.min(root:GetHeight()*root:GetEffectiveScale(), child:GetHeight()*child:GetEffectiveScale()) * 0.4
+  local widthMargin = math.min(root:GetHeight()*root:GetEffectiveScale(), child:GetWidth()*child:GetEffectiveScale()) * 0.4
+
+  if topOverlap < heightMargin and rightOverlap > widthMargin and leftOverlap > widthMargin then
+    return index, 2, "vertical"
+  elseif bottomOverlap < heightMargin and rightOverlap > widthMargin and leftOverlap > widthMargin then
+    return index, 1, "vertical"
+  elseif rightOverlap < widthMargin and topOverlap > heightMargin and bottomOverlap > heightMargin then
+    return index, 2, "horizontal"
+  elseif leftOverlap < widthMargin and topOverlap > heightMargin and bottomOverlap > heightMargin then
+    return index, 1, "horizontal"
+  else
+    return nil
+  end
+end
+
 function addonTable.Designer.LayoutManagerMixin:InsertRootAt(root)
   local group = self:GetDeepestGroupOverlapping(root, self.root)
   if not group then
+    local details = root.details
+    local point, _, relativePoint, x, y = root:GetPoint(1)
+    local new = CopyTable(addonTable.Designer.Defaults.Group)
+    table.insert(new.entries, details)
+    new.anchor = {point, "UIParent", relativePoint, x * root:GetEffectiveScale() / self.root:GetEffectiveScale(), y * root:GetEffectiveScale() / self.root:GetEffectiveScale()}
+    DeleteRoot(root, false)
+    table.insert(self.root.details.entries, new)
     Announce()
     return
   end
   local insertIndex = self:GetInsertionPointFromGroup(root, group)
-  if not insertIndex then
-    Announce()
-    return
-  end
-  local details = root.details
-  local groupDetails = group.details
-  local oldIndex = tIndexOf(groupDetails.entries, details)
-  if oldIndex and oldIndex < insertIndex then
-    insertIndex = insertIndex - 1
-  end
+  assert(insertIndex)
+  local altIndex, newIndex, layout = self:GetInsertDirection(root, group)
+  local rootDetails = root.details
   DeleteRoot(root, false)
-  table.insert(groupDetails.entries, insertIndex, details)
+  if layout and layout ~= group.details.layout then
+    local childDetails = group.children[altIndex].details
+    if childDetails.kind == "group" and childDetails.layout == layout then
+      table.insert(childDetails.entries, newIndex == 2 and #childDetails.entries + 1 or 1, rootDetails)
+    else
+      local groupDetails = group.details
+      if #groupDetails.entries == 1 then
+        groupDetails.layout = layout
+        table.insert(groupDetails.entries, newIndex, rootDetails)
+      else
+        local new = CopyTable(addonTable.Designer.Defaults.Group)
+        new.layout = layout
+        table.insert(new.entries, childDetails)
+        table.insert(new.entries, newIndex, rootDetails)
+        groupDetails.entries[altIndex] = new
+      end
+    end
+  else
+    local groupDetails = group.details
+    local oldIndex = tIndexOf(groupDetails.entries, rootDetails)
+    if oldIndex and oldIndex < insertIndex then
+      insertIndex = insertIndex - 1
+    end
+    table.insert(groupDetails.entries, insertIndex,  rootDetails)
+  end
   Announce()
 end
 
@@ -348,19 +432,24 @@ function addonTable.Designer.LayoutManagerMixin:AddHandlers(root)
           return
         end
         local insertIndex = self:GetInsertionPointFromGroup(root, group)
-        if not insertIndex then
-          return
-        end
+        local altIndex, newIndex, layout = self:GetInsertDirection(root, group, insertIndex)
+        local anchorFrame
         local point = group.children[insertIndex]
-        if not point or point == root then
-          if group.details.layout == "vertical" then
+        if layout ~= group.details.layout then
+          anchorFrame = group.children[altIndex]
+        elseif point == root or not point then
+          anchorFrame = group
+          layout = group.details.layout
+        end
+        if anchorFrame then
+          if layout == "vertical" then
             self.insertVertical:Show()
-            self.insertVertical:SetPoint("TOP", group, "TOP", 0, 4 - group.details.padding * (addonTable.Constants.nativeSize - 4))
-            self.insertVertical:SetSize(group:GetWidth(), 8)
+            self.insertVertical:SetPoint("TOP", anchorFrame, newIndex == 1 and "BOTTOM" or "TOP", 0, 4 - group.details.padding * (addonTable.Constants.nativeSize - 4))
+            self.insertVertical:SetSize(anchorFrame:GetWidth(), 8)
           else
             self.insertHorizontal:Show()
-            self.insertHorizontal:SetPoint("RIGHT", group, "RIGHT", 4 - group.details.padding * (addonTable.Constants.nativeSize - 4), 0)
-            self.insertHorizontal:SetSize(8, group:GetHeight())
+            self.insertHorizontal:SetPoint("RIGHT", anchorFrame, newIndex == 1 and "LEFT" or "RIGHT", 4 - group.details.padding * (addonTable.Constants.nativeSize - 4), 0)
+            self.insertHorizontal:SetSize(8, anchorFrame:GetHeight())
           end
         else
           if group.details.layout == "vertical" then
