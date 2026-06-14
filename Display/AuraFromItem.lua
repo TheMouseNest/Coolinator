@@ -18,7 +18,7 @@ end)
 local trackerFrame = CreateFrame("Frame")
 trackerFrame.recorded = {}
 trackerFrame.callbacksBySpellID = {}
-trackerFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+trackerFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
 trackerFrame:RegisterEvent("PLAYER_DEAD")
 trackerFrame:SetScript("OnEvent", function(_, eventName, _, _, spellID)
   if eventName == "UNIT_SPELLCAST_SUCCEEDED" then
