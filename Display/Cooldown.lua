@@ -9,10 +9,15 @@ function addonTable.Display.CooldownMixin:OnLoad()
   self.Icon = self:CreateTexture()
   self.Icon:SetSize(addonTable.Constants.nativeSize, addonTable.Constants.nativeSize)
   self.Icon:SetPoint("CENTER")
+  self.NotUsable = self:CreateTexture()
+  self.NotUsable:SetAllPoints(self.Icon)
+  self.NotUsable:SetTexture("Interface/AddOns/Coolinator/Assets/Special/white.png")
+  self.NotUsable:SetVertexColor(0, 0, 0, 0.5)
   local mask = self:CreateMaskTexture()
   mask:SetAtlas("UI-HUD-CoolDownManager-Mask")
   mask:SetAllPoints(self.Icon)
   self.Icon:AddMaskTexture(mask)
+  self.NotUsable:AddMaskTexture(mask)
 
   local overlay = self:CreateTexture(nil, "OVERLAY")
   overlay:SetAtlas("UI-HUD-CoolDownManager-IconOverlay")
@@ -76,6 +81,8 @@ function addonTable.Display.CooldownMixin:OnEvent(eventName, data, ...)
     else
       self.Icon:SetVertexColor(0.8, 0, 0, 1)
     end
+  elseif eventName == "SPELL_UPDATE_USABLE" and self.spellID then
+    self.NotUsable:SetShown(not C_Spell.IsSpellUsable(self.spellID))
   end
 end
 
@@ -109,6 +116,7 @@ function addonTable.Display.CooldownMixin:Enable()
   self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
   self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
   self:RegisterEvent("SPELL_RANGE_CHECK_UPDATE")
+  self:RegisterEvent("SPELL_UPDATE_USABLE")
 end
 
 function addonTable.Display.CooldownMixin:Disable()
@@ -153,6 +161,7 @@ function addonTable.Display.CooldownMixin:UpdateSpellByID(spellID, activationOff
   else
     self.Icon:SetVertexColor(1, 1, 1, 1)
   end
+  self.NotUsable:SetShown(not C_Spell.IsSpellUsable(self.spellID))
 end
 
 function addonTable.Display.CooldownMixin:UpdateItemByID(itemID)
@@ -170,4 +179,6 @@ function addonTable.Display.CooldownMixin:UpdateItemByID(itemID)
       addonTable.CallbackRegistry:TriggerEvent("Layout")
     end)
   end
+
+  self.NotUsable:Hide()
 end
