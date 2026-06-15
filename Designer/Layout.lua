@@ -355,6 +355,9 @@ function addonTable.Designer.LayoutManagerMixin:InsertRootAt(root)
   local rootIndex = tIndexOf(groupDetails.entries, rootDetails)
   DeleteRoot(root, false)
   if layout and layout ~= groupDetails.layout then
+    if rootIndex and altIndex >= rootIndex then
+      altIndex = altIndex - 1
+    end
     local childDetails = groupDetails.entries[altIndex]
     if childDetails.kind == "group" and childDetails.layout == layout then
       insertIndex = newIndex == 2 and #childDetails.entries + 1 or 1
