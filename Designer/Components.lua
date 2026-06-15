@@ -47,7 +47,7 @@ function addonTable.Designer.IconMixin:Setup(details)
     self.Icon:SetDesaturated(C_Item.GetItemCount(details.resource.itemID) == 0)
   elseif details.resource.equipmentSlot then
     local location = ItemLocation:CreateFromEquipmentSlot(details.resource.equipmentSlot)
-    texture = C_Item.GetItemIcon(location)
+    texture = location:IsValid() and C_Item.GetItemIcon(location) or C_Item.GetItemIconByID(0)
     self.Icon:SetDesaturated(not C_Item.DoesItemExist(location))
   end
   self.Icon:SetTexture(texture)
