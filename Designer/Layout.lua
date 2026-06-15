@@ -255,6 +255,7 @@ local function GroupSimilar(groupDetails)
       groupDetails.scale = groupDetails.entries[1].scale * groupDetails.scale
       groupDetails.alpha = groupDetails.entries[1].alpha * groupDetails.alpha
       groupDetails.layout = groupDetails.entries[1].layout
+      groupDetails.alignment = groupDetails.entries[1].alignment
       groupDetails.padding = groupDetails.entries[1].padding
       groupDetails.entries = groupDetails.entries[1].entries
     end
