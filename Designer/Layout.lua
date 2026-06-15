@@ -183,13 +183,26 @@ local function Degroup(groupDetails)
   end
   local final = {}
   for _, entry in ipairs(groupDetails.entries) do
-    if entry.kind == "group" and (entry.layout == groupDetails.layout or #entry.entries == 1) and entry.alpha == 1 and entry.scale == 1 and entry.padding == groupDetails.padding then
+    if entry.kind == "group" and (entry.layout == groupDetails.layout or #entry.entries == 1) and entry.alpha == 1 and entry.scale == 1 and entry.padding == groupDetails.padding and entry.alignment == groupDetails.alignment then
       tAppendAll(final, entry.entries)
     else
       table.insert(final, entry)
     end
   end
   groupDetails.entries = final
+end
+
+local function IsSimilarEnough(details1, details2)
+  if not details1 or not details2 then
+    return false
+  end
+  if details1.kind ~= details2.kind then
+    return false
+  end
+  if details1.kind == "bar" and details1.resource.kind ~= details2.resource.kind then
+    return false
+  end
+  return true
 end
 
 -- Group similar widgets together automatically
@@ -200,7 +213,7 @@ local function GroupSimilar(groupDetails)
     end
     return
   end
-  local lastKind
+  local last
   local count = 1
   local index = 1
   local function Apply()
@@ -222,7 +235,7 @@ local function GroupSimilar(groupDetails)
   end
   while index <= #groupDetails.entries do
     local details = groupDetails.entries[index]
-    if lastKind == details.kind and details.kind ~= "group" then
+    if IsSimilarEnough(details, last) and details.kind ~= "group" then
       count = count + 1
     elseif count > 1 then
       Apply()
@@ -231,7 +244,7 @@ local function GroupSimilar(groupDetails)
       count = 1
     end
     index = index + 1
-    lastKind = details.kind
+    last = details
   end
   if count > 1 and count ~= #groupDetails.entries then
     Apply()
@@ -395,6 +408,11 @@ function addonTable.Designer.LayoutManagerMixin:GetInsertDirection(root, group)
   local index = startIndex + math.floor((endIndex - startIndex) / 2)
 
   local child = group.children[index]
+
+  if child.details.kind ~= root.details.kind and child.details.kind ~= "group" then
+    index = -1
+  end
+
   local topOverlap = child:GetTop()*child:GetEffectiveScale() - root:GetBottom()*root:GetEffectiveScale()
   local bottomOverlap = root:GetTop()*root:GetEffectiveScale() - child:GetBottom()*child:GetEffectiveScale()
   local rightOverlap = child:GetRight()*child:GetEffectiveScale() - root:GetLeft()*root:GetEffectiveScale()
@@ -448,26 +466,28 @@ function addonTable.Designer.LayoutManagerMixin:InsertRootAt(root)
       altIndex = altIndex - 1
     end
     local childDetails = groupDetails.entries[altIndex]
-    if childDetails.kind == "group" and childDetails.layout == layout then
-      insertIndex = newIndex == 2 and #childDetails.entries + 1 or 1
-      if rootIndex and rootIndex < insertIndex then
-        insertIndex = insertIndex - 1
+    if #groupDetails.entries == 1 then
+      groupDetails.layout = layout
+      table.insert(groupDetails.entries, newIndex, rootDetails)
+    elseif altIndex == -1 then
+      local new = CopyTable(addonTable.Designer.Defaults.Group)
+      new.layout = layout
+      new.entries = {groupDetails}
+      table.insert(new.entries, newIndex, rootDetails)
+      local groupParentDetails = group:GetParent().details
+      if groupParentDetails.layout == "standalone" then
+        new.anchor = groupDetails.anchor
+        groupDetails.anchor = nil
       end
-      table.insert(childDetails.entries, insertIndex, rootDetails)
-      AutoGroup(self.root.details)
+      groupParentDetails.entries[tIndexOf(groupParentDetails.entries, groupDetails)] = new
     else
-      if #groupDetails.entries == 1 then
-        groupDetails.layout = layout
-        table.insert(groupDetails.entries, newIndex, rootDetails)
-        AutoGroup(self.root.details)
-      else
-        local new = CopyTable(addonTable.Designer.Defaults.Group)
-        new.layout = layout
-        table.insert(new.entries, childDetails)
-        table.insert(new.entries, newIndex, rootDetails)
-        groupDetails.entries[altIndex] = new
-      end
+      local new = CopyTable(addonTable.Designer.Defaults.Group)
+      new.layout = layout
+      table.insert(new.entries, childDetails)
+      table.insert(new.entries, newIndex, rootDetails)
+      groupDetails.entries[altIndex] = new
     end
+    AutoGroup(self.root.details)
   elseif insertIndex then
     if rootIndex and rootIndex < insertIndex then
       insertIndex = insertIndex - 1
@@ -555,11 +575,15 @@ function addonTable.Designer.LayoutManagerMixin:AddHandlers(root)
           return
         end
         local insertIndex = self:GetInsertionPointFromGroup(root, group)
-        local altIndex, newIndex, layout = self:GetInsertDirection(root, group, insertIndex)
+        local altIndex, newIndex, layout = self:GetInsertDirection(root, group)
         local anchorFrame
         local point = group.children[insertIndex]
         if layout ~= group.details.layout then
-          anchorFrame = group.children[altIndex]
+          if altIndex == -1 then
+            anchorFrame = group
+          else
+            anchorFrame = group.children[altIndex]
+          end
         elseif not point then
           anchorFrame = group
           layout = group.details.layout
