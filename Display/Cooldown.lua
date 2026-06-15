@@ -206,6 +206,7 @@ function addonTable.Display.CooldownMixin:UpdateItemByEquipmentSlot(equipmentSlo
     C_Timer.After(0, function()
       addonTable.CallbackRegistry:TriggerEvent("Layout")
     end)
+    return
   end
 
   self.ChargesCooldown:Clear()
