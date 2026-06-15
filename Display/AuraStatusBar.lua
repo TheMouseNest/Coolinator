@@ -75,6 +75,14 @@ function addonTable.Display.AuraStatusBarMixin:Setup(sourceWidget, details)
   self.details = details
 end
 
+function addonTable.Display.AuraStatusBarMixin:UpdateSource(sourceWidget)
+  if sourceWidget ~= self.widgets.source then
+    self:Setup(sourceWidget, self.details)
+  else
+    sourceWidget:SetParent(self)
+  end
+end
+
 function addonTable.Display.AuraStatusBarMixin:ApplySize()
   if self.details.icon.show then
     local iconSize
