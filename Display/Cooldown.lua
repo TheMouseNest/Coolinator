@@ -9,7 +9,7 @@ function addonTable.Display.CooldownMixin:OnLoad()
   self.Icon = self:CreateTexture()
   self.Icon:SetSize(addonTable.Constants.nativeSize, addonTable.Constants.nativeSize)
   self.Icon:SetPoint("CENTER")
-  self.NotUsable = self:CreateTexture()
+  self.NotUsable = self:CreateTexture(nil, "OVERLAY")
   self.NotUsable:SetAllPoints(self.Icon)
   self.NotUsable:SetTexture("Interface/AddOns/Coolinator/Assets/Special/white.png")
   self.NotUsable:SetVertexColor(0, 0, 0, 0.5)
@@ -173,7 +173,8 @@ function addonTable.Display.CooldownMixin:UpdateSpellByID(spellID, activationOff
   else
     self.Icon:SetVertexColor(1, 1, 1, 1)
   end
-  self.NotUsable:SetShown(not C_Spell.IsSpellUsable(self.spellID))
+  local isUsable = C_Spell.IsSpellUsable(self.spellID)
+  self.NotUsable:SetShown(not isUsable)
 end
 
 function addonTable.Display.CooldownMixin:UpdateItemByID(itemID)
