@@ -222,10 +222,36 @@ local function SetupDesigner(parent)
   return container
 end
 
+local function SetupBehaviour(parent)
+  local container = CreateFrame("Frame", nil, parent)
+  local allFrames = {}
+
+  local compressLayout = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.REMOVE_SPACING_FOR_HIDDEN_AURAS, 28, function(value)
+    addonTable.Config.Set(addonTable.Config.Options.COMPRESS_LAYOUT)
+  end)
+  compressLayout.option = addonTable.Config.Options.COMPRESS_LAYOUT
+  compressLayout:SetPoint("TOP")
+  table.insert(allFrames, compressLayout)
+
+  container:SetScript("OnShow", function()
+    for _, f in ipairs(allFrames) do
+      if f.SetValue then
+        if f.option then
+          f:SetValue(addonTable.Config.Get(f.option))
+        elseif f.DropDown then
+          f:SetValue()
+        end
+      end
+    end
+  end)
+
+  return container
+end
+
 local TabSetups = {
   {callback = SetupGeneral, name = addonTable.Locales.GENERAL},
   {callback = SetupDesigner, name = addonTable.Locales.DESIGNER},
-  --{callback = SetupBehaviour, name = addonTable.Locales.BEHAVIOUR},
+  {callback = SetupBehaviour, name = addonTable.Locales.BEHAVIOUR},
 }
 
 function addonTable.CustomiseDialog.Toggle()
@@ -237,7 +263,7 @@ function addonTable.CustomiseDialog.Toggle()
 
   local frame = addonTable.CustomiseDialog.Components.GetContentFrame(
     "CoolinatorCustomiseDialog" .. addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN),
-    600, 830
+    600, 600
   )
   customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] = frame
 

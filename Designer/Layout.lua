@@ -91,14 +91,19 @@ function addonTable.Designer.LayoutManagerMixin:OnLoad()
   self.selectParentButton:SetScript("OnLeave", function()
     GameTooltip:Hide()
   end)
-  self.insertInParent = GetButton(self, "Interface/AddOns/Coolinator/Assets/Buttons/plus.png")
-  self.insertInParent:SetScript("OnEnter", function()
-    GameTooltip:SetOwner(self.insertInParent, "ANCHOR_LEFT")
-    GameTooltip:SetText(addonTable.Locales.INSERT_END)
-  end)
-  self.insertInParent:SetScript("OnLeave", function()
-    GameTooltip:Hide()
-  end)
+  self.insertButton = {
+    GetButton(self, "Interface/AddOns/Coolinator/Assets/Buttons/plus.png"),
+    GetButton(self, "Interface/AddOns/Coolinator/Assets/Buttons/plus.png"),
+  }
+  for _, b in ipairs(self.insertButton) do
+    b:SetScript("OnEnter", function()
+      GameTooltip:SetOwner(b, "ANCHOR_LEFT")
+      GameTooltip:SetText(addonTable.Locales.INSERT)
+    end)
+    b:SetScript("OnLeave", function()
+      GameTooltip:Hide()
+    end)
+  end
   self.deleteButton = GetButton(self, "Interface/AddOns/Coolinator/Assets/Buttons/cross.png")
   self.dragButton = GetButton(self, "Interface/AddOns/Coolinator/Assets/Buttons/drag.png")
   self.dragButton:SetSize(40, 40)
@@ -614,78 +619,90 @@ function addonTable.Designer.LayoutManagerMixin:UpdateSelectionJustOne()
   local frame = self:GetForDetails(self.selection[1], self.root)
   if not frame then
     self.selection = {}
+    return
   end
   local selector = self.selectorPool:Acquire()
   selector:Show()
   selector:SetFrameLevel(9999)
   selector:SetAllPoints(frame)
+  local details = self.selection[1]
   local parentDetails = frame:GetParent() ~= UIParent and frame:GetParent().details
-  if parentDetails.layout == "vertical" then
-    local up, down = self.movementArrows.up, self.movementArrows.down
-    up:Show()
-    down:Show()
-    up:SetPoint("BOTTOM", frame, "TOP", 0, 2)
-    up:SetScript("OnClick", function()
-      local index = tIndexOf(parentDetails.entries, self.selection)
-      if index < #parentDetails.entries then
-        local tmp = parentDetails.entries[index + 1]
-        parentDetails.entries[index + 1] = self.selection
-        parentDetails.entries[index] = tmp
-        Announce()
-      end
-    end)
-    down:SetPoint("TOP", frame, "BOTTOM", 0, -2)
-    down:SetScript("OnClick", function()
-      local index = tIndexOf(parentDetails.entries, self.selection)
-      if index > 1 then
-        local tmp = parentDetails.entries[index - 1]
-        parentDetails.entries[index - 1] = self.selection
-        parentDetails.entries[index] = tmp
-        Announce()
-      end
-    end)
-  elseif parentDetails.layout == "horizontal" then
-    local left, right = self.movementArrows.left, self.movementArrows.right
-    left:Show()
-    right:Show()
-    right:SetPoint("LEFT", frame, "RIGHT", 2, 0)
-    right:SetScript("OnClick", function()
-      local index = tIndexOf(parentDetails.entries, self.selection)
-      if index < #parentDetails.entries then
-        local tmp = parentDetails.entries[index + 1]
-        parentDetails.entries[index + 1] = self.selection
-        parentDetails.entries[index] = tmp
-        Announce()
-      end
-    end)
-    left:SetPoint("RIGHT", frame, "LEFT", -2, 0)
-    left:SetScript("OnClick", function()
-      local index = tIndexOf(parentDetails.entries, self.selection)
-      if index > 1 then
-        local tmp = parentDetails.entries[index - 1]
-        parentDetails.entries[index - 1] = self.selection
-        parentDetails.entries[index] = tmp
-        Announce()
-      end
-    end)
+  if details.kind == "group" then
+    if parentDetails.layout == "vertical" then
+      local up, down = self.movementArrows.up, self.movementArrows.down
+      up:Show()
+      down:Show()
+      up:SetPoint("BOTTOM", frame, "TOP", 0, 2)
+      up:SetScript("OnClick", function()
+        local index = tIndexOf(parentDetails.entries, details)
+        if index < #parentDetails.entries then
+          local tmp = parentDetails.entries[index + 1]
+          parentDetails.entries[index + 1] = details
+          parentDetails.entries[index] = tmp
+          Announce()
+        end
+      end)
+      down:SetPoint("TOP", frame, "BOTTOM", 0, -2)
+      down:SetScript("OnClick", function()
+        local index = tIndexOf(parentDetails.entries, details)
+        if index > 1 then
+          local tmp = parentDetails.entries[index - 1]
+          parentDetails.entries[index - 1] = details
+          parentDetails.entries[index] = tmp
+          Announce()
+        end
+      end)
+    elseif parentDetails.layout == "horizontal" then
+      local left, right = self.movementArrows.left, self.movementArrows.right
+      left:Show()
+      right:Show()
+      right:SetPoint("LEFT", frame, "RIGHT", 2, 0)
+      right:SetScript("OnClick", function()
+        local index = tIndexOf(parentDetails.entries, details)
+        if index < #parentDetails.entries then
+          local tmp = parentDetails.entries[index + 1]
+          parentDetails.entries[index + 1] = details
+          parentDetails.entries[index] = tmp
+          Announce()
+        end
+      end)
+      left:SetPoint("RIGHT", frame, "LEFT", -2, 0)
+      left:SetScript("OnClick", function()
+        local index = tIndexOf(parentDetails.entries, details)
+        if index > 1 then
+          local tmp = parentDetails.entries[index - 1]
+          parentDetails.entries[index - 1] = details
+          parentDetails.entries[index] = tmp
+          Announce()
+        end
+      end)
+    end
+  else
+    for index, button in ipairs(self.insertButton) do
+      button:ClearAllPoints()
+      button:Show()
+      button:SetScript("OnClick", function()
+        MenuUtil.CreateContextMenu(frame, function(_, rootDescription)
+          self:AddEntryToInsert(rootDescription, details, function(new)
+            table.insert(parentDetails.entries, tIndexOf(parentDetails.entries, details) + index - 1, new)
+            Announce()
+          end)
+        end)
+      end)
+    end
+    if parentDetails.layout == "vertical" then
+      self.insertButton[1]:SetPoint("TOP", frame, "BOTTOM", 0, -2)
+      self.insertButton[2]:SetPoint("BOTTOM", frame, "TOP", 0, 2)
+    elseif parentDetails.layout == "horizontal" then
+      self.insertButton[1]:SetPoint("RIGHT", frame, "LEFT", -2, 0)
+      self.insertButton[2]:SetPoint("LEFT", frame, "RIGHT", 2, 0)
+    end
   end
   if parentDetails.layout ~= "standalone" then
     self.selectParentButton:Show()
     self.selectParentButton:SetPoint("BOTTOMRIGHT", frame, "TOPLEFT", -2, 2)
     self.selectParentButton:SetScript("OnClick", function()
       self:MarkSelected(parentDetails)
-    end)
-
-    self.insertInParent:Show()
-    self.insertInParent:SetPoint("BOTTOM", self.selectParentButton, "TOP", 0, 2)
-    self.insertInParent:SetScript("OnClick", function()
-      MenuUtil.CreateContextMenu(frame, function(_, rootDescription)
-        self:AddEntryToInsert(rootDescription, frame.details, function(new)
-          table.insert(parentDetails.entries, new)
-          Announce()
-          self:MarkSelected(new)
-        end)
-      end)
     end)
 
     self.deleteButton:Show()
@@ -703,20 +720,21 @@ function addonTable.Designer.LayoutManagerMixin:UpdateSelectionJustOne()
       GameTooltip:Hide()
     end)
 
-    self.popoutStandaloneButton:Show()
-    self.popoutStandaloneButton:SetPoint("BOTTOM", self.insertInParent, "TOP", 0, 2)
-    self.popoutStandaloneButton:SetScript("OnClick", function()
-      local details = frame.details
-      DeleteRoot(frame, false)
-      if frame.details.kind ~= "group" then
-        local tmp = CopyTable(addonTable.Designer.Defaults.Group)
-        table.insert(tmp.entries, details)
-        details = tmp
-      end
-      details.anchor = {"BOTTOM", "UIParent", "CENTER", 0, 0}
-      table.insert(self.root.details.entries, details)
-      Announce()
-    end)
+    if details.kind == "group" then
+      self.popoutStandaloneButton:Show()
+      self.popoutStandaloneButton:SetPoint("BOTTOM", self.selectParentButton, "TOP", 0, 2)
+      self.popoutStandaloneButton:SetScript("OnClick", function()
+        DeleteRoot(frame, false)
+        if frame.details.kind ~= "group" then
+          local tmp = CopyTable(addonTable.Designer.Defaults.Group)
+          table.insert(tmp.entries, details)
+          details = tmp
+        end
+        details.anchor = {"BOTTOM", "UIParent", "CENTER", 0, 0}
+        table.insert(self.root.details.entries, details)
+        Announce()
+      end)
+    end
   else
     self.dragButton:Show()
     self.dragButton:SetPoint("CENTER", frame)
@@ -737,8 +755,10 @@ function addonTable.Designer.LayoutManagerMixin:UpdateSelection()
   for _, frame in pairs(self.movementArrows) do
     frame:Hide()
   end
+  for _, frame in ipairs(self.insertButton) do
+    frame:Hide()
+  end
   self.selectParentButton:Hide()
-  self.insertInParent:Hide()
   self.deleteButton:Hide()
   self.dragButton:Hide()
   self.popoutStandaloneButton:Hide()
