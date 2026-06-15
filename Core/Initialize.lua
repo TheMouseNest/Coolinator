@@ -16,6 +16,10 @@ function addonTable.Core.AutoGenerateLayout(name)
     designs[spec] = {}
   end
   designs[spec][name or addonTable.Constants.DefaultName] = addonTable.Core.GenerateDefaultCDMLayout()
+  local assignments = addonTable.Config.Get(addonTable.Config.Options.DESIGN_ASSIGNMENTS)
+  if assignments[spec] == nil then
+    assignments[spec] = addonTable.Constants.DefaultName
+  end
 end
 
 function addonTable.Core.Initialize()
