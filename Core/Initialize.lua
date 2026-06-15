@@ -78,8 +78,8 @@ frame:SetScript("OnEvent", function(_, eventName, data1, data2)
     addonTable.Core.Initialize()
   elseif eventName == "TRAIT_CONFIG_UPDATED" and addonTable.State then
     TriggerUpdate()
-  elseif eventName == "SPELLS_CHANGED" and addonTable.State then
-    addonTable.CallbackRegistry:TriggerEvent("UpdateSpellIcons")
+  elseif eventName == "SPELL_UPDATE_ICON" and addonTable.State then
+    addonTable.CallbackRegistry:TriggerEvent("UpdateSpellIcons", data1)
   elseif eventName == "PLAYER_ENTERING_WORLD" and not data1 and not data2 then
     addonTable.CallbackRegistry:TriggerEvent("Layout")
   elseif eventName == "PLAYER_EQUIPMENT_CHANGED" then

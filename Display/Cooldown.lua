@@ -122,8 +122,8 @@ function addonTable.Display.CooldownMixin:Enable()
   self:RegisterEvent("SPELL_RANGE_CHECK_UPDATE")
   self:RegisterEvent("SPELL_UPDATE_USABLE")
 
-  addonTable.CallbackRegistry:RegisterCallback("UpdateSpellIcons", function()
-    if self.spellID then
+  addonTable.CallbackRegistry:RegisterCallback("UpdateSpellIcons", function(_, spellID)
+    if self.spellID and not spellID or C_Spell.GetBaseSpell(self.spellID) == spellID then
       self.Icon:SetTexture(C_Spell.GetSpellTexture(self.spellID))
     end
   end, self)
