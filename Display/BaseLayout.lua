@@ -37,8 +37,6 @@ local function AnchorStandalone(widget, anchor)
 end
 
 function addonTable.Display.BaseLayoutManagerMixin:GetGroup(details)
-  self.autoSize = addonTable.Config.Get(addonTable.Config.Options.COMPRESS_LAYOUT)
-
   local wrapper = self.wrappersPool:Acquire()
   wrapper.children = {}
   wrapper.details = details

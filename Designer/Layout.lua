@@ -148,6 +148,9 @@ function addonTable.Designer.LayoutManagerMixin:Delayout()
 
   self.insertHorizontal:Hide()
   self.insertVertical:Hide()
+
+  self:SetScript("OnUpdate", nil)
+  self.toArrange = {}
 end
 
 local function CheckChildren(details, checker)
@@ -758,6 +761,8 @@ end
 
 function addonTable.Designer.LayoutManagerMixin:Layout()
   self.pending = true
+
+  self.autoSize = addonTable.Config.Get(addonTable.Config.Options.COMPRESS_LAYOUT)
 
   self.currentLayout = addonTable.Designer.GetCurrent()
 

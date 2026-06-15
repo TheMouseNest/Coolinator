@@ -120,6 +120,9 @@ function addonTable.Display.LayoutManagerMixin:Delayout()
     pool:ReleaseAll()
   end
   self.wrappersPool:ReleaseAll()
+
+  self:SetScript("OnUpdate", nil)
+  self.toArrange = {}
 end
 
 function addonTable.Display.LayoutManagerMixin:Layout()
@@ -127,6 +130,8 @@ function addonTable.Display.LayoutManagerMixin:Layout()
     return
   end
   self.pending = true
+
+  self.autoSize = addonTable.Config.Get(addonTable.Config.Options.COMPRESS_LAYOUT)
 
   self.currentLayout = addonTable.Core.GetCurrentDesign()
 

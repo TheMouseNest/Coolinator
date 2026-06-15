@@ -69,6 +69,9 @@ end
 
 function addonTable.Display.GeneratePool(mixin, template)
   return CreateFramePool("Frame", UIParent, template or "CoolinatorPropagateMouseClicksTemplate", function(_, frame)
+    frame:SetScript("OnShow", nil)
+    frame:SetScript("OnHide", nil)
+    frame:SetScript("OnSizeChanged", nil)
     if frame.Disable then
       frame:Disable()
     end
