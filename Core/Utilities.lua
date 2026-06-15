@@ -59,7 +59,7 @@ function addonTable.Utilities.IsSpellKnown(spellID)
   if addonTable.Constants.AurasFromItems[spellID] then
     return spellID
   end
-  local mapped = addonTable.State.spellIDMap[spellID]
+  local mapped = addonTable.State.auraMap[spellID] or addonTable.State.abilityMap[spellID]
   if mapped then
     local isKnown = C_CooldownViewer.GetCooldownViewerCooldownInfo(mapped).isKnown
     if isKnown then

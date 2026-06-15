@@ -292,11 +292,18 @@ local function SetupBehaviour(parent)
   local allFrames = {}
 
   local compressLayout = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.REMOVE_SPACING_FOR_HIDDEN_AURAS, 28, function(value)
-    addonTable.Config.Set(addonTable.Config.Options.COMPRESS_LAYOUT)
+    addonTable.Config.Set(addonTable.Config.Options.COMPRESS_LAYOUT, not addonTable.Config.Get(addonTable.Config.Options.COMPRESS_LAYOUT))
   end)
   compressLayout.option = addonTable.Config.Options.COMPRESS_LAYOUT
   compressLayout:SetPoint("TOP")
   table.insert(allFrames, compressLayout)
+
+  local useNativeWidgets = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.USE_BLIZZARD_WIDGETS, 28, function(value)
+    addonTable.Config.Set(addonTable.Config.Options.USE_BLIZZARD_WIDGETS, not addonTable.Config.Get(addonTable.Config.Options.USE_BLIZZARD_WIDGETS))
+  end)
+  useNativeWidgets.option = addonTable.Config.Options.USE_BLIZZARD_WIDGETS
+  useNativeWidgets:SetPoint("TOP", compressLayout, "BOTTOM", 0, -30)
+  table.insert(allFrames, useNativeWidgets)
 
   container:SetScript("OnShow", function()
     for _, f in ipairs(allFrames) do

@@ -41,6 +41,7 @@ L["EDIT_THE_ICONS_AND_BARS_ONSCREEN"] = "Edit the icons and bars onscreen by cli
 L["INCOMPATIBLE_WIDGET_TYPE"] = "Incompatible widget type"
 L["BEHAVIOUR"] = "Behaviour"
 L["REMOVE_SPACING_FOR_HIDDEN_AURAS"] = "Remove spacing for hidden auras"
+L["USE_BLIZZARD_WIDGETS"] = "Use Blizzard widgets"
 
 L["ENTER_PROFILE_NAME"] = "Enter Profile Name:"
 L["PROFILES"] = "Profiles"

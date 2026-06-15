@@ -12,6 +12,14 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
     frame:ClearAllPoints()
     frame:Hide()
   end)
+  self.abilityWrappersPool = CreateFramePool("Frame", UIParent, nil, function(_, frame)
+    frame:SetScript("OnShow", nil)
+    frame:SetScript("OnHide", nil)
+    frame:SetScript("OnSizeChanged", nil)
+    frame:SetParent(UIParent)
+    frame:ClearAllPoints()
+    frame:Hide()
+  end)
   self.cooldownPool = addonTable.Display.GeneratePool(addonTable.Display.CooldownMixin)
   self.auraFromItemPool = addonTable.Display.GeneratePool(addonTable.Display.AuraFromItemMixin)
   self.auraStatusBarPool = addonTable.Display.GeneratePool(addonTable.Display.AuraStatusBarMixin)
@@ -34,8 +42,8 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
   local hookedAuras = {}
   local function CacheIcons()
     local result = {}
-	  for itemFrame in BuffIconCooldownViewer.itemFramePool:EnumerateActive() do
-	    result[itemFrame.layoutIndex] = itemFrame
+    for itemFrame in BuffIconCooldownViewer.itemFramePool:EnumerateActive() do
+      result[itemFrame.layoutIndex] = itemFrame
       if not hookedAuras[itemFrame] then
         hooksecurefunc(itemFrame, "Show", function()
           local parent = itemFrame:GetParent()
@@ -57,20 +65,29 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
         end)
         hookedAuras[itemFrame] = true
       end
-	  end
-	  self.auraIcons = result
+    end
+    self.auraIcons = result
   end
 
   local function CacheBars()
     local result = {}
-	  for itemFrame in BuffBarCooldownViewer.itemFramePool:EnumerateActive() do
-	    result[itemFrame.layoutIndex] = itemFrame
-	  end
-	  self.auraBars = result
+    for itemFrame in BuffBarCooldownViewer.itemFramePool:EnumerateActive() do
+      result[itemFrame.layoutIndex] = itemFrame
+    end
+    self.auraBars = result
+  end
+
+  local function CacheAbilities()
+    local result = {}
+    for itemFrame in EssentialCooldownViewer.itemFramePool:EnumerateActive() do
+      result[itemFrame.layoutIndex] = itemFrame
+    end
+    self.abilityIcons = result
   end
 
   CacheIcons()
   CacheBars()
+  CacheAbilities()
 
   hooksecurefunc(BuffIconCooldownViewer, "RefreshLayout", function()
     C_Timer.After(0, function()
@@ -83,12 +100,11 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
       end
       for frame in self.auraWrappersPool:EnumerateActive() do
         local aura = self.auraIcons[frame.auraIndex]
-        if not aura then
-          return
+        if aura then
+          aura:SetParent(frame)
+          aura:ClearAllPoints()
+          aura:SetPoint("CENTER", frame)
         end
-        aura:SetParent(frame)
-        aura:ClearAllPoints()
-        aura:SetPoint("CENTER", frame)
       end
     end)
   end)
@@ -99,6 +115,9 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
         return
       end
       CacheBars()
+      for i = 1, # self.auraBars do
+        self.auraBars[i]:SetParent(addonTable.hiddenFrame)
+      end
       for frame in self.auraStatusBarPool:EnumerateActive() do
         local aura = self.auraBars[frame.auraIndex]
         frame:UpdateSource(aura)
@@ -107,7 +126,27 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
     end)
   end)
 
-  EssentialCooldownViewer:SetParent(addonTable.hiddenFrame)
+  hooksecurefunc(EssentialCooldownViewer, "RefreshLayout", function()
+    C_Timer.After(0, function()
+      if not addonTable.State then
+        return
+      end
+      CacheAbilities()
+      for i = 1, #self.abilityIcons do
+        self.abilityIcons[i]:SetParent(addonTable.hiddenFrame)
+      end
+      for frame in self.abilityWrappersPool:EnumerateActive() do
+        local ability = self.abilityIcons[frame.abilityIndex]
+        if ability then
+          ability:SetParent(frame)
+          ability:SetScale(0.8)
+          ability:ClearAllPoints()
+          ability:SetPoint("CENTER", frame)
+        end
+      end
+    end)
+  end)
+
   UtilityCooldownViewer:SetParent(addonTable.hiddenFrame)
 
   self:Layout()
@@ -116,6 +155,7 @@ end
 function addonTable.Display.LayoutManagerMixin:Delayout()
   self.cooldownPool:ReleaseAll()
   self.auraWrappersPool:ReleaseAll()
+  self.abilityWrappersPool:ReleaseAll()
   self.auraFromItemPool:ReleaseAll()
   self.auraStatusBarPool:ReleaseAll()
   for _, pool in pairs(self.classPools) do
@@ -134,6 +174,12 @@ function addonTable.Display.LayoutManagerMixin:Layout()
   self.pending = true
 
   self.autoSize = addonTable.Config.Get(addonTable.Config.Options.COMPRESS_LAYOUT)
+  self.useBlizzardWidgets = addonTable.Config.Get(addonTable.Config.Options.USE_BLIZZARD_WIDGETS)
+  if self.useBlizzardWidgets then
+    EssentialCooldownViewer:SetParent(UIParent)
+  else
+    EssentialCooldownViewer:SetParent(addonTable.hiddenFrame)
+  end
 
   self.currentLayout = addonTable.Core.GetCurrentDesign()
 
@@ -141,6 +187,9 @@ function addonTable.Display.LayoutManagerMixin:Layout()
 
   for i = 1, #self.auraIcons do
     self.auraIcons[i]:SetParent(addonTable.hiddenFrame)
+  end
+  for i = 1, #self.abilityIcons do
+    self.abilityIcons[i]:SetParent(addonTable.hiddenFrame)
   end
 
   local wrapper = self:GetGroup(self.currentLayout)
@@ -159,25 +208,41 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
       return
     end
   end
-  if details.resource.kind == "ability" then
+  if details.resource.kind == "ability" and self.useBlizzardWidgets and addonTable.State.abilityMap[spellID] then
+    local abilityIndex = addonTable.State.abilityOrder[addonTable.State.abilityMap[spellID]]
+    local ability = self.abilityIcons[abilityIndex]
+    local frame = self.abilityWrappersPool:Acquire()
+    frame.abilityIndex = abilityIndex
+    if ability then
+      ability:SetParent(frame)
+      ability:ClearAllPoints()
+      ability:SetPoint("CENTER", frame)
+      ability:SetScale(0.8)
+      frame:SetShown(ability:IsShown())
+    end
+    frame:Show()
+    frame:SetSize(addonTable.Constants.nativeSize - 4, addonTable.Constants.nativeSize - 4)
+
+    return frame
+
+  elseif details.resource.kind == "ability" then
     local frame = self.cooldownPool:Acquire()
     frame:Show()
     frame:Enable()
     frame:UpdateSpellByID(spellID)
     return frame
 
-  elseif details.resource.kind == "aura" and addonTable.State.spellIDMap[spellID] then
-    local auraIndex = addonTable.State.auraOrder[addonTable.State.spellIDMap[spellID]]
+  elseif details.resource.kind == "aura" and addonTable.State.auraMap[spellID] then
+    local auraIndex = addonTable.State.auraOrder[addonTable.State.auraMap[spellID]]
     local aura = self.auraIcons[auraIndex]
-    if not aura then
-      return
-    end
     local frame = self.auraWrappersPool:Acquire()
     frame.auraIndex = auraIndex
-    aura:SetParent(frame)
-    aura:ClearAllPoints()
-    aura:SetPoint("CENTER", frame)
-    frame:SetShown(aura:IsShown())
+    if aura then
+      aura:SetParent(frame)
+      aura:ClearAllPoints()
+      aura:SetPoint("CENTER", frame)
+      frame:SetShown(aura:IsShown())
+    end
     frame:SetSize(addonTable.Constants.nativeSize - 4, addonTable.Constants.nativeSize - 4)
 
     return frame
@@ -214,7 +279,7 @@ function addonTable.Display.LayoutManagerMixin:GetBar(details)
     if not spellID then
       return
     end
-    local auraIndex = addonTable.State.barOrder[addonTable.State.spellIDMap[details.resource.spellID]]
+    local auraIndex = addonTable.State.barOrder[addonTable.State.auraMap[details.resource.spellID]]
     local aura = self.auraBars[auraIndex]
     if not aura then
       return

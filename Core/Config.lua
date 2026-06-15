@@ -7,6 +7,7 @@ local settings = {
   DESIGN_ASSIGNMENTS = {key = "design_assignments", default = {}, refresh = {addonTable.Constants.RefreshReason.Design}},
 
   COMPRESS_LAYOUT = {key = "compress_layout", default = true, refresh = {addonTable.Constants.RefreshReason.Design}},
+  USE_BLIZZARD_WIDGETS = {key = "use_blizzard_widgets", default = false, refresh = {addonTable.Constants.RefreshReason.Design}},
 
   CURRENT_SKIN = {key = "current_skin", default = "blizzard"},
 }
