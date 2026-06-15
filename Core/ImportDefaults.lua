@@ -137,12 +137,14 @@ function addonTable.Core.GenerateDefaultCDMLayout()
     },
   })]]
 
-  return {
+  local final = {
     kind = "group",
-    version = 1,
+    version = 2,
     layout = "standalone",
     entries = {
       result
     }
   }
+  addonTable.Core.RemoveDeadGroups(final)
+  return final
 end

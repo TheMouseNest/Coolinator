@@ -17,10 +17,26 @@ local function AddAlignment(group)
   end
 end
 
+function addonTable.Core.RemoveDeadGroups(group)
+  for i = #group.entries, 1, -1 do
+    local entry = group.entries[i]
+    if entry.kind == "group" then
+      addonTable.Core.RemoveDeadGroups(entry)
+      if #entry.entries == 0 then
+        table.remove(group.entries, i)
+      end
+    end
+  end
+end
+
 function addonTable.Core.UpgradeDesign(design)
-  if not design.version or design.version <= 1 then
+  if not design.version or design.version < 1 then
     AddAlignment(design)
     design.version = 1
+  end
+  if design.version < 2 then
+    addonTable.Core.RemoveDeadGroups(design)
+    design.version = 2
   end
 end
 
