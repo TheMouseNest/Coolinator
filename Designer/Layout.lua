@@ -608,6 +608,9 @@ end
 
 function addonTable.Designer.LayoutManagerMixin:UpdateSelectionJustOne()
   local frame = self:GetForDetails(self.selection[1], self.root)
+  if not frame then
+    self.selection = {}
+  end
   local selector = self.selectorPool:Acquire()
   selector:Show()
   selector:SetFrameLevel(9999)
