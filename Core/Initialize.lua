@@ -9,13 +9,13 @@ local hidden = CreateFrame("Frame")
 hidden:Hide()
 addonTable.hiddenFrame = hidden
 
-function addonTable.Core.AutoGenerateLayout()
+function addonTable.Core.AutoGenerateLayout(name)
   local spec = addonTable.Utilities.GetSpecID()
   local designs = addonTable.Config.Get(addonTable.Config.Options.DESIGNS)
   if not designs[spec] then
     designs[spec] = {}
   end
-  designs[spec][addonTable.Constants.DefaultName] = addonTable.Core.GenerateDefaultCDMLayout()
+  designs[spec][name or addonTable.Constants.DefaultName] = addonTable.Core.GenerateDefaultCDMLayout()
 end
 
 function addonTable.Core.Initialize()
@@ -63,7 +63,7 @@ addonTable.CallbackRegistry:RegisterCallback("Designer.Close", function()
   end
 end)
 addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, refreshState)
-  if refreshState[addonTable.Constants.Design] then
+  if refreshState[addonTable.Constants.RefreshReason.Design] then
     TriggerUpdate()
   end
 end)

@@ -53,6 +53,8 @@ Display/Layout.lua
 Assets.lua
 
 CustomiseDialog/Components.lua
+CustomiseDialog/ImportDialog.lua
+CustomiseDialog/ImportExport.lua
 CustomiseDialog/Main.lua
 CustomiseDialog/Initialize.lua
 
@@ -63,3 +65,5 @@ Designer/Layout.lua
 Designer/WidgetConfiguration.lua
 Designer/Options.lua
 Designer/Main.lua
+
+API/Main.lua

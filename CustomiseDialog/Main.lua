@@ -127,24 +127,73 @@ local function SetupGeneral(parent)
   end
   table.insert(allFrames, profileDropdown)
 
-  --[[if C_EncodingUtil then
+  local designDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.DESIGN)
+  designDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  designDropdown.DropDown:SetupMenu(function(_, rootDescription)
+    local specID = addonTable.Utilities.GetSpecID()
+    local designs = GetKeysArray(addonTable.Config.Get(addonTable.Config.Options.DESIGNS)[specID])
+    local assignments = addonTable.Config.Get(addonTable.Config.Options.DESIGN_ASSIGNMENTS)
+    table.sort(designs)
+    for _, name in ipairs(designs) do
+      local button = rootDescription:CreateRadio(name ~= "DEFAULT" and name or LIGHTBLUE_FONT_COLOR:WrapTextInColorCode(DEFAULT), function()
+        return assignments[specID] == name
+      end, function()
+        assignments[specID] = name
+        addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Design] = true})
+      end)
+      if name ~= "DEFAULT" and name ~= assignments[specID] then
+        button:AddInitializer(function(button, description, menu)
+          if InCombatLockdown() then
+            return
+          end
+          local delete = MenuTemplates.AttachAutoHideButton(button, "transmog-icon-remove")
+          delete:SetPoint("RIGHT")
+          delete:SetSize(18, 18)
+          delete.Texture:SetAtlas("transmog-icon-remove")
+          delete:SetScript("OnClick", function()
+            menu:Close()
+            addonTable.Config.Get(addonTable.Config.Options.DESIGNS)[specID][name] = nil
+          end)
+          MenuUtil.HookTooltipScripts(delete, function(tooltip)
+            GameTooltip_SetTitle(tooltip, DELETE)
+          end)
+        end)
+      end
+    end
+    rootDescription:CreateButton(NORMAL_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.NEW_DESIGN), function()
+      addonTable.Dialogs.ShowEditBox(addonTable.Locales.ENTER_DESIGN_NAME, ACCEPT, CANCEL, function(name)
+        if designs[name] == nil then
+          addonTable.Core.AutoGenerateLayout(name)
+          addonTable.Config.Get(addonTable.Config.Options.DESIGN_ASSIGNMENTS)[specID] = name
+          addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Design] = true})
+          designDropdown.DropDown:GenerateMenu()
+        else
+          addonTable.Dialogs.ShowAcknowledge(addonTable.Locales.THAT_DESIGN_NAME_ALREADY_EXISTS)
+        end
+      end)
+    end)
+  end)
+  table.insert(allFrames, designDropdown)
+
+  do
     local exportButton = CreateFrame("Button", nil, container, "UIPanelDynamicResizeButtonTemplate")
     exportButton:SetPoint("TOPLEFT", allFrames[#allFrames], "BOTTOM", -33, -10)
     exportButton:SetText(addonTable.Locales.EXPORT)
     DynamicResizeButton_Resize(exportButton)
     exportButton:SetScript("OnClick", function()
-      addonTable.Dialogs.ShowDualChoice(addonTable.Locales.WHAT_TO_EXPORT, addonTable.Locales.STYLE, addonTable.Locales.PROFILE,
+      addonTable.Dialogs.ShowDualChoice(addonTable.Locales.WHAT_TO_EXPORT, addonTable.Locales.DESIGN, addonTable.Locales.PROFILE,
         function()
-          local design = CopyTable(addonTable.Core.GetDesignByName(addonTable.Config.Get(addonTable.Config.Options.STYLE)))
-          design.addon = "Coolinator"
-          design.kind = "style"
-          addonTable.Dialogs.ShowCopy(C_EncodingUtil.SerializeJSON(design):gsub("%|%|", "|"):gsub("%|", "||"))
+          local export = {data = CopyTable(addonTable.Core.GetCurrentDesign())}
+          export.addon = "Coolinator"
+          export.kind = "design"
+          export.version = 1
+          addonTable.Dialogs.ShowCopy("COOLI!1!" .. C_EncodingUtil.EncodeBase64(C_EncodingUtil.CompressString(C_EncodingUtil.SerializeCBOR(export))))
         end, function()
           local options = addonTable.Config.DumpCurrentProfile()
           options.addon = "Coolinator"
           options.version = 1
           options.kind = "profile"
-          addonTable.Dialogs.ShowCopy(C_EncodingUtil.SerializeJSON(options):gsub("%|%|", "|"):gsub("%|", "||"))
+          addonTable.Dialogs.ShowCopy("COOLI!1!" .. C_EncodingUtil.EncodeBase64(C_EncodingUtil.CompressString(C_EncodingUtil.SerializeCBOR(options))))
         end
       )
     end)
@@ -156,19 +205,34 @@ local function SetupGeneral(parent)
     DynamicResizeButton_Resize(importButton)
     importButton:SetScript("OnClick", function()
       addonTable.CustomiseDialog.ShowImportDialog(function(text)
-        local status, import = pcall(C_EncodingUtil.DeserializeJSON, text)
+        local prefix = text:match("^COOLI!1!")
+        if not prefix then
+          addonTable.Dialogs.ShowAcknowledge(addonTable.Locales.INVALID_IMPORT)
+          return
+        end
+        local status, decoded = pcall(C_EncodingUtil.DecodeBase64, text:sub(9))
+        if not status then
+          addonTable.Dialogs.ShowAcknowledge(addonTable.Locales.INVALID_IMPORT)
+          return
+        end
+        local status, decompressed = pcall(C_EncodingUtil.DecompressString, decoded)
+        if not status then
+          addonTable.Dialogs.ShowAcknowledge(addonTable.Locales.INVALID_IMPORT)
+          return
+        end
+        local status, import = pcall(C_EncodingUtil.DeserializeCBOR, decompressed)
         if not status or type(import) ~= "table" or import.addon ~= "Coolinator" then
           addonTable.Dialogs.ShowAcknowledge(addonTable.Locales.INVALID_IMPORT)
           return
         end
-        if import.kind == nil or import.kind == "style" then
-          addonTable.Dialogs.ShowEditBox(addonTable.Locales.ENTER_THE_NEW_STYLE_NAME, OKAY, CANCEL, function(value)
-            local designs = addonTable.Config.Get(addonTable.Config.Options.DESIGNS)
+        if import.kind == "design" then
+          addonTable.Dialogs.ShowEditBox(addonTable.Locales.ENTER_THE_NEW_DESIGN_NAME, OKAY, CANCEL, function(value)
+            local designs = addonTable.Config.Get(addonTable.Config.Options.DESIGNS)[addonTable.Utilities.GetSpecID()]
             if designs[value] or value:match("^_") then
-              addonTable.Dialogs.ShowAcknowledge(addonTable.Locales.THAT_STYLE_NAME_ALREADY_EXISTS)
+              addonTable.Dialogs.ShowAcknowledge(addonTable.Locales.THAT_DESIGN_NAME_ALREADY_EXISTS)
             else
               addonTable.CustomiseDialog.ImportData(import, value, false)
-              styleDropdown.DropDown:GenerateMenu()
+              designDropdown.DropDown:GenerateMenu()
             end
           end)
         elseif import.kind == "profile" then
@@ -192,7 +256,7 @@ local function SetupGeneral(parent)
       end)
     end)
     --addonTable.Skins.AddFrame("Button", importButton)
-  end]]
+  end
 
   return container
 end

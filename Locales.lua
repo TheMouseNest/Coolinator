@@ -139,6 +139,27 @@ L["SLASH_REGEN_HELP"] = "Start afresh on the current character with your design"
 L["SLASH_HELP"] = "Open the Coolinator settings."
 L["SLASH_UNKNOWN_COMMAND"] = "Unknown command '%s'"
 
+L["EXPORT"] = "Export"
+L["IMPORT"] = "Import"
+L["PASTE_YOUR_IMPORT_STRING_HERE"] = "Paste your import string here"
+
+L["WHAT_TO_EXPORT"] = "What to export?"
+L["DESIGN"] = "Design"
+L["PROFILE"] = "Profile"
+
+L["ENTER_THE_NEW_DESIGN_NAME"] = "Enter the new style name"
+L["ENTER_THE_CUSTOM_DESIGN_NAME"] = "Enter the custom style name"
+L["ENTER_THE_NEW_PROFILE_NAME"] = "Enter the new profile name"
+L["THAT_DESIGN_NAME_ALREADY_EXISTS"] = "That style name already exists"
+L["THAT_PROFILE_NAME_ALREADY_EXISTS"] = "That profile name already exists"
+L["OVERWRITE_CURRENT_PROFILE"] = "Overwrite current profile?"
+L["OVERWRITE"] = "Overwrite"
+L["MAKE_NEW"] = "Make new"
+L["INVALID_IMPORT"] = "Invalid import"
+L["NEW_DESIGN"] = "New Design"
+
+L["THANKS_FOR_USING_COOLINATOR_DONATE"] = "Thanks for using Coolinator. Consider donating to support development"
+
 local L = Locales.frFR
 --@localization(locale="frFR", format="lua_additive_table")@
 
