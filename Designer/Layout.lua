@@ -174,28 +174,7 @@ local function CheckChildren(details, checker)
   return false
 end
 
--- Auto unwrap nested groups where the layout will be unaffected
-local function FlattenTree(root)
-  if root.details.layout == "standalone" then
-    return
-  end
-  if not root.deleted and #root.details.entries == 1 then
-    if root.details.entries[1].kind == "group" and (root.details.entries[1].alignment == root.details.alignment or root.details.entries[1].layout ~= root.details.layout) then
-      root.details.scale = root.details.entries[1].scale * root.details.scale
-      root.details.alpha = root.details.entries[1].alpha * root.details.alpha
-      root.details.layout = root.details.entries[1].layout
-      root.details.padding = root.details.entries[1].padding
-      root.details.entries = root.details.entries[1].entries
-      root.children = root.children[1].children
-    end
-    local parent = root:GetParent()
-    if parent.details.layout == root.details.layout and root.details.scale == 1 and root.details.alpha == 1 then
-      parent.details.entries[tIndexOf(parent.details.entries, root.details)] = root.details.entries[1]
-    end
-  end
-  FlattenTree(root:GetParent())
-end
-
+-- Strip all groups that aren't strictly necessary for layout
 local function Degroup(groupDetails)
   for _, entry in ipairs(groupDetails.entries) do
     if entry.kind == "group" then
@@ -213,7 +192,7 @@ local function Degroup(groupDetails)
   groupDetails.entries = final
 end
 
--- Group icons/bars together automatically
+-- Group similar widgets together automatically
 local function GroupSimilar(groupDetails)
   if groupDetails.layout == "standalone" then
     for _, entry in ipairs(groupDetails.entries) do
@@ -280,7 +259,7 @@ local function AutoGroup(groupDetails)
   GroupSimilar(groupDetails)
 end
 
-local function DeleteRoot(root, shouldAnnounce)
+local function DeleteRoot(root, shouldUpdate)
   if root.details.layout == "standalone" then
     return
   end
@@ -297,9 +276,8 @@ local function DeleteRoot(root, shouldAnnounce)
   end
 
   local details = root.details
-  if shouldAnnounce then
+  if shouldUpdate then
     addonTable.CallbackRegistry:TriggerEvent("Designer.Options", {})
-    Announce()
     if CheckChildren(details, function(d) return d.kind == "bar" and d.resource.kind == "aura" end) then
       addonTable.CallbackRegistry:TriggerEvent("AuraBarsChanged")
     end
@@ -837,6 +815,7 @@ function addonTable.Designer.LayoutManagerMixin:UpdateSelectionJustOne()
     self.deleteButton:SetScript("OnClick", function()
       DeleteRoot(frame, true)
       AutoGroup(self.root.details)
+      Announce()
     end)
     self.deleteButton:SetScript("OnEnter", function()
       frame:SetAlpha(0.5 * frame.details.alpha)
