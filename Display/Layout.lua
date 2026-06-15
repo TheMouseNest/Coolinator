@@ -98,10 +98,11 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
       if not addonTable.State then
         return
       end
+      CacheBars()
       for frame in self.auraStatusBarPool:EnumerateActive() do
-        frame:ApplySize()
         local aura = self.auraBars[frame.auraIndex]
-        aura:SetParent(frame)
+        frame:UpdateSource(aura)
+        frame:ApplySize()
       end
     end)
   end)
