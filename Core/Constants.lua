@@ -34,6 +34,7 @@ addonTable.Constants.Events = {
   "Designer.Close",
   "Designer.Options",
   "Designer.Layout",
+  "Designer.Reanchor",
 }
 
 addonTable.Constants.RefreshReason = {
