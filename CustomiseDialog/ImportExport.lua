@@ -12,7 +12,7 @@ function addonTable.CustomiseDialog.ImportData(import, name, overwrite)
 
   import.addon = nil
   if import.kind == "design" then
-    local designs = addonTable.Config.Get(addonTable.Config.Options.DESIGNS)[addonTable.Utilities.GetSpecID()]
+    local designs = addonTable.Config.Get(addonTable.Config.Options.DESIGNS)[import.specID or addonTable.Utilities.GetSpecID()]
     if designs[name] and not overwrite then
       return false, 3
     end
@@ -20,7 +20,7 @@ function addonTable.CustomiseDialog.ImportData(import, name, overwrite)
     addonTable.Core.UpgradeDesign(import.data)
     designs[name] = import.data
 
-    addonTable.Config.Get(addonTable.Config.Options.DESIGN_ASSIGNMENTS)[addonTable.Utilities.GetSpecID()] = name
+    addonTable.Config.Get(addonTable.Config.Options.DESIGN_ASSIGNMENTS)[import.specID or addonTable.Utilities.GetSpecID()] = name
 
     addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Design] = true})
 

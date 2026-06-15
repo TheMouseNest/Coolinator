@@ -186,6 +186,7 @@ local function SetupGeneral(parent)
           local export = {data = CopyTable(addonTable.Core.GetCurrentDesign())}
           export.addon = "Coolinator"
           export.kind = "design"
+          export.specID = addonTable.Utilities.GetSpecID()
           export.version = 1
           addonTable.Dialogs.ShowCopy("COOLI!1!" .. C_EncodingUtil.EncodeBase64(C_EncodingUtil.CompressString(C_EncodingUtil.SerializeCBOR(export))))
         end, function()
