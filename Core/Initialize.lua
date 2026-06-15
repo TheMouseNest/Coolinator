@@ -77,10 +77,11 @@ frame:RegisterEvent("ADDON_LOADED")
 frame:RegisterEvent("SPELLS_CHANGED")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+frame:RegisterEvent("ACTIVE_PLAYER_SPECIALIZATION_CHANGED")
 frame:SetScript("OnEvent", function(_, eventName, data1, data2)
   if eventName == "ADDON_LOADED" and data1 == "Coolinator" then
     addonTable.Core.Initialize()
-  elseif eventName == "TRAIT_CONFIG_UPDATED" and addonTable.State then
+  elseif (eventName == "TRAIT_CONFIG_UPDATED" or eventName == "ACTIVE_PLAYER_SPECIALIZATION_CHANGED") and addonTable.State then
     TriggerUpdate()
   elseif eventName == "SPELL_UPDATE_ICON" and addonTable.State then
     addonTable.CallbackRegistry:TriggerEvent("UpdateSpellIcons", data1)
