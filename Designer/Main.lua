@@ -100,3 +100,28 @@ function addonTable.Designer.Initialize()
     addonTable.Designer.GenerateOptionsFromDetails(details)
   end)
 end
+
+function addonTable.Designer.ConvertAnchorToCorner(targetCorner, frame, parent)
+  local _ = frame:GetRect() -- Force evaluation of the position of the frame
+  if targetCorner == "TOPLEFT" then
+    return "TOPLEFT", frame:GetLeft(), frame:GetTop() - parent:GetTop()/frame:GetScale()
+  elseif targetCorner == "TOPRIGHT" then
+    return "TOPRIGHT", frame:GetRight() - parent:GetRight()/frame:GetScale(), frame:GetTop() - parent:GetTop()/frame:GetScale()
+  elseif targetCorner == "BOTTOMLEFT" then
+    return "BOTTOMLEFT", frame:GetLeft(), frame:GetBottom()
+  elseif targetCorner == "BOTTOMRIGHT" then
+    return "BOTTOMRIGHT", frame:GetRight() - parent:GetRight()/frame:GetScale(), frame:GetBottom()
+  elseif targetCorner == "RIGHT" then
+    return "RIGHT", frame:GetRight() - parent:GetRight()/frame:GetScale(), select(2, frame:GetCenter()) - select(2, parent:GetCenter())/frame:GetScale()
+  elseif targetCorner == "LEFT" then
+    return "LEFT", frame:GetLeft(), select(2, frame:GetCenter()) - select(2, parent:GetCenter())/frame:GetScale()
+  elseif targetCorner == "TOP" then
+    return "TOP", select(1, frame:GetCenter() - select(1, parent:GetCenter())/frame:GetScale()), (frame:GetTop() - parent:GetTop()/frame:GetScale())
+  elseif targetCorner == "BOTTOM" then
+    return "BOTTOM", select(1, frame:GetCenter()) - select(1, parent:GetCenter())/frame:GetScale(), frame:GetBottom()
+  elseif targetCorner == "CENTER" then
+    return "CENTER", select(1, frame:GetCenter()) - select(1, parent:GetCenter())/frame:GetScale(), select(2, frame:GetCenter()) - select(2, parent:GetCenter())/frame:GetScale()
+  else
+    error("Unknown anchor")
+  end
+end

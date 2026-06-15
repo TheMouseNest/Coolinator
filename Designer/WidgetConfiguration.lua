@@ -602,6 +602,47 @@ addonTable.Designer.WidgetConfiguration = {
               end,
             },
             {
+              label = addonTable.Locales.GROW_FROM,
+              kind = "dropdown",
+              getInitData = function(details)
+                if details.anchor then
+                  return {
+                    addonTable.Locales.CENTER,
+                    addonTable.Locales.TOP,
+                    addonTable.Locales.BOTTOM,
+                    addonTable.Locales.LEFT,
+                    addonTable.Locales.RIGHT,
+                    addonTable.Locales.TOP_LEFT,
+                    addonTable.Locales.TOP_RIGHT,
+                    addonTable.Locales.BOTTOM_LEFT,
+                    addonTable.Locales.BOTTOM_RIGHT,
+                  }, {
+                    "CENTER",
+                    "TOP",
+                    "BOTTOM",
+                    "LEFT",
+                    "RIGHT",
+                    "TOPLEFT",
+                    "TOPRIGHT",
+                    "BOTTOMLEFT",
+                    "BOTTOMRIGHT",
+                  }
+                else
+                  return {
+                    addonTable.Locales.PARENT,
+                  }, {
+                    "PARENT"
+                  }
+                end
+              end,
+              setter = function(details, value)
+                addonTable.CallbackRegistry:TriggerEvent("Designer.Reanchor", details, value)
+              end,
+              getter = function(details)
+                return details.anchor and details.anchor[1] or "PARENT"
+              end,
+            },
+            {
               label = addonTable.Locales.LAYOUT,
               kind = "dropdown",
               getInitData = function()

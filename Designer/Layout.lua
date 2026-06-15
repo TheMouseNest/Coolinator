@@ -117,6 +117,7 @@ function addonTable.Designer.LayoutManagerMixin:OnLoad()
   addonTable.CallbackRegistry:RegisterCallback("Designer.Options", function(_, new)
     self.selection = new
   end, self)
+  addonTable.CallbackRegistry:RegisterCallback("Designer.Reanchor", self.Reanchor, self)
 
   self.selection = {}
 end
@@ -724,8 +725,8 @@ function addonTable.Designer.LayoutManagerMixin:UpdateSelectionJustOne()
     end)
     self.dragButton:SetScript("OnDragStop", function()
       frame:StopMovingOrSizing()
-      local point, _, relativePoint, x, y = frame:GetPoint(1)
-      frame.details.anchor = {point, "UIParent", relativePoint, x * frame.details.scale, y * frame.details.scale}
+      local point, x, y = addonTable.Designer.ConvertAnchorToCorner(frame.details.anchor[1], frame, UIParent)
+      frame.details.anchor = {point, "UIParent", point, x * frame.details.scale, y * frame.details.scale}
     end)
     frame:SetMovable(true)
     self.dragButton:RegisterForDrag("LeftButton")
@@ -757,6 +758,17 @@ function addonTable.Designer.LayoutManagerMixin:UpdateSelection()
       end
     end
   end
+end
+
+function addonTable.Designer.LayoutManagerMixin:Reanchor(details, value)
+  assert(details.anchor)
+  local frame = self:GetForDetails(details, self.root)
+  assert(frame)
+  local _, x, y = addonTable.Designer.ConvertAnchorToCorner(value, frame, UIParent)
+  frame.anchor[1] = value
+  frame.anchor[3] = value
+  frame.anchor[4] = x * details.scale
+  frame.anchor[5] = y * details.scale
 end
 
 function addonTable.Designer.LayoutManagerMixin:Layout()
