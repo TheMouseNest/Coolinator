@@ -765,10 +765,10 @@ function addonTable.Designer.LayoutManagerMixin:Reanchor(details, value)
   local frame = self:GetForDetails(details, self.root)
   assert(frame)
   local _, x, y = addonTable.Designer.ConvertAnchorToCorner(value, frame, UIParent)
-  frame.anchor[1] = value
-  frame.anchor[3] = value
-  frame.anchor[4] = x * details.scale
-  frame.anchor[5] = y * details.scale
+  details.anchor[1] = value
+  details.anchor[3] = value
+  details.anchor[4] = x * details.scale
+  details.anchor[5] = y * details.scale
 end
 
 function addonTable.Designer.LayoutManagerMixin:Layout()
