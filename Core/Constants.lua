@@ -71,7 +71,7 @@ addonTable.Constants.ClassResources = {
   ["HUNTER"] = {"focus"},
   [253] = {"focus"}, -- Beast Mastery
   [254] = {"focus"}, -- Marksmanship
-  [255] = {"focus"}, -- Survival
+  [255] = {"focus", "tip-of-the-spear"}, -- Survival
   [1448] = {"focus"},
   -- Mage
   ["MAGE"] = {"mana", "arcane-charges"},

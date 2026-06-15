@@ -95,42 +95,44 @@ function addonTable.Display.ClassResourceStatusBar.stagger:ApplySize()
   PixelUtil.SetSize(self.border, self.borderWidth * self.lowerScale, self.borderHeight * self.lowerScale)
 end
 
-addonTable.Display.ClassResourceStatusBar.icicles = {}
+local function GenerateBarForAuraResource(spellID, max, label)
+  local mixin = {}
+  addonTable.Display.ClassResourceStatusBar[label] = mixin
 
-function addonTable.Display.ClassResourceStatusBar.icicles:OnLoad()
-  GenerateStatusBar(self)
+  function mixin:OnLoad()
+    GenerateStatusBar(self)
+    self.statusBar:SetMinMaxValues(0, max)
+  end
 
-  self.icicles = 0
-end
+  function mixin:OnEvent(eventName, ...)
+    if eventName == "UNIT_AURA" then
+      self:Import()
+    end
+  end
 
-function addonTable.Display.ClassResourceStatusBar.icicles:OnEvent(eventName, ...)
-  if eventName == "UNIT_AURA" then
+  function mixin:Setup(details)
+    self:RegisterUnitEvent("UNIT_AURA", "player")
+
+    self.rawWidth, self.rawHeight, self.borderWidth, self.borderHeight, self.lowerScale = addonTable.Display.ApplyStatusBar(details, self.statusBar, self.border, self.borderMask, self.background)
+    self.details = details
+
+    self.borderWrapper:SetFrameLevel(self.statusBar:GetFrameLevel() + 2)
+
     self:Import()
   end
+
+  function mixin:Disable()
+    self:UnregisterEvent("UNIT_AURA")
+  end
+
+  function mixin:Import()
+    local auraData = C_UnitAuras.GetUnitAuraBySpellID("player", spellID)
+    local value = auraData and auraData.applications or 0
+    self.statusBar:SetValue(value)
+  end
+
+  mixin.ApplySize = SizeStatusBar
 end
-
-function addonTable.Display.ClassResourceStatusBar.icicles:Setup(details)
-  self:RegisterUnitEvent("UNIT_AURA", "player")
-
-  self.rawWidth, self.rawHeight, self.borderWidth, self.borderHeight, self.lowerScale = addonTable.Display.ApplyStatusBar(details, self.statusBar, self.border, self.borderMask, self.background)
-  self.details = details
-
-  self.borderWrapper:SetFrameLevel(self.statusBar:GetFrameLevel() + 2)
-
-  self:Import()
-end
-
-function addonTable.Display.ClassResourceStatusBar.icicles:Disable()
-  self:UnregisterEvent("UNIT_AURA")
-end
-
-function addonTable.Display.ClassResourceStatusBar.icicles:Import()
-  local auraData = C_UnitAuras.GetUnitAuraBySpellID("player", 205473)
-  self.icicles = auraData and auraData.applications or 0
-  self.statusBar:SetValue(self.icicles)
-end
-
-addonTable.Display.ClassResourceStatusBar.icicles.ApplySize = SizeStatusBar
 
 local function GenerateBarForResource(primaryResource, label)
   addonTable.Display.ClassResourceStatusBar[label] = {}
@@ -186,3 +188,6 @@ GenerateBarForResource(Enum.PowerType.RunicPower, "runic-power")
 GenerateBarForResource(Enum.PowerType.Fury, "fury")
 GenerateBarForResource(Enum.PowerType.Pain, "pain")
 GenerateBarForResource(Enum.PowerType.LunarPower, "lunar-power")
+
+GenerateBarForAuraResource(205473, 5, "icicles")
+GenerateBarForAuraResource(260286, 3, "tip-of-the-spear")
