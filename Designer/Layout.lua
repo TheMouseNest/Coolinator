@@ -64,6 +64,7 @@ end
 
 function addonTable.Designer.LayoutManagerMixin:OnLoad()
   addonTable.Display.BaseLayoutManagerMixin.OnLoad(self)
+  self:SetScript("OnEvent", self.OnEvent)
 
   self.iconPool = addonTable.Display.GeneratePool(addonTable.Designer.IconMixin, "")
   self.barPool = addonTable.Display.GeneratePool(addonTable.Designer.BarMixin, "")
@@ -156,6 +157,7 @@ function addonTable.Designer.LayoutManagerMixin:Delayout()
   self.insertVertical:Hide()
 
   self:SetScript("OnUpdate", nil)
+  self:UnregisterAllEvents()
   self.toArrange = {}
 end
 
@@ -625,6 +627,9 @@ function addonTable.Designer.LayoutManagerMixin:UpdateSelectionJustOne()
   selector:Show()
   selector:SetFrameLevel(9999)
   selector:SetAllPoints(frame)
+  if IsShiftKeyDown() then
+    return
+  end
   local details = self.selection[1]
   local parentDetails = frame:GetParent() ~= UIParent and frame:GetParent().details
   if details.kind == "group" then
@@ -750,8 +755,8 @@ function addonTable.Designer.LayoutManagerMixin:UpdateSelectionJustOne()
     self.dragButton:RegisterForDrag("LeftButton")
   end
 end
-function addonTable.Designer.LayoutManagerMixin:UpdateSelection()
-  self.selectorPool:ReleaseAll()
+
+function addonTable.Designer.LayoutManagerMixin:HideSelectedButtons()
   for _, frame in pairs(self.movementArrows) do
     frame:Hide()
   end
@@ -762,6 +767,11 @@ function addonTable.Designer.LayoutManagerMixin:UpdateSelection()
   self.deleteButton:Hide()
   self.dragButton:Hide()
   self.popoutStandaloneButton:Hide()
+end
+
+function addonTable.Designer.LayoutManagerMixin:UpdateSelection()
+  self.selectorPool:ReleaseAll()
+  self:HideSelectedButtons()
   if #self.selection == 1 then
     self:UpdateSelectionJustOne()
   elseif #self.selection > 1 then
@@ -791,6 +801,16 @@ function addonTable.Designer.LayoutManagerMixin:Reanchor(details, value)
   details.anchor[5] = y * details.scale
 end
 
+function addonTable.Designer.LayoutManagerMixin:OnEvent(eventName)
+  if eventName == "MODIFIER_STATE_CHANGED" and #self.selection > 0 then
+    if not IsShiftKeyDown() then
+      self:UpdateSelection()
+    else
+      self:HideSelectedButtons()
+    end
+  end
+end
+
 function addonTable.Designer.LayoutManagerMixin:Layout()
   self.pending = true
 
@@ -799,6 +819,8 @@ function addonTable.Designer.LayoutManagerMixin:Layout()
   self.currentLayout = addonTable.Designer.GetCurrent()
 
   self:Delayout()
+
+  self:RegisterEvent("MODIFIER_STATE_CHANGED")
 
   local wrapper = self:GetGroup(self.currentLayout)
 
