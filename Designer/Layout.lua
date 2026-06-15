@@ -174,24 +174,134 @@ local function CheckChildren(details, checker)
   return false
 end
 
+-- Auto unwrap nested groups where the layout will be unaffected
+local function FlattenTree(root)
+  if root.details.layout == "standalone" then
+    return
+  end
+  if not root.deleted and #root.details.entries == 1 then
+    if root.details.entries[1].kind == "group" and (root.details.entries[1].alignment == root.details.alignment or root.details.entries[1].layout ~= root.details.layout) then
+      root.details.scale = root.details.entries[1].scale * root.details.scale
+      root.details.alpha = root.details.entries[1].alpha * root.details.alpha
+      root.details.layout = root.details.entries[1].layout
+      root.details.padding = root.details.entries[1].padding
+      root.details.entries = root.details.entries[1].entries
+      root.children = root.children[1].children
+    end
+    local parent = root:GetParent()
+    if parent.details.layout == root.details.layout and root.details.scale == 1 and root.details.alpha == 1 then
+      parent.details.entries[tIndexOf(parent.details.entries, root.details)] = root.details.entries[1]
+    end
+  end
+  FlattenTree(root:GetParent())
+end
+
+local function Degroup(groupDetails)
+  for _, entry in ipairs(groupDetails.entries) do
+    if entry.kind == "group" then
+      Degroup(entry)
+    end
+  end
+  local final = {}
+  for _, entry in ipairs(groupDetails.entries) do
+    if entry.kind == "group" and (entry.layout == groupDetails.layout or #entry.entries == 1) and entry.alpha == 1 and entry.scale == 1 and entry.padding == groupDetails.padding then
+      tAppendAll(final, entry.entries)
+    else
+      table.insert(final, entry)
+    end
+  end
+  groupDetails.entries = final
+end
+
+-- Group icons/bars together automatically
+local function GroupSimilar(groupDetails)
+  if groupDetails.layout == "standalone" then
+    for _, entry in ipairs(groupDetails.entries) do
+      GroupSimilar(entry)
+    end
+    return
+  end
+  local lastKind
+  local count = 1
+  local index = 1
+  local function Apply()
+    local entries = {}
+    for i = index - count, index - 1 do
+      local entry = groupDetails.entries[i]
+      table.insert(entries, entry)
+    end
+    for i = index - 1, index - count, -1 do
+      table.remove(groupDetails.entries, i)
+    end
+    index = index - count
+    local new = CopyTable(addonTable.Designer.Defaults.Group)
+    new.alignment = groupDetails.alignment
+    new.layout = groupDetails.layout
+    new.padding = groupDetails.padding
+    new.entries = entries
+    table.insert(groupDetails.entries, index, new)
+  end
+  while index <= #groupDetails.entries do
+    local details = groupDetails.entries[index]
+    if lastKind == details.kind and details.kind ~= "group" then
+      count = count + 1
+    elseif count > 1 then
+      Apply()
+      count = 1
+    else
+      count = 1
+    end
+    index = index + 1
+    lastKind = details.kind
+  end
+  if count > 1 and count ~= #groupDetails.entries then
+    Apply()
+  end
+
+  if #groupDetails.entries == 1 then
+    if groupDetails.entries[1].kind == "group" and (groupDetails.entries[1].alignment == groupDetails.alignment or groupDetails.entries[1].layout ~= groupDetails.layout) then
+      groupDetails.scale = groupDetails.entries[1].scale * groupDetails.scale
+      groupDetails.alpha = groupDetails.entries[1].alpha * groupDetails.alpha
+      groupDetails.layout = groupDetails.entries[1].layout
+      groupDetails.padding = groupDetails.entries[1].padding
+      groupDetails.entries = groupDetails.entries[1].entries
+    end
+  end
+
+  for _, entry in ipairs(groupDetails.entries) do
+    if entry.kind == "group" then
+      GroupSimilar(entry)
+    end
+  end
+end
+
+local function AutoGroup(groupDetails)
+  Degroup(groupDetails)
+  GroupSimilar(groupDetails)
+end
+
 local function DeleteRoot(root, shouldAnnounce)
   if root.details.layout == "standalone" then
     return
   end
   local parentDetails = root:GetParent().details
   local index = tIndexOf(parentDetails.entries, root.details)
-  if index then
-    table.remove(parentDetails.entries, index)
-    if #parentDetails.entries == 0 and parentDetails.layout ~= "standalone" then
-      DeleteRoot(root:GetParent(), false)
-    end
-    local details = root.details
+  if not index then
+    return
+  end
+
+  table.remove(parentDetails.entries, index)
+  root.deleted = true
+  if #parentDetails.entries == 0 and parentDetails.layout ~= "standalone" then
+    DeleteRoot(root:GetParent(), false)
+  end
+
+  local details = root.details
+  if shouldAnnounce then
     addonTable.CallbackRegistry:TriggerEvent("Designer.Options", {})
-    if shouldAnnounce then
-      Announce()
-      if CheckChildren(details, function(d) return d.kind == "bar" and d.resource.kind == "aura" end) then
-        addonTable.CallbackRegistry:TriggerEvent("AuraBarsChanged")
-      end
+    Announce()
+    if CheckChildren(details, function(d) return d.kind == "bar" and d.resource.kind == "aura" end) then
+      addonTable.CallbackRegistry:TriggerEvent("AuraBarsChanged")
     end
   end
 end
@@ -337,6 +447,7 @@ function addonTable.Designer.LayoutManagerMixin:InsertRootAt(root)
     new.anchor = {point, "UIParent", relativePoint, x * root:GetEffectiveScale() / self.root:GetEffectiveScale(), y * root:GetEffectiveScale() / self.root:GetEffectiveScale()}
     DeleteRoot(root, false)
     table.insert(self.root.details.entries, new)
+    AutoGroup(self.root.details)
     Announce()
     return
   end
@@ -365,10 +476,12 @@ function addonTable.Designer.LayoutManagerMixin:InsertRootAt(root)
         insertIndex = insertIndex - 1
       end
       table.insert(childDetails.entries, insertIndex, rootDetails)
+      AutoGroup(self.root.details)
     else
       if #groupDetails.entries == 1 then
         groupDetails.layout = layout
         table.insert(groupDetails.entries, newIndex, rootDetails)
+        AutoGroup(self.root.details)
       else
         local new = CopyTable(addonTable.Designer.Defaults.Group)
         new.layout = layout
@@ -382,13 +495,16 @@ function addonTable.Designer.LayoutManagerMixin:InsertRootAt(root)
       insertIndex = insertIndex - 1
     end
     table.insert(groupDetails.entries, insertIndex,  rootDetails)
+    AutoGroup(self.root.details)
   else
     table.insert(groupDetails.entries, rootIndex,  rootDetails)
+    AutoGroup(self.root.details)
   end
   Announce()
 end
 
 function addonTable.Designer.LayoutManagerMixin:AddHandlers(root)
+  root.deleted = nil
   root:SetFrameLevel(root:GetParent():GetFrameLevel() + 1)
   root:SetAlpha(root.details.alpha or 1)
   root:SetScript("OnEnter", function()
@@ -422,6 +538,7 @@ function addonTable.Designer.LayoutManagerMixin:AddHandlers(root)
           local insert = rootDescription:CreateButton(addonTable.Locales.INSERT)
           self:AddEntryToInsert(insert, root.details, function(new)
             table.insert(parentDetails.entries, (tIndexOf(parentDetails.entries, root.details) + 1) or 1, new)
+            AutoGroup(self.root.details)
             Announce()
             addonTable.CallbackRegistry:TriggerEvent("Designer.Options", {new})
           end)
@@ -438,6 +555,7 @@ function addonTable.Designer.LayoutManagerMixin:AddHandlers(root)
               details.anchor = nil
             end
             parentDetails.entries[index] = new
+            AutoGroup(self.root.details)
             Announce()
           end)
         end
@@ -693,6 +811,7 @@ function addonTable.Designer.LayoutManagerMixin:UpdateSelectionJustOne()
         MenuUtil.CreateContextMenu(frame, function(_, rootDescription)
           self:AddEntryToInsert(rootDescription, details, function(new)
             table.insert(parentDetails.entries, tIndexOf(parentDetails.entries, details) + index - 1, new)
+            AutoGroup(self.root.details)
             Announce()
           end)
         end)
@@ -717,6 +836,7 @@ function addonTable.Designer.LayoutManagerMixin:UpdateSelectionJustOne()
     self.deleteButton:SetPoint("BOTTOMLEFT", frame, "TOPRIGHT", 2, 2)
     self.deleteButton:SetScript("OnClick", function()
       DeleteRoot(frame, true)
+      AutoGroup(self.root.details)
     end)
     self.deleteButton:SetScript("OnEnter", function()
       frame:SetAlpha(0.5 * frame.details.alpha)
@@ -740,6 +860,7 @@ function addonTable.Designer.LayoutManagerMixin:UpdateSelectionJustOne()
         end
         details.anchor = {"BOTTOM", "UIParent", "CENTER", 0, 0}
         table.insert(self.root.details.entries, details)
+        AutoGroup(self.root.details)
         Announce()
       end)
     end
