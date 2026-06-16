@@ -29,6 +29,7 @@ addonTable.Constants.Events = {
 
   "Layout",
   "UpdateSpellIcons",
+  "UpdateKeyBindings",
 
   "Designer.Open",
   "Designer.Close",

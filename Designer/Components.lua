@@ -32,8 +32,36 @@ function addonTable.Designer.IconMixin:OnLoad()
   self.CountFrame.text = self.CountFrame:CreateFontString(nil, nil, "NumberFontNormal")
   self.CountFrame.text:SetPoint("BOTTOMRIGHT", -2, -2)
 
+  self.KeyBindingFrame = CreateFrame("Frame", nil, self)
+  self.KeyBindingFrame:SetAllPoints(self.Icon)
+  self.KeyBindingFrame.text = self.KeyBindingFrame:CreateFontString(nil, nil, "NumberFontNormal")
+  self.KeyBindingFrame.text:SetPoint("TOPRIGHT", -2, -2)
+  self.KeyBindingFrame.text:SetTextColor(0.7, 0.7, 0.7)
+
   self:SetScript("OnEnter", self.OnEnter)
   self:SetScript("OnLeave", self.OnLeave)
+
+  addonTable.CallbackRegistry:RegisterCallback("UpdateKeyBindings", function(_, spellID)
+    self:UpdateBindingText()
+  end, self)
+end
+
+function addonTable.Designer.IconMixin:UpdateBindingText()
+  print("in")
+  if not addonTable.Config.Get(addonTable.Config.Options.SHOW_KEYBINDINGS) then
+    self.KeyBindingFrame.text:SetText("")
+    return
+  end
+  if self.details.resource.spellID then
+    self.KeyBindingFrame.text:SetText(addonTable.State.Bindings.spells[C_Spell.GetBaseSpell(self.details.resource.spellID)] or "")
+  elseif self.details.resource.itemID then
+    self.KeyBindingFrame.text:SetText(addonTable.State.Bindings.items[self.details.resource.itemID] or "")
+  elseif self.details.resource.equipmentSlot then
+    local location = ItemLocation:CreateFromEquipmentSlot(self.details.resource.equipmentSlot)
+    if C_Item.DoesItemExist(location) then
+      self.KeyBindingFrame.text:SetText(addonTable.State.Bindings.items[C_Item.GetItemID(location)] or "")
+    end
+  end
 end
 
 function addonTable.Designer.IconMixin:Setup(details)
@@ -52,6 +80,7 @@ function addonTable.Designer.IconMixin:Setup(details)
   end
   self.Icon:SetTexture(texture)
   self.CountFrame.text:SetText("")
+  self:UpdateBindingText()
 end
 
 function addonTable.Designer.IconMixin:OnEnter()

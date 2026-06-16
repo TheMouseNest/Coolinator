@@ -91,7 +91,7 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
 
   hooksecurefunc(BuffIconCooldownViewer, "RefreshLayout", function()
     C_Timer.After(0, function()
-      if not addonTable.State then
+      if not addonTable.State.CDM then
         return
       end
       CacheIcons()
@@ -111,7 +111,7 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
 
   hooksecurefunc(BuffBarCooldownViewer, "RefreshLayout", function()
     C_Timer.After(0, function()
-      if not addonTable.State then
+      if not addonTable.State.CDM then
         return
       end
       CacheBars()
@@ -130,7 +130,7 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
 
   hooksecurefunc(EssentialCooldownViewer, "RefreshLayout", function()
     C_Timer.After(0, function()
-      if not addonTable.State then
+      if not addonTable.State.CDM then
         return
       end
       CacheAbilities()
@@ -210,8 +210,8 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
       return
     end
   end
-  if details.resource.kind == "ability" and self.useBlizzardWidgets and addonTable.State.abilityMap[spellID] then
-    local abilityIndex = addonTable.State.abilityOrder[addonTable.State.abilityMap[spellID]]
+  if details.resource.kind == "ability" and self.useBlizzardWidgets and addonTable.State.CDM.abilityMap[spellID] then
+    local abilityIndex = addonTable.State.CDM.abilityOrder[addonTable.State.CDM.abilityMap[spellID]]
     local ability = self.abilityIcons[abilityIndex]
     local frame = self.abilityWrappersPool:Acquire()
     frame.abilityIndex = abilityIndex
@@ -234,8 +234,8 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
     frame:UpdateSpellByID(spellID)
     return frame
 
-  elseif details.resource.kind == "aura" and addonTable.State.auraMap[spellID] then
-    local auraIndex = addonTable.State.auraOrder[addonTable.State.auraMap[spellID]]
+  elseif details.resource.kind == "aura" and addonTable.State.CDM.auraMap[spellID] then
+    local auraIndex = addonTable.State.CDM.auraOrder[addonTable.State.CDM.auraMap[spellID]]
     local aura = self.auraIcons[auraIndex]
     local frame = self.auraWrappersPool:Acquire()
     frame.auraIndex = auraIndex
@@ -281,7 +281,7 @@ function addonTable.Display.LayoutManagerMixin:GetBar(details)
     if not spellID then
       return
     end
-    local auraIndex = addonTable.State.barOrder[addonTable.State.auraMap[details.resource.spellID]]
+    local auraIndex = addonTable.State.CDM.barOrder[addonTable.State.CDM.auraMap[details.resource.spellID]]
     local aura = self.auraBars[auraIndex]
     if not aura then
       return

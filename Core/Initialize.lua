@@ -22,6 +22,42 @@ function addonTable.Core.AutoGenerateLayout(name)
   end
 end
 
+local actionButtons = {
+  { prefix = "ACTIONBUTTON", count = 12, start = 1},
+  { prefix = "MULTIACTIONBAR1BUTTON", count = 12, start = 61},
+  { prefix = "MULTIACTIONBAR2BUTTON", count = 12, start = 49},
+  { prefix = "MULTIACTIONBAR3BUTTON", count = 12, start = 25},
+  { prefix = "MULTIACTIONBAR4BUTTON", count = 12, start = 37},
+  { prefix = "MULTIACTIONBAR5BUTTON", count = 12, start = 145},
+  { prefix = "MULTIACTIONBAR6BUTTON", count = 12, start = 157},
+  { prefix = "MULTIACTIONBAR6BUTTON", count = 12, start = 169},
+  { prefix = "ACTIONBUTTON", count = 12, start = 121},
+}
+
+function addonTable.Core.StoreKeyBindings()
+  local spellMap = {}
+  local itemMap = {}
+  for _, details in ipairs(actionButtons) do
+    for i = 1, details.count do
+      local key1 = GetBindingKey(details.prefix .. i)
+      if key1 then
+        local actionType, id = GetActionInfo(details.start + i - 1)
+        if actionType == "spell" then
+          id = C_Spell.GetBaseSpell(id)
+        end
+        local text = GetBindingText(key1, 1)
+        if actionType == "spell" and spellMap[id] == nil then
+          spellMap[id] = text
+        elseif actionType == "item" and itemMap[id] == nil then
+          itemMap[id] = text
+        end
+      end
+    end
+  end
+
+  return {spells = spellMap, items = itemMap}
+end
+
 function addonTable.Core.Initialize()
   addonTable.Config.InitializeData()
   addonTable.SlashCmd.Initialize()
@@ -37,7 +73,7 @@ end
 local function TriggerUpdate()
   C_Timer.After(0.1, function()
     if CooldownViewerSettings.layoutManager.currentSpecTag ~= CooldownViewerUtil.GetCurrentClassAndSpecTag() then
-      addonTable.State = nil
+      addonTable.State.CDM = nil
       addonTable.Dialogs.ShowConfirm(addonTable.Locales.SPEC_MISMATCH_IN_BLIZZARD_CDM, RELOADUI, CANCEL, ReloadUI)
       return
     end
@@ -46,8 +82,8 @@ local function TriggerUpdate()
     addonTable.SpellEquivalence = addonTable.Core.GenerateSpellOverrides()
     local layout = addonTable.Core.GetCurrentDesign()
     if layout then
-      addonTable.State = addonTable.Core.GetCDMOrder(layout)
-      if not addonTable.State then
+      addonTable.State.CDM = addonTable.Core.GetCDMOrder(layout)
+      if not addonTable.State.CDM then
         addonTable.Core.ApplyLayoutToCDM(layout)
         return
       end
@@ -77,18 +113,22 @@ frame:RegisterEvent("ADDON_LOADED")
 frame:RegisterEvent("SPELLS_CHANGED")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+frame:RegisterEvent("UPDATE_BINDINGS")
 frame:RegisterEvent("ACTIVE_PLAYER_SPECIALIZATION_CHANGED")
 frame:SetScript("OnEvent", function(_, eventName, data1, data2)
   if eventName == "ADDON_LOADED" and data1 == "Coolinator" then
     addonTable.Core.Initialize()
-  elseif (eventName == "TRAIT_CONFIG_UPDATED" or eventName == "ACTIVE_PLAYER_SPECIALIZATION_CHANGED") and addonTable.State then
+  elseif (eventName == "TRAIT_CONFIG_UPDATED" or eventName == "ACTIVE_PLAYER_SPECIALIZATION_CHANGED") and addonTable.State.CDM then
     TriggerUpdate()
-  elseif eventName == "SPELL_UPDATE_ICON" and addonTable.State then
+  elseif eventName == "SPELL_UPDATE_ICON" and addonTable.State.CDM then
     addonTable.CallbackRegistry:TriggerEvent("UpdateSpellIcons", data1)
   elseif eventName == "PLAYER_ENTERING_WORLD" and not data1 and not data2 then
     addonTable.CallbackRegistry:TriggerEvent("Layout")
   elseif eventName == "PLAYER_EQUIPMENT_CHANGED" then
     addonTable.CallbackRegistry:TriggerEvent("Layout")
+  elseif eventName == "UPDATE_BINDINGS" then
+    addonTable.State.Bindings = addonTable.Core.StoreKeyBindings()
+    addonTable.CallbackRegistry:TriggerEvent("UpdateKeyBindings")
   end
 end)
 
@@ -97,9 +137,9 @@ EventUtil.ContinueAfterAllEvents(function()
   addonTable.SpellEquivalence = addonTable.Core.GenerateSpellOverrides()
   C_Timer.After(0.1, function()
     local layout = addonTable.Core.GetCurrentDesign()
-    addonTable.State = addonTable.Core.GetCDMOrder(layout)
+    addonTable.State.CDM = addonTable.Core.GetCDMOrder(layout)
 
-    if not addonTable.State then
+    if not addonTable.State.CDM then
       addonTable.Core.ApplyLayoutToCDM(layout)
       return
     end

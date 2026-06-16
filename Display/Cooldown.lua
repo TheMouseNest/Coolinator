@@ -39,6 +39,12 @@ function addonTable.Display.CooldownMixin:OnLoad()
   self.CountFrame.text = self.CountFrame:CreateFontString(nil, nil, "NumberFontNormal")
   self.CountFrame.text:SetPoint("BOTTOMRIGHT", -2, -2)
 
+  self.KeyBindingFrame = CreateFrame("Frame", nil, self)
+  self.KeyBindingFrame:SetAllPoints(self.Icon)
+  self.KeyBindingFrame.text = self.KeyBindingFrame:CreateFontString(nil, nil, "NumberFontNormal")
+  self.KeyBindingFrame.text:SetPoint("TOPRIGHT", -2, -2)
+  self.KeyBindingFrame.text:SetTextColor(0.7, 0.7, 0.7)
+
 	self.SpellActivationAlert = CreateFrame("Frame", nil, self, "ActionButtonSpellAlertTemplate");
 	local frameWidth, frameHeight = self:GetSize();
 	self.SpellActivationAlert:SetSize(frameWidth * 1.4, frameHeight * 1.4);
@@ -127,6 +133,9 @@ function addonTable.Display.CooldownMixin:Enable()
       self.Icon:SetTexture(C_Spell.GetSpellTexture(self.spellID))
     end
   end, self)
+  addonTable.CallbackRegistry:RegisterCallback("UpdateKeyBindings", function(_, spellID)
+    self:UpdateBindingText()
+  end, self)
 end
 
 function addonTable.Display.CooldownMixin:Disable()
@@ -138,6 +147,23 @@ function addonTable.Display.CooldownMixin:Disable()
 
   self:UnregisterAllEvents()
   addonTable.CallbackRegistry:UnregisterCallback("UpdateSpellIcons", self)
+end
+
+function addonTable.Display.CooldownMixin:UpdateBindingText()
+  if not addonTable.Config.Get(addonTable.Config.Options.SHOW_KEYBINDINGS) then
+    self.KeyBindingFrame.text:SetText("")
+    return
+  end
+  if self.spellID then
+    self.KeyBindingFrame.text:SetText(addonTable.State.Bindings.spells[C_Spell.GetBaseSpell(self.spellID)] or "")
+  elseif self.itemID then
+    self.KeyBindingFrame.text:SetText(addonTable.State.Bindings.items[self.itemID] or "")
+  elseif self.equipmentSlot then
+    local location = ItemLocation:CreateFromEquipmentSlot(self.equipmentSlot)
+    if C_Item.DoesItemExist(location) then
+      self.KeyBindingFrame.text:SetText(addonTable.State.Bindings.items[C_Item.GetItemID(location)] or "")
+    end
+  end
 end
 
 function addonTable.Display.CooldownMixin:UpdateSpellByID(spellID, activationOff)
@@ -175,6 +201,7 @@ function addonTable.Display.CooldownMixin:UpdateSpellByID(spellID, activationOff
   end
   local isUsable = C_Spell.IsSpellUsable(self.spellID)
   self.NotUsable:SetShown(not isUsable)
+  self:UpdateBindingText()
 end
 
 function addonTable.Display.CooldownMixin:UpdateItemByID(itemID)
@@ -195,6 +222,7 @@ function addonTable.Display.CooldownMixin:UpdateItemByID(itemID)
   end
 
   self.NotUsable:Hide()
+  self:UpdateBindingText()
 end
 
 function addonTable.Display.CooldownMixin:UpdateItemByEquipmentSlot(equipmentSlot)
@@ -217,4 +245,5 @@ function addonTable.Display.CooldownMixin:UpdateItemByEquipmentSlot(equipmentSlo
   self.Icon:SetTexture(C_Item.GetItemIcon(location))
 
   self.NotUsable:Hide()
+  self:UpdateBindingText()
 end

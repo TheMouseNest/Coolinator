@@ -298,12 +298,19 @@ local function SetupBehaviour(parent)
   compressLayout:SetPoint("TOP")
   table.insert(allFrames, compressLayout)
 
-  local useNativeWidgets = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.USE_BLIZZARD_WIDGETS, 28, function(value)
+  local useBlizzardWidgets = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.USE_BLIZZARD_WIDGETS, 28, function(value)
     addonTable.Config.Set(addonTable.Config.Options.USE_BLIZZARD_WIDGETS, not addonTable.Config.Get(addonTable.Config.Options.USE_BLIZZARD_WIDGETS))
   end)
-  useNativeWidgets.option = addonTable.Config.Options.USE_BLIZZARD_WIDGETS
-  useNativeWidgets:SetPoint("TOP", compressLayout, "BOTTOM", 0, -30)
-  table.insert(allFrames, useNativeWidgets)
+  useBlizzardWidgets.option = addonTable.Config.Options.USE_BLIZZARD_WIDGETS
+  useBlizzardWidgets:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  table.insert(allFrames, useBlizzardWidgets)
+
+  local showKeybindings = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_KEYBINDINGS, 28, function(value)
+    addonTable.Config.Set(addonTable.Config.Options.SHOW_KEYBINDINGS, not addonTable.Config.Get(addonTable.Config.Options.SHOW_KEYBINDINGS))
+  end)
+  showKeybindings.option = addonTable.Config.Options.SHOW_KEYBINDINGS
+  showKeybindings:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  table.insert(allFrames, showKeybindings)
 
   container:SetScript("OnShow", function()
     for _, f in ipairs(allFrames) do
