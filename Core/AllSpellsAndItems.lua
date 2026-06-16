@@ -2,7 +2,7 @@
 local addonTable = select(2, ...)
 
 function addonTable.Core.GetSpellFromCDMInfo(info)
-  return info.overrideTooltipSpellID or info.overrideSpellID or info.spellID
+  return C_Spell.GetBaseSpell(info.overrideTooltipSpellID or info.overrideSpellID or info.spellID)
 end
 
 function addonTable.Core.GetAllAuras()
