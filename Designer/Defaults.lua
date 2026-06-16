@@ -121,6 +121,9 @@ addonTable.Designer.Defaults = {
     ["fury"] = GetPrimaryClassResource("fury", GetColor("ff6633"), GetColor("ffbe90", 0.3)),
     ["pain"] = GetPrimaryClassResource("pain", {r = 1, g = 0, b = 0}, GetColor("ff787a", 0.3), GetColor("760002"), GetColor("ff0004"), GetColor("e100ff")),
     ["lunar-power"] = GetPrimaryClassResource("lunar-power", GetColor("7bf8ff"), GetColor("4d9b9f", 0.3), GetColor("760002"), GetColor("ff0004"), GetColor("e100ff")),
+    ["focus"] = GetPrimaryClassResource("focus", GetColor("d37400"), GetColor("d3a954", 0.3)),
+    ["insanity"] = GetPrimaryClassResource("insanity", GetColor("a10099"), GetColor("d38dcd", 0.3)),
+    ["tip-of-the-spear"] = GetPrimaryClassResource("tip-of-the-spear", GetColor("2ed31c"), GetColor("89d38c", 0.3)),
     ["stagger"] = {
       kind = "bar",
       resource = {kind = "class", resource = "stagger", options = {multiplier = 1.5}},

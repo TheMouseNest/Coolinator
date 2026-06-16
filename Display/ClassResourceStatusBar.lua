@@ -186,6 +186,8 @@ GenerateBarForResource(Enum.PowerType.Mana, "mana")
 GenerateBarForResource(Enum.PowerType.Rage, "rage")
 GenerateBarForResource(Enum.PowerType.RunicPower, "runic-power")
 GenerateBarForResource(Enum.PowerType.Fury, "fury")
+GenerateBarForResource(Enum.PowerType.Focus, "focus")
+GenerateBarForResource(Enum.PowerType.Insanity, "insanity")
 GenerateBarForResource(Enum.PowerType.Pain, "pain")
 GenerateBarForResource(Enum.PowerType.LunarPower, "lunar-power")
 
