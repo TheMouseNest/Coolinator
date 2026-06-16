@@ -29,6 +29,10 @@ addonTable.Assets.BarMasks = {
   ["Cooli: Solid"] = {file = "Interface/AddOns/Coolinator/Assets/Special/white.png", width = 10, height = 10},
 }
 
+addonTable.Assets.IconBorders = {
+  ["Cooli: 1px"] = {file = "Interface/AddOns/Coolinator/Assets/IconBorders/1px.png", mask = "Interface/AddOns/Coolinator/Assets/IconBorders/1px-mask.png"},
+}
+
 function addonTable.Assets.Initialize()
   local DPIScale = "DPI144"
   if GetScreenDPIScale() < 1.4 then

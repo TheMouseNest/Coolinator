@@ -6,21 +6,15 @@ function addonTable.Display.CooldownMixin:OnLoad()
   self:SetSize(addonTable.Constants.nativeSize - 4, addonTable.Constants.nativeSize - 4)
   self:SetFlattensRenderLayers(true)
 
-  self.Icon = self:CreateTexture()
+  self.Icon = self:CreateTexture(nil, "OVERLAY")
   self.Icon:SetSize(addonTable.Constants.nativeSize, addonTable.Constants.nativeSize)
   self.Icon:SetPoint("CENTER")
   self.NotUsable = self:CreateTexture(nil, "OVERLAY")
   self.NotUsable:SetAllPoints(self.Icon)
   self.NotUsable:SetTexture("Interface/AddOns/Coolinator/Assets/Special/white.png")
   self.NotUsable:SetVertexColor(0, 0, 0, 0.5)
-  local mask = self:CreateMaskTexture()
-  mask:SetAtlas("UI-HUD-CoolDownManager-Mask")
-  mask:SetAllPoints(self.Icon)
-  self.Icon:AddMaskTexture(mask)
-  self.NotUsable:AddMaskTexture(mask)
 
   local overlay = self:CreateTexture(nil, "OVERLAY")
-  overlay:SetAtlas("UI-HUD-CoolDownManager-IconOverlay")
   overlay:SetSize(50+18, 50+16)
 
   self.ChargesCooldown = CreateFrame("Cooldown", nil, self, "CooldownFrameTemplate")
@@ -48,12 +42,19 @@ function addonTable.Display.CooldownMixin:OnLoad()
 	self.SpellActivationAlert = CreateFrame("Frame", nil, self, "ActionButtonSpellAlertTemplate");
 	local frameWidth, frameHeight = self:GetSize();
 	self.SpellActivationAlert:SetSize(frameWidth * 1.4, frameHeight * 1.4);
-	self.SpellActivationAlert:SetPoint("CENTER", self, "CENTER", 0, 0);		
+	self.SpellActivationAlert:SetPoint("CENTER", self, "CENTER", 0, 0);
 	self.SpellActivationAlert:SetFrameStrata("MEDIUM")
 
   self:SetScript("OnEvent", self.OnEvent)
   self:SetScript("OnEnter", self.OnEnter)
   self:SetScript("OnLeave", self.OnLeave)
+end
+
+function addonTable.Display.CooldownMixin:Style()
+  addonTable.Display.StyleIcon({id = self.details.style}, self, self.Icon, self.CountFrame.text,
+    {self.Icon, self.NotUsable},
+    {self.BaseCooldown, self.ChargesCooldown,}
+  )
 end
 
 function addonTable.Display.CooldownMixin:OnEnter()
@@ -149,6 +150,24 @@ function addonTable.Display.CooldownMixin:Disable()
   addonTable.CallbackRegistry:UnregisterCallback("UpdateSpellIcons", self)
 end
 
+function addonTable.Display.CooldownMixin:Setup(details)
+  self.details = details
+  self.spellID = nil
+  self.itemID = nil
+  self.equipmentSlot = nil
+
+  if details.resource.spellID then
+    self:UpdateSpellByID(details.resource.spellID)
+  elseif details.resource.itemID then
+    self:UpdateItemByID(details.resource.spellID)
+  else
+    self:UpdateItemByEquipmentSlot(details.resource.equipmentSlot)
+  end
+
+  self:UpdateBindingText()
+  self:Style()
+end
+
 function addonTable.Display.CooldownMixin:UpdateBindingText()
   if not addonTable.Config.Get(addonTable.Config.Options.SHOW_KEYBINDINGS) then
     self.KeyBindingFrame.text:SetText("")
@@ -168,8 +187,6 @@ end
 
 function addonTable.Display.CooldownMixin:UpdateSpellByID(spellID, activationOff)
   self.spellID = spellID
-  self.itemID = nil
-  self.equipmentSlot = nil
 
   local chargeDuration = C_Spell.GetSpellChargeDuration(spellID)
   if chargeDuration then
@@ -201,13 +218,10 @@ function addonTable.Display.CooldownMixin:UpdateSpellByID(spellID, activationOff
   end
   local isUsable = C_Spell.IsSpellUsable(self.spellID)
   self.NotUsable:SetShown(not isUsable)
-  self:UpdateBindingText()
 end
 
 function addonTable.Display.CooldownMixin:UpdateItemByID(itemID)
-  self.spellID = nil
   self.itemID = itemID
-  self.equipmentSlot = nil
 
   self.ChargesCooldown:Clear()
   local start, duration, enable = C_Item.GetItemCooldown(self.itemID)
@@ -222,12 +236,9 @@ function addonTable.Display.CooldownMixin:UpdateItemByID(itemID)
   end
 
   self.NotUsable:Hide()
-  self:UpdateBindingText()
 end
 
 function addonTable.Display.CooldownMixin:UpdateItemByEquipmentSlot(equipmentSlot)
-  self.spellID = nil
-  self.itemID = nil
   self.equipmentSlot = equipmentSlot
 
   local location = ItemLocation:CreateFromEquipmentSlot(equipmentSlot)
@@ -245,5 +256,4 @@ function addonTable.Display.CooldownMixin:UpdateItemByEquipmentSlot(equipmentSlo
   self.Icon:SetTexture(C_Item.GetItemIcon(location))
 
   self.NotUsable:Hide()
-  self:UpdateBindingText()
 end

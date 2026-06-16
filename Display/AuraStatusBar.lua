@@ -36,7 +36,10 @@ function addonTable.Display.AuraStatusBarMixin:Setup(sourceWidget, details)
     icon:SetSize(30, 30)
     icon.Icon = sourceWidget.Icon.Icon
     icon.Icon:SetParent(icon)
-    icon.Icon:RemoveMaskTexture(icon.Icon:GetMaskTexture(1))
+    local mask = icon.Icon:GetMaskTexture(1)
+    if mask then
+      icon.Icon:RemoveMaskTexture(mask)
+    end
     icon.Icon:SetAllPoints()
     icon.Mask = icon:CreateMaskTexture()
     icon.Mask:SetAtlas("UI-HUD-CoolDownManager-Mask")

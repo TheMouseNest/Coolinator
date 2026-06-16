@@ -9,17 +9,9 @@ function addonTable.Designer.IconMixin:OnLoad()
   self:SetSize(addonTable.Constants.nativeSize - 4, addonTable.Constants.nativeSize - 4)
   self:SetFlattensRenderLayers(true)
 
-  self.Icon = self:CreateTexture()
+  self.Icon = self:CreateTexture(nil, "ARTWORK")
   self.Icon:SetSize(addonTable.Constants.nativeSize, addonTable.Constants.nativeSize)
   self.Icon:SetPoint("CENTER")
-  local mask = self:CreateMaskTexture()
-  mask:SetAtlas("UI-HUD-CoolDownManager-Mask")
-  mask:SetAllPoints(self.Icon)
-  self.Icon:AddMaskTexture(mask)
-
-  local overlay = self:CreateTexture(nil, "OVERLAY")
-  overlay:SetAtlas("UI-HUD-CoolDownManager-IconOverlay")
-  overlay:SetSize(50+18, 50+16)
 
   self.BaseCooldown = CreateFrame("Cooldown", nil, self, "CooldownFrameTemplate")
   self.BaseCooldown:SetAllPoints()
@@ -47,7 +39,6 @@ function addonTable.Designer.IconMixin:OnLoad()
 end
 
 function addonTable.Designer.IconMixin:UpdateBindingText()
-  print("in")
   if not addonTable.Config.Get(addonTable.Config.Options.SHOW_KEYBINDINGS) then
     self.KeyBindingFrame.text:SetText("")
     return
@@ -81,6 +72,8 @@ function addonTable.Designer.IconMixin:Setup(details)
   self.Icon:SetTexture(texture)
   self.CountFrame.text:SetText("")
   self:UpdateBindingText()
+
+  addonTable.Display.StyleIcon({id = self.details.style}, self, self.Icon, self.CountFrame.text, {self.Icon}, {self.BaseCooldown})
 end
 
 function addonTable.Designer.IconMixin:OnEnter()

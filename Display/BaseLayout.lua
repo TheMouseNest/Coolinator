@@ -38,6 +38,7 @@ end
 
 function addonTable.Display.BaseLayoutManagerMixin:GetGroup(details)
   local wrapper = self.wrappersPool:Acquire()
+  wrapper:Show()
   wrapper.children = {}
   wrapper.details = details
   for _, entry in ipairs(details.entries) do
@@ -150,7 +151,6 @@ function addonTable.Display.BaseLayoutManagerMixin:ArrangeGroup(wrapper, details
         width = width + child:GetWidth() * child:GetScale() + details.padding * offsetSize
       end
     end
-    wrapper:Show()
     if #wrapper.children > 0 then
       width = width - details.padding * offsetSize
     end
@@ -178,7 +178,6 @@ function addonTable.Display.BaseLayoutManagerMixin:ArrangeGroup(wrapper, details
         height = height + child:GetHeight() * child:GetScale() + details.padding * offsetSize
       end
     end
-    wrapper:Show()
     if #wrapper.children > 0 then
       height = height - details.padding * offsetSize
     end
@@ -193,7 +192,6 @@ function addonTable.Display.BaseLayoutManagerMixin:ArrangeGroup(wrapper, details
         child:ApplySize()
       end
     end
-    wrapper:Show()
     wrapper:SetAlpha(1)
     wrapper:SetScale(1)
   end

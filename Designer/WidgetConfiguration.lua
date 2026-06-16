@@ -313,6 +313,28 @@ addonTable.Designer.WidgetConfiguration = {
                 return (1 - details.alpha) * 100
               end,
             },
+            { kind = "spacer" },
+            {
+              label = addonTable.Locales.STYLE,
+              kind = "dropdown",
+              getInitData = function()
+                local labels = {
+                  addonTable.Locales.SQUARE,
+                  addonTable.Locales.BLIZZARD,
+                }
+                local values = {
+                  "square",
+                  "blizzard"
+                }
+                return labels, values
+              end,
+              setter = function(details, value)
+                details.style = value
+              end,
+              getter = function(details)
+                return details.style
+              end,
+            },
           }
         }
       }

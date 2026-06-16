@@ -42,6 +42,7 @@ Core/ImportDefaults.lua
 Core/SpellOverrides.lua
 
 Display/Templates.xml
+Display/StyleIcons.lua
 Display/Utilities.lua
 Display/Cooldown.lua
 Display/AuraStatusBar.lua

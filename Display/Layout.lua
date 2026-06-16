@@ -224,6 +224,9 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
     end
     frame:Show()
     frame:SetSize(addonTable.Constants.nativeSize - 4, addonTable.Constants.nativeSize - 4)
+    local _, _, overlay = ability:GetRegions()
+    overlay:Hide()
+    addonTable.Display.StyleIcon({id  = details.style}, frame, ability.Icon, ability.ChargeCount.Current, {ability.Icon}, {ability.Cooldown})
 
     return frame
 
@@ -231,7 +234,7 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
     local frame = self.cooldownPool:Acquire()
     frame:Show()
     frame:Enable()
-    frame:UpdateSpellByID(spellID)
+    frame:Setup(details)
     return frame
 
   elseif details.resource.kind == "aura" and addonTable.State.CDM.auraMap[spellID] then
@@ -243,6 +246,10 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
       aura:SetParent(frame)
       aura:ClearAllPoints()
       aura:SetPoint("CENTER", frame)
+      frame:Show()
+      local _, overlay = aura:GetRegions()
+      overlay:Hide()
+      addonTable.Display.StyleIcon({id  = details.style}, frame, aura.Icon, aura.Applications.Applications, {aura.Icon}, {aura.Cooldown})
       frame:SetShown(aura:IsShown())
     end
     frame:SetSize(addonTable.Constants.nativeSize - 4, addonTable.Constants.nativeSize - 4)
@@ -260,7 +267,7 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
     local frame = self.cooldownPool:Acquire()
     frame:Show()
     frame:Enable()
-    frame:UpdateItemByID(details.resource.itemID)
+    frame:Setup(details)
     return frame
   elseif details.resource.kind == "equipment" then
     local location = ItemLocation:CreateFromEquipmentSlot(details.resource.equipmentSlot)
@@ -270,7 +277,7 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
     local frame = self.cooldownPool:Acquire()
     frame:Show()
     frame:Enable()
-    frame:UpdateItemByEquipmentSlot(details.resource.equipmentSlot)
+    frame:Setup(details)
     return frame
   end
 end

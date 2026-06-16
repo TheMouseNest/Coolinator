@@ -49,21 +49,25 @@ addonTable.Designer.Defaults = {
   },
   AuraIcon = {
     kind = "icon",
+    style = "blizzard",
     resource = {kind = "aura", spellID = 0},
     height = 1, scale = 1, alpha = 1
   },
   AbilityIcon = {
     kind = "icon",
+    style = "blizzard",
     resource = {kind = "ability", spellID = 0},
     height = 1, scale = 1, alpha = 1
   },
   ItemIcon = {
     kind = "icon",
+    style = "blizzard",
     resource = {kind = "item", itemID = 0},
     height = 1, scale = 1, alpha = 1
   },
   EquipmentIcon = {
     kind = "icon",
+    style = "blizzard",
     resource = {kind = "equipment", equipmentSlot = 0},
     height = 1, scale = 1, alpha = 1
   },

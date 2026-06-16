@@ -29,6 +29,17 @@ function addonTable.Core.RemoveDeadGroups(group)
   end
 end
 
+local function AddStylev3(group)
+  for i = #group.entries, 1, -1 do
+    local entry = group.entries[i]
+    if entry.kind == "group" then
+      AddStylev3(entry)
+    elseif entry.kind == "icon" then
+      entry.style = "blizzard"
+    end
+  end
+end
+
 function addonTable.Core.UpgradeDesign(design)
   if not design.version or design.version < 1 then
     AddAlignment(design)
@@ -37,6 +48,10 @@ function addonTable.Core.UpgradeDesign(design)
   if design.version < 2 then
     addonTable.Core.RemoveDeadGroups(design)
     design.version = 2
+  end
+  if design.version < 3 then
+    AddStylev3(design)
+    design.version = 3
   end
 end
 

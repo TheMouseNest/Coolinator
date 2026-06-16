@@ -135,15 +135,15 @@ function addonTable.Designer.LayoutManagerMixin:GetBar(details)
   else
     bar = self.barPool:Acquire()
   end
-  bar:Setup(details)
   bar:Show()
+  bar:Setup(details)
   return bar
 end
 
 function addonTable.Designer.LayoutManagerMixin:GetIcon(details)
   local icon = self.iconPool:Acquire()
-  icon:Setup(details)
   icon:Show()
+  icon:Setup(details)
   return icon
 end
 
