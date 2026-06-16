@@ -120,8 +120,10 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
       end
       for frame in self.auraStatusBarPool:EnumerateActive() do
         local aura = self.auraBars[frame.auraIndex]
-        frame:UpdateSource(aura)
-        frame:ApplySize()
+        if aura then
+          frame:UpdateSource(aura)
+          frame:ApplySize()
+        end
       end
     end)
   end)
