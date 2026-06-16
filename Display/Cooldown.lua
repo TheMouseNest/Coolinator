@@ -159,7 +159,7 @@ function addonTable.Display.CooldownMixin:Setup(details)
   if details.resource.spellID then
     self:UpdateSpellByID(details.resource.spellID)
   elseif details.resource.itemID then
-    self:UpdateItemByID(details.resource.spellID)
+    self:UpdateItemByID(details.resource.itemID)
   else
     self:UpdateItemByEquipmentSlot(details.resource.equipmentSlot)
   end
