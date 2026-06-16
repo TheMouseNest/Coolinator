@@ -9,5 +9,8 @@ addonTable.Assets = {}
 addonTable.Design = {}
 addonTable.Designer = {}
 addonTable.CustomiseDialog = {}
+addonTable.State = {}
 
-Coolinator = {}
+Coolinator = {
+  API = {}
+}

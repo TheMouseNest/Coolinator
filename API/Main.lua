@@ -2,7 +2,7 @@
 ---@class addonTableCoolinator
 local addonTable = select(2, ...)
 
-function addonTable.API.ImportString(importText, resultName)
+function Coolinator.API.ImportString(importText, resultName)
   local prefix = importText:match("^COOLI!1!")
   if not prefix then
     addonTable.Dialogs.ShowAcknowledge(addonTable.Locales.INVALID_IMPORT)
