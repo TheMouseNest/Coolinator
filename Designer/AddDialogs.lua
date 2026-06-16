@@ -38,8 +38,9 @@ local function GetSpellIconDialog(allGetter, activeGetter, kind)
     end
     button.Highlight:Hide()
     if kind == Kind.Spell then
-      button.Icon:SetDesaturated(not addonTable.Utilities.IsSpellKnown(data))
-      button.Icon:SetTexture(C_Spell.GetSpellTexture(data))
+      local override = C_Spell.GetOverrideSpell(data)
+      button.Icon:SetDesaturated(not addonTable.Utilities.IsSpellKnown(override))
+      button.Icon:SetTexture(C_Spell.GetSpellTexture(override))
     elseif kind == Kind.Item then
       button.Icon:SetDesaturated(C_Item.GetItemCount(data) == 0)
       button.Icon:SetTexture(C_Item.GetItemIconByID(data))
@@ -58,7 +59,7 @@ local function GetSpellIconDialog(allGetter, activeGetter, kind)
       button.Highlight:Show()
       GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
       if kind == Kind.Spell then
-        GameTooltip:SetSpellByID(data)
+        GameTooltip:SetSpellByID(C_Spell.GetOverrideSpell(data))
       elseif kind == Kind.Item then
         GameTooltip:SetItemByID(data)
       elseif kind == Kind.Equipment then
