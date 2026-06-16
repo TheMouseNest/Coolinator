@@ -94,6 +94,29 @@ addonTable.Designer.Defaults = {
       color = {r = 1, g = 1, b = 1},
     },
   },
+  AbilityBar = {
+    kind = "bar",
+    resource = {kind = "ability", spellID = 0},
+    width = 1,
+    height = 1,
+    scale = 1.5,
+    layout = "horizontal",
+    direction = "right",
+    icon = {show = true, position = "left"},
+    alpha = 1,
+    foreground = {
+      asset = "Cooli: Fade Bottom",
+      color = {r = 0, g = 1, b = 0},
+    },
+    background = {
+      asset = "Cooli: Solid White",
+      color = GetColor("94ff21", 0.3),
+    },
+    border = {
+      asset = "Cooli: Blizzard Midnight",
+      color = {r = 1, g = 1, b = 1},
+    },
+  },
   ClassResource = {
     ["icicles"] = {
       kind = "bar",

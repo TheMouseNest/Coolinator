@@ -130,7 +130,7 @@ end
 
 function addonTable.Designer.LayoutManagerMixin:GetBar(details)
   local bar
-  if details.resource.kind == "aura" then
+  if details.resource.kind == "aura" or details.resource.kind == "ability" then
     bar = self.barIconPool:Acquire()
   else
     bar = self.barPool:Acquire()
@@ -633,6 +633,16 @@ function addonTable.Designer.LayoutManagerMixin:AddEntryToInsert(rootDescription
       local new = CopyTable(addonTable.Designer.Defaults.AbilityIcon)
       new.resource.spellID = data
       if origin.kind == "icon" and origin.resource.kind == "ability" then
+        ImportStyle(new, origin)
+      end
+      inserter(new)
+    end)
+  end)
+  rootDescription:CreateButton(addonTable.Locales.ABILITY_BAR, function()
+    self.abilityFrame:Update(function(data)
+      local new = CopyTable(addonTable.Designer.Defaults.AbilityBar)
+      new.resource.spellID = data
+      if origin.kind == "bar" and origin.resource.kind == "ability" then
         ImportStyle(new, origin)
       end
       inserter(new)

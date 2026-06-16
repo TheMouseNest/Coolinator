@@ -22,6 +22,7 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
   end)
   self.cooldownPool = addonTable.Display.GeneratePool(addonTable.Display.CooldownMixin)
   self.auraFromItemPool = addonTable.Display.GeneratePool(addonTable.Display.AuraFromItemMixin)
+  self.abilityBarPool = addonTable.Display.GeneratePool(addonTable.Display.AbilityStatusBarMixin)
   self.auraStatusBarPool = addonTable.Display.GeneratePool(addonTable.Display.AuraStatusBarMixin)
   self.classPools = {}
   for key, mixin in pairs(addonTable.Display.ClassResourceStatusBar) do
@@ -302,6 +303,16 @@ function addonTable.Display.LayoutManagerMixin:GetBar(details)
     monitor:Show()
     monitor:Setup(aura, details)
     return monitor
+  elseif details.resource.kind == "ability" then
+    if not addonTable.Utilities.IsAbilitySpellKnown(details.resource.spellID) then
+      return
+    end
+    local frame = self.abilityBarPool:Acquire()
+    frame:Show()
+    frame:Enable()
+    frame:Setup(details)
+    return frame
+
   elseif details.resource.kind == "class" then
     if not self.classPools[details.resource.resource] then
       addonTable.Utilities.Message("Unknown class resource")

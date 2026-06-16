@@ -14,9 +14,6 @@ function addonTable.Display.CooldownMixin:OnLoad()
   self.NotUsable:SetTexture("Interface/AddOns/Coolinator/Assets/Special/white.png")
   self.NotUsable:SetVertexColor(0, 0, 0, 0.5)
 
-  local overlay = self:CreateTexture(nil, "OVERLAY")
-  overlay:SetSize(50+18, 50+16)
-
   self.ChargesCooldown = CreateFrame("Cooldown", nil, self, "CooldownFrameTemplate")
   self.ChargesCooldown:SetAllPoints(self.Icon)
   self.ChargesCooldown:SetDrawSwipe(false)
