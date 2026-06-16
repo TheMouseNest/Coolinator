@@ -115,6 +115,7 @@ frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 frame:RegisterEvent("UPDATE_BINDINGS")
 frame:RegisterEvent("ACTIVE_PLAYER_SPECIALIZATION_CHANGED")
+frame:RegisterEvent("TRAIT_CONFIG_UPDATED")
 frame:SetScript("OnEvent", function(_, eventName, data1, data2)
   if eventName == "ADDON_LOADED" and data1 == "Coolinator" then
     addonTable.Core.Initialize()
