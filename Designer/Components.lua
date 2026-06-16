@@ -60,7 +60,11 @@ function addonTable.Designer.IconMixin:Setup(details)
   local texture
   if details.resource.spellID then
     texture = C_Spell.GetSpellTexture(details.resource.spellID)
-    self.Icon:SetDesaturated(not addonTable.Utilities.IsSpellKnown(details.resource.spellID) or false)
+    if details.resource.kind == "aura" then
+      self.Icon:SetDesaturated(not addonTable.Utilities.IsAuraSpellKnown(details.resource.spellID) or false)
+    elseif details.resource.kind == "ability" then
+      self.Icon:SetDesaturated(not addonTable.Utilities.IsAbilitySpellKnown(details.resource.spellID) or false)
+    end
   elseif details.resource.itemID then
     texture = C_Item.GetItemIconByID(details.resource.itemID)
     self.Icon:SetDesaturated(C_Item.GetItemCount(details.resource.itemID) == 0)

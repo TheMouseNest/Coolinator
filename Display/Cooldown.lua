@@ -157,7 +157,7 @@ function addonTable.Display.CooldownMixin:Setup(details)
   self.equipmentSlot = nil
 
   if details.resource.spellID then
-    self:UpdateSpellByID(details.resource.spellID)
+    self:UpdateSpellByID(addonTable.Utilities.IsAbilitySpellKnown(details.resource.spellID) or details.resource.spellID)
   elseif details.resource.itemID then
     self:UpdateItemByID(details.resource.itemID)
   else

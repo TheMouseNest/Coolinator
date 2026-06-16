@@ -55,31 +55,34 @@ function addonTable.Utilities.PurgeKey(t, k)
   until issecurevariable(t, k)
 end
 
-function addonTable.Utilities.IsSpellKnown(spellID)
+function addonTable.Utilities.IsAuraSpellKnown(spellID)
   if addonTable.Constants.AurasFromItems[spellID] then
     return spellID
   end
-  local mapped = addonTable.State.CDM.auraMap[spellID] or addonTable.State.CDM.abilityMap[spellID]
+  local mapped = addonTable.State.CDM.auraMap[spellID]
   if mapped then
     local isKnown = C_CooldownViewer.GetCooldownViewerCooldownInfo(mapped).isKnown
     if isKnown then
       return spellID
     end
   end
+end
+
+function addonTable.Utilities.IsAbilitySpellKnown(spellID)
+  local newSpellID = C_Spell.GetOverrideSpell(spellID)
+  if newSpellID then
+    if C_SpellBook.IsSpellKnown(newSpellID, Enum.SpellBookSpellBank.Player) or C_SpellBook.IsSpellKnown(newSpellID, Enum.SpellBookSpellBank.Pet) then
+      return newSpellID
+    end
+  end
+  newSpellID = addonTable.SpellEquivalence[spellID]
+  if newSpellID then
+    if C_SpellBook.IsSpellKnown(newSpellID, Enum.SpellBookSpellBank.Player) or C_SpellBook.IsSpellKnown(newSpellID, Enum.SpellBookSpellBank.Pet) then
+      return newSpellID
+    end
+  end
   if C_SpellBook.IsSpellKnown(spellID, Enum.SpellBookSpellBank.Player) or C_SpellBook.IsSpellKnown(spellID, Enum.SpellBookSpellBank.Pet) then
     return spellID
-  end
-  local newSpellID = addonTable.SpellEquivalence[spellID]
-  if newSpellID then
-    if C_SpellBook.IsSpellKnown(newSpellID, Enum.SpellBookSpellBank.Player) or C_SpellBook.IsSpellKnown(newSpellID, Enum.SpellBookSpellBank.Pet) then
-      return newSpellID
-    end
-  end
-  newSpellID = C_Spell.GetOverrideSpell(spellID)
-  if newSpellID then
-    if C_SpellBook.IsSpellKnown(newSpellID, Enum.SpellBookSpellBank.Player) or C_SpellBook.IsSpellKnown(newSpellID, Enum.SpellBookSpellBank.Pet) then
-      return newSpellID
-    end
   end
 
   return nil

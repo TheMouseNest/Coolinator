@@ -163,8 +163,11 @@ function addonTable.Core.GetCDMMapping(activeOnly)
     local info = C_CooldownViewer.GetCooldownViewerCooldownInfo(cdmID)
     auraMapping[info.spellID] = cdmID
     auraMapping[info.overrideSpellID] = cdmID
+    auraMapping[C_Spell.GetBaseSpell(info.spellID)] = cdmID
+    auraMapping[C_Spell.GetBaseSpell(info.overrideSpellID)] = cdmID
     if info.overrideTooltipSpellID then
       auraMapping[info.overrideTooltipSpellID] = cdmID
+      auraMapping[C_Spell.GetBaseSpell(info.overrideTooltipSpellID)] = cdmID
     end
     for _, spellID in ipairs(info.linkedSpellIDs) do
       auraMapping[spellID] = cdmID
@@ -179,8 +182,11 @@ function addonTable.Core.GetCDMMapping(activeOnly)
     local info = C_CooldownViewer.GetCooldownViewerCooldownInfo(cdmID)
     abilityMapping[info.spellID] = cdmID
     abilityMapping[info.overrideSpellID] = cdmID
+    abilityMapping[C_Spell.GetBaseSpell(info.spellID)] = cdmID
+    abilityMapping[C_Spell.GetBaseSpell(info.overrideSpellID)] = cdmID
     if info.overrideTooltipSpellID then
       abilityMapping[info.overrideTooltipSpellID] = cdmID
+      abilityMapping[C_Spell.GetBaseSpell(info.overrideTooltipSpellID)] = cdmID
     end
     for _, spellID in ipairs(info.linkedSpellIDs) do
       abilityMapping[spellID] = cdmID

@@ -40,6 +40,19 @@ local function AddStylev3(group)
   end
 end
 
+local function UseBaseSpellsv4(group)
+  for i = #group.entries, 1, -1 do
+    local entry = group.entries[i]
+    if entry.kind == "group" then
+      UseBaseSpellsv4(entry)
+    elseif entry.kind == "icon" and entry.resource.kind == "ability" then
+      entry.resource.spellID = C_Spell.GetBaseSpell(entry.resource.spellID)
+    elseif entry.kind == "icon" and entry.resource.kind == "aura" then
+      entry.resource.spellID = C_Spell.GetBaseSpell(entry.resource.spellID)
+    end
+  end
+end
+
 function addonTable.Core.UpgradeDesign(design)
   if not design.version or design.version < 1 then
     AddAlignment(design)
@@ -52,6 +65,11 @@ function addonTable.Core.UpgradeDesign(design)
   if design.version < 3 then
     AddStylev3(design)
     design.version = 3
+  end
+
+  if design.version < 5 then
+    UseBaseSpellsv4(design)
+    design.version = 5
   end
 end
 

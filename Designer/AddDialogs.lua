@@ -39,7 +39,7 @@ local function GetSpellIconDialog(allGetter, activeGetter, kind)
     button.Highlight:Hide()
     if kind == Kind.Spell then
       local override = C_Spell.GetOverrideSpell(data)
-      button.Icon:SetDesaturated(not addonTable.Utilities.IsSpellKnown(override))
+      button.Icon:SetDesaturated(not addonTable.Utilities.IsAuraSpellKnown(override) and not addonTable.Utilities.IsAbilitySpellKnown(override))
       button.Icon:SetTexture(C_Spell.GetSpellTexture(override))
     elseif kind == Kind.Item then
       button.Icon:SetDesaturated(C_Item.GetItemCount(data) == 0)

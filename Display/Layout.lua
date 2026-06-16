@@ -203,14 +203,11 @@ function addonTable.Display.LayoutManagerMixin:Layout()
 end
 
 function addonTable.Display.LayoutManagerMixin:GetIcon(details)
-  local spellID
-  if details.resource.spellID then
-    spellID = addonTable.Utilities.IsSpellKnown(details.resource.spellID)
+  if details.resource.kind == "ability" and self.useBlizzardWidgets and addonTable.State.CDM.abilityMap[spellID] then
+    local spellID = addonTable.Utilities.IsAbilitySpellKnown(details.resource.spellID)
     if not spellID then
       return
     end
-  end
-  if details.resource.kind == "ability" and self.useBlizzardWidgets and addonTable.State.CDM.abilityMap[spellID] then
     local abilityIndex = addonTable.State.CDM.abilityOrder[addonTable.State.CDM.abilityMap[spellID]]
     local ability = self.abilityIcons[abilityIndex]
     local frame = self.abilityWrappersPool:Acquire()
@@ -231,13 +228,20 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
     return frame
 
   elseif details.resource.kind == "ability" then
+    if not addonTable.Utilities.IsAbilitySpellKnown(details.resource.spellID) then
+      return
+    end
     local frame = self.cooldownPool:Acquire()
     frame:Show()
     frame:Enable()
     frame:Setup(details)
     return frame
 
-  elseif details.resource.kind == "aura" and addonTable.State.CDM.auraMap[spellID] then
+  elseif details.resource.kind == "aura" and addonTable.State.CDM.auraMap[details.resource.spellID] then
+    local spellID = addonTable.Utilities.IsAuraSpellKnown(details.resource.spellID)
+    if not spellID then
+      return
+    end
     local auraIndex = addonTable.State.CDM.auraOrder[addonTable.State.CDM.auraMap[spellID]]
     local aura = self.auraIcons[auraIndex]
     local frame = self.auraWrappersPool:Acquire()
@@ -284,7 +288,7 @@ end
 
 function addonTable.Display.LayoutManagerMixin:GetBar(details)
   if details.resource.kind == "aura" then
-    local spellID = addonTable.Utilities.IsSpellKnown(details.resource.spellID)
+    local spellID = addonTable.Utilities.IsAuraSpellKnown(details.resource.spellID)
     if not spellID then
       return
     end

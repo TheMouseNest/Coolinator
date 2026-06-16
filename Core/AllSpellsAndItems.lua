@@ -12,10 +12,10 @@ function addonTable.Core.GetAllAuras()
   local result = {}
 
   for _, aura in ipairs(auraTracked) do
-    table.insert(result, addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(aura)))
+    table.insert(result, C_Spell.GetBaseSpell(addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(aura))))
   end
   for _, aura in ipairs(auraBars) do
-    table.insert(result, addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(aura)))
+    table.insert(result, C_Spell.GetBaseSpell(addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(aura))))
   end
 
   return result
@@ -36,10 +36,8 @@ function addonTable.Core.GetAllAbilities()
   end
 
   local function RecordSeen(info)
-    if info.overrideSpellID then
-      seen[info.overrideSpellID] = true
-      AutoIncludeBase(info.overrideSpellID)
-    end
+    seen[info.overrideSpellID] = true
+    AutoIncludeBase(info.overrideSpellID)
     if info.overrideTooltipSpellID then
       seen[info.overrideTooltipSpellID] = true
       AutoIncludeBase(info.overrideTooltipSpellID)
