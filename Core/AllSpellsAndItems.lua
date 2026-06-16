@@ -28,14 +28,24 @@ function addonTable.Core.GetAllAbilities()
   local result = {}
   local seen = {}
 
+  local function AutoIncludeBase(spellID)
+    local base = C_Spell.GetBaseSpell(spellID)
+    if base then
+      seen[base] = true
+    end
+  end
+
   local function RecordSeen(info)
     if info.overrideSpellID then
       seen[info.overrideSpellID] = true
+      AutoIncludeBase(info.overrideSpellID)
     end
     if info.overrideTooltipSpellID then
       seen[info.overrideTooltipSpellID] = true
+      AutoIncludeBase(info.overrideTooltipSpellID)
     end
     seen[info.spellID] = true
+    AutoIncludeBase(info.spellID)
   end
   for _, ability in ipairs(abilityTracked) do
     local info = C_CooldownViewer.GetCooldownViewerCooldownInfo(ability)
