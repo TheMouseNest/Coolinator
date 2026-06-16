@@ -63,15 +63,15 @@ function addonTable.Core.GenerateDefaultCDMLayout()
   }
 
   for _, id in ipairs(spellUtility) do
-    table.insert(result.entries[1].entries, {kind = "icon", resource = {kind = "ability", spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))}, height = 1, scale = 1, alpha = 1})
+    table.insert(result.entries[1].entries, {kind = "icon", resource = {kind = "ability", spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))}, height = 1, scale = 1, alpha = 1, style = "blizzard"})
   end
 
   for _, id in ipairs(spellEssential) do
-    table.insert(result.entries[2].entries, {kind = "icon", resource = {kind = "ability", spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))}, height = 1, scale = 1, alpha = 1})
+    table.insert(result.entries[2].entries, {kind = "icon", resource = {kind = "ability", spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))}, height = 1, scale = 1, alpha = 1, style = "blizzard"})
   end
 
   for _, id in ipairs(auraTracked) do
-    table.insert(result.entries[3].entries, {kind = "icon", resource = {kind = "aura", spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))}, height = 1, scale = 1, alpha = 1})
+    table.insert(result.entries[3].entries, {kind = "icon", resource = {kind = "aura", spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))}, height = 1, scale = 1, alpha = 1, style = "blizzard"})
   end
 
   local barGroups = {
