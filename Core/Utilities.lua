@@ -81,6 +81,12 @@ function addonTable.Utilities.IsSpellKnown(spellID)
       return newSpellID
     end
   end
+  newSpellID = C_Spell.GetBaseSpell(spellID)
+  if newSpellID then
+    if C_SpellBook.IsSpellKnown(newSpellID, Enum.SpellBookSpellBank.Player) or C_SpellBook.IsSpellKnown(newSpellID, Enum.SpellBookSpellBank.Pet) then
+      return newSpellID
+    end
+  end
 
   return nil
 end
