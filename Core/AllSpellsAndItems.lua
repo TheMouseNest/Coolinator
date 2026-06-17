@@ -80,6 +80,16 @@ function addonTable.Core.GetAllAbilities()
     end
   end
 
+  local skyridingFlyoutID = 229
+  local _, _, skyridingSpellCount = GetFlyoutInfo(skyridingFlyoutID)
+  for i = 1, skyridingSpellCount do
+    local spellID, _, isKnown = GetFlyoutSlotInfo(skyridingFlyoutID, i)
+    if spellID and isKnown and not C_Spell.IsSpellPassive(spellID) and not seen[spellID] then
+      table.insert(result, spellID)
+      seen[spellID] = true
+    end
+  end
+
   return result
 end
 
