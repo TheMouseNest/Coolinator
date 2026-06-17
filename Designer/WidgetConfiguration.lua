@@ -380,7 +380,35 @@ addonTable.Designer.WidgetConfiguration = {
                 return details.style
               end,
             },
+            { kind = "spacer" },
+            {
+              label = addonTable.Locales.SHOW_TOOLTIPS,
+              kind = "checkbox",
+              setter = function(details, value)
+                details.showTooltips = value
+              end,
+              getter = function(details)
+                return details.showTooltips
+              end,
+            }
           }
+        }
+      }
+    },
+    ["ability"] = {
+      {
+        label = addonTable.Locales.GENERAL,
+        entries = {
+          {
+            label = addonTable.Locales.SHOW_ICON,
+            kind = "checkbox",
+            setter = function(details, value)
+              details.texts.cooldown.showFractions = value
+            end,
+            getter = function(details)
+              return details.texts.cooldown.showFractions
+            end,
+          },
         }
       }
     }

@@ -33,16 +33,20 @@ function addonTable.Display.AuraIconMixin:Setup(sourceWidget, details)
   sourceWidget:SetParent(self)
   sourceWidget:ClearAllPoints()
   sourceWidget:SetPoint("CENTER", self)
+
   self:Show()
 
   local widgets = sourceFrames[sourceWidget]
   self.widgets = widgets
 
+  widgets.source:SetMouseMotionEnabled(details.showTooltips)
   addonTable.Display.StyleIcon({id  = details.style}, self, widgets.icon, widgets.count, {widgets.icon}, {widgets.cooldown})
+
   widgets.debuffBorder:SetAllPoints(widgets.icon)
   widgets.debuffBorder:Setup(details)
   widgets.debuffBorder:SetFrameLevel(self:GetFrameLevel() + 4)
-  self:SetShown(sourceWidget:IsShown())
+
+  self:SetShown(widgets.source:IsShown())
 end
 
 function addonTable.Display.AuraIconMixin:UpdateSource(sourceWidget)

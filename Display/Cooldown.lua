@@ -163,6 +163,8 @@ function addonTable.Display.CooldownMixin:Setup(details)
 
   self:UpdateBindingText()
   self:Style()
+
+  self:SetMouseMotionEnabled(details.showTooltips)
 end
 
 function addonTable.Display.CooldownMixin:UpdateBindingText()

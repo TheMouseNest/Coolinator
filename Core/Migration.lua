@@ -53,6 +53,32 @@ local function UseBaseSpellsv4(group)
   end
 end
 
+local function Textsv6(group)
+  for i = #group.entries, 1, -1 do
+    local entry = group.entries[i]
+    if entry.kind == "group" then
+      Textsv6(entry)
+    elseif entry.kind == "icon" then
+      entry.showTooltips = true
+      entry.texts = {
+        cooldown = {
+          anchor = {},
+          scale = Round(14/12 * 100) / 100,
+          color = GetColor("FFFFFF"),
+          visible = true,
+          showFractions = false,
+        },
+        count = {
+          anchor = {"BOTTOMLEFT", -2, -2},
+          scale = Round(11/12 * 100) / 100,
+          color = GetColor("FFFFFF"),
+          visible = true,
+        }
+      }
+    end
+  end
+end
+
 function addonTable.Core.UpgradeDesign(design)
   if not design.version or design.version < 1 then
     AddAlignment(design)
@@ -70,6 +96,11 @@ function addonTable.Core.UpgradeDesign(design)
   if design.version < 5 then
     UseBaseSpellsv4(design)
     design.version = 5
+  end
+
+  if design.version < 6 then
+    Textsv6(design)
+    design.version = 6
   end
 end
 
