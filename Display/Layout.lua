@@ -4,14 +4,6 @@ local addonTable = select(2, ...)
 addonTable.Display.LayoutManagerMixin = CreateFromMixins(addonTable.Display.BaseLayoutManagerMixin)
 function addonTable.Display.LayoutManagerMixin:OnLoad()
   addonTable.Display.BaseLayoutManagerMixin.OnLoad(self)
-  self.auraWrappersPool = CreateFramePool("Frame", UIParent, nil, function(_, frame)
-    frame:SetScript("OnShow", nil)
-    frame:SetScript("OnHide", nil)
-    frame:SetScript("OnSizeChanged", nil)
-    frame:SetParent(UIParent)
-    frame:ClearAllPoints()
-    frame:Hide()
-  end)
   self.abilityWrappersPool = CreateFramePool("Frame", UIParent, nil, function(_, frame)
     frame:SetScript("OnShow", nil)
     frame:SetScript("OnHide", nil)
@@ -20,6 +12,7 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
     frame:ClearAllPoints()
     frame:Hide()
   end)
+  self.auraIconPool = addonTable.Display.GeneratePool(addonTable.Display.AuraIconMixin)
   self.cooldownPool = addonTable.Display.GeneratePool(addonTable.Display.CooldownMixin)
   self.auraFromItemPool = addonTable.Display.GeneratePool(addonTable.Display.AuraFromItemMixin)
   self.abilityBarPool = addonTable.Display.GeneratePool(addonTable.Display.AbilityStatusBarMixin)
@@ -48,19 +41,19 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
       if not hookedAuras[itemFrame] then
         hooksecurefunc(itemFrame, "Show", function()
           local parent = itemFrame:GetParent()
-          if self.auraWrappersPool:IsActive(parent) then
+          if self.auraIconPool:IsActive(parent) then
             parent:Show()
           end
         end)
         hooksecurefunc(itemFrame, "Hide", function()
           local parent = itemFrame:GetParent()
-          if self.auraWrappersPool:IsActive(parent) then
+          if self.auraIconPool:IsActive(parent) then
             parent:Hide()
           end
         end)
         hooksecurefunc(itemFrame, "SetShown", function(_, value)
           local parent = itemFrame:GetParent()
-          if self.auraWrappersPool:IsActive(parent) then
+          if self.auraIconPool:IsActive(parent) then
             parent:SetShown(value)
           end
         end)
@@ -99,12 +92,10 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
       for i = 1, #self.auraIcons do
         self.auraIcons[i]:SetParent(addonTable.hiddenFrame)
       end
-      for frame in self.auraWrappersPool:EnumerateActive() do
+      for frame in self.auraIconPool:EnumerateActive() do
         local aura = self.auraIcons[frame.auraIndex]
         if aura then
-          aura:SetParent(frame)
-          aura:ClearAllPoints()
-          aura:SetPoint("CENTER", frame)
+          frame:UpdateSource(aura)
         end
       end
     end)
@@ -157,7 +148,7 @@ end
 
 function addonTable.Display.LayoutManagerMixin:Delayout()
   self.cooldownPool:ReleaseAll()
-  self.auraWrappersPool:ReleaseAll()
+  self.auraIconPool:ReleaseAll()
   self.abilityWrappersPool:ReleaseAll()
   self.auraFromItemPool:ReleaseAll()
   self.auraStatusBarPool:ReleaseAll()
@@ -245,21 +236,12 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
     end
     local auraIndex = addonTable.State.CDM.auraOrder[addonTable.State.CDM.auraMap[spellID]]
     local aura = self.auraIcons[auraIndex]
-    local frame = self.auraWrappersPool:Acquire()
-    frame.auraIndex = auraIndex
     if aura then
-      aura:SetParent(frame)
-      aura:ClearAllPoints()
-      aura:SetPoint("CENTER", frame)
-      frame:Show()
-      local _, overlay = aura:GetRegions()
-      overlay:Hide()
-      addonTable.Display.StyleIcon({id  = details.style}, frame, aura.Icon, aura.Applications.Applications, {aura.Icon}, {aura.Cooldown})
-      frame:SetShown(aura:IsShown())
+      local frame = self.auraIconPool:Acquire()
+      frame.auraIndex = auraIndex
+      frame:Setup(aura, details)
+      return frame
     end
-    frame:SetSize(addonTable.Constants.nativeSize - 4, addonTable.Constants.nativeSize - 4)
-
-    return frame
   elseif details.resource.kind == "aura" and addonTable.Constants.AurasFromItems[spellID] then
     local frame = self.auraFromItemPool:Acquire()
     frame:Show()

@@ -30,6 +30,9 @@ function addonTable.Designer.IconMixin:OnLoad()
   self.KeyBindingFrame.text:SetPoint("TOPRIGHT", -2, -2)
   self.KeyBindingFrame.text:SetTextColor(0.7, 0.7, 0.7)
 
+  self.DebuffBorder = addonTable.Utilities.InitFrameWithMixin(self, addonTable.Display.AuraDebuffBorderMixin)
+  self.DebuffBorder:SetAllPoints(self.Icon)
+
   self:SetScript("OnEnter", self.OnEnter)
   self:SetScript("OnLeave", self.OnLeave)
 
@@ -58,10 +61,14 @@ end
 function addonTable.Designer.IconMixin:Setup(details)
   self.details = details
   local texture
+  self.DebuffBorder:Hide()
   if details.resource.spellID then
     texture = C_Spell.GetSpellTexture(details.resource.spellID)
     if details.resource.kind == "aura" then
       self.Icon:SetDesaturated(not addonTable.Utilities.IsAuraSpellKnown(details.resource.spellID) or false)
+      self.DebuffBorder:Show()
+      self.DebuffBorder:Setup(details)
+      self.DebuffBorder:SetFrameLevel(self:GetFrameLevel() + 4)
     elseif details.resource.kind == "ability" then
       self.Icon:SetDesaturated(not addonTable.Utilities.IsAbilitySpellKnown(details.resource.spellID) or false)
     end

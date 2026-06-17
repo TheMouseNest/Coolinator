@@ -49,6 +49,8 @@ Display/AuraStatusBar.lua
 Display/AbilityStatusBar.lua
 Display/ClassResourceStatusBar.lua
 Display/AuraFromItem.lua
+Display/AuraIcon.lua
+Display/AuraDebuffBorder.lua
 Display/BaseLayout.lua
 Display/Layout.lua
 

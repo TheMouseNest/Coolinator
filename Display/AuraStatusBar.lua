@@ -51,11 +51,15 @@ function addonTable.Display.AuraStatusBarMixin:Setup(sourceWidget, details)
     icon.Applications:SetSize(30, 10)
     icon.Applications:SetPoint("BOTTOMRIGHT", -5, 5)
 
+    local debuffBorder = addonTable.Utilities.InitFrameWithMixin(self, addonTable.Display.AuraDebuffBorderMixin)
+    debuffBorder:SetAllPoints(icon)
+
     sourceFrames[sourceWidget] = {
       icon = icon,
       statusBar = statusBar,
       background = background,
       border = border,
+      debuffBorder = debuffBorder,
       borderWrapper = borderWrapper,
       borderMask = borderMask,
       duration = statusBar.Duration,

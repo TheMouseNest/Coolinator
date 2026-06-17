@@ -36,8 +36,8 @@ function addonTable.Display.StyleIcon(styleSettings, parent, icon, count, masked
 
   if styleID == "square" then
     local asset = addonTable.Assets.IconBorders["Cooli: 1px"]
-    mask:SetTexture(asset.mask)
-    parent.border:SetTexture(asset.file, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+    mask:SetTexture(asset.mask, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+    parent.border:SetTexture(asset.file)
     parent.border:SetVertexColor(0, 0, 0)
     parent.border:SetSize(addonTable.Constants.nativeSize, addonTable.Constants.nativeSize)
     for _, c in ipairs(cooldowns) do
