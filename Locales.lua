@@ -14,7 +14,7 @@ local Locales = {
   itIT = {},
 }
 
-PLATYNATOR_LOCALES = Locales
+COOLINATOR_LOCALES = Locales
 
 local L = Locales.enUS
 
