@@ -91,6 +91,8 @@ function addonTable.Display.CooldownMixin:OnEvent(eventName, data, ...)
     end
   elseif eventName == "SPELL_UPDATE_USABLE" and self.spellID then
     self.NotUsable:SetShown(not C_Spell.IsSpellUsable(self.spellID))
+  elseif eventName == "SPELL_UPDATE_CHARGES" and self.spellID then
+    self:UpdateSpellCharges()
   end
 end
 
@@ -125,6 +127,7 @@ function addonTable.Display.CooldownMixin:Enable()
   self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
   self:RegisterEvent("SPELL_RANGE_CHECK_UPDATE")
   self:RegisterEvent("SPELL_UPDATE_USABLE")
+  self:RegisterEvent("SPELL_UPDATE_CHARGES")
 
   addonTable.CallbackRegistry:RegisterCallback("UpdateSpellIcons", function(_, spellID)
     if self.spellID and (not spellID or C_Spell.GetBaseSpell(self.spellID) == spellID) then
@@ -173,13 +176,16 @@ function addonTable.Display.CooldownMixin:UpdateBindingText()
     return
   end
   if self.spellID then
-    self.KeyBindingFrame.text:SetText(addonTable.State.Bindings.spells[C_Spell.GetBaseSpell(self.spellID)] or "")
+    local binding = addonTable.State.Bindings.spells[C_Spell.GetBaseSpell(self.spellID)]
+    self.KeyBindingFrame.text:SetText(binding and binding.binding or "")
   elseif self.itemID then
-    self.KeyBindingFrame.text:SetText(addonTable.State.Bindings.items[self.itemID] or "")
+    local binding = addonTable.State.Bindings.items[self.itemID]
+    self.KeyBindingFrame.text:SetText(binding and binding.binding or "")
   elseif self.equipmentSlot then
     local location = ItemLocation:CreateFromEquipmentSlot(self.equipmentSlot)
     if C_Item.DoesItemExist(location) then
-      self.KeyBindingFrame.text:SetText(addonTable.State.Bindings.items[C_Item.GetItemID(location)] or "")
+      local binding = addonTable.State.Bindings.items[C_Item.GetItemID(location)]
+      self.KeyBindingFrame.text:SetText(binding and binding.binding or "")
     end
   end
 end
@@ -202,8 +208,8 @@ function addonTable.Display.CooldownMixin:UpdateSpellByID(spellID, activationOff
 
   self.BaseCooldown:SetAlphaFromBoolean(gcd, 0, 1)
 
-  self.CountFrame.text:SetText(C_Spell.GetSpellDisplayCount(spellID))
   self.Icon:SetTexture(C_Spell.GetSpellTexture(spellID))
+  self:UpdateSpellCharges()
 
   if not activationOff then
     self:SetActivationAlert(C_SpellActivationOverlay.IsSpellOverlayed(spellID))
@@ -217,6 +223,15 @@ function addonTable.Display.CooldownMixin:UpdateSpellByID(spellID, activationOff
   end
   local isUsable = C_Spell.IsSpellUsable(self.spellID)
   self.NotUsable:SetShown(not isUsable)
+end
+
+function addonTable.Display.CooldownMixin:UpdateSpellCharges()
+  local binding = addonTable.State.Bindings.spells[C_Spell.GetBaseSpell(self.spellID)]
+  if binding then
+    self.CountFrame.text:SetText(C_ActionBar.GetActionDisplayCount(binding.action))
+  else
+    self.CountFrame.text:SetText(C_Spell.GetSpellDisplayCount(self.spellID))
+  end
 end
 
 function addonTable.Display.CooldownMixin:UpdateItemByID(itemID)
