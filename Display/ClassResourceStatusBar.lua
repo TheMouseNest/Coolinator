@@ -100,7 +100,7 @@ local function GenerateBarForAuraResource(spellID, max, label)
   addonTable.Display.ClassResourceStatusBar[label] = mixin
 
   function mixin:OnLoad()
-    GenerateStatusBar(self)
+    addonTable.Display.GenerateStatusBar(self)
     self.statusBar:SetMinMaxValues(0, max)
   end
 
@@ -138,7 +138,7 @@ local function GenerateBarForResource(primaryResource, label)
   addonTable.Display.ClassResourceStatusBar[label] = {}
   local mixin = addonTable.Display.ClassResourceStatusBar[label]
 
-  mixin.OnLoad = GenerateStatusBar
+  mixin.OnLoad = addonTable.Display.GenerateStatusBar
 
   function mixin:OnEvent(eventName, ...)
     self:Import()
