@@ -132,6 +132,13 @@ L["ALIGNMENT"] = "Alignment"
 L["PLEASE_RELOAD_TO_GET_COOLINATOR_WORKING_REASON_X"] = "Please reload to get Coolinator working. Reason (%s)"
 L["DUE_TO_AURA_BARS_CHANGING_RELOAD_REQUIRED"] = "Due to aura bars changing a reload is required for Coolinator function"
 
+L["SKYRIDING"] = "Skyriding"
+L["MOUNTED"] = "Mounted"
+L["COMBAT"] = "Combat"
+L["WORLD"] = "World"
+L["INSTANCE"] = "Instance"
+L["SHOW_WHEN"] = "Show when"
+
 L["OPTIONS"] = "Options"
 L["DELETE"] = "Delete"
 

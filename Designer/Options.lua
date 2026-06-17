@@ -55,6 +55,25 @@ local function GenerateOptions(parent, yOffset, xOffset, entries)
       frame = addonTable.CustomiseDialog.Components.GetColorPicker(parent, e.label, 28 + xOffset, Setter)
     elseif e.kind == "colorPickerWithCheckbox" then
       frame = addonTable.CustomiseDialog.Components.GetColorPickerWithCheckbox(parent, e.label, 28 + xOffset, Setter)
+    elseif e.kind == "situationDropdown" then
+      frame = addonTable.CustomiseDialog.Components.GetBasicDropdown(parent, e.label)
+      local function callback(kind)
+        return function()
+          local value = Getter()
+          return value and value[kind]
+        end,
+        function()
+          Getter()[kind] = not Getter()[kind]
+          Setter(kind)
+        end
+      end
+      frame.DropDown:SetupMenu(function(_, rootDescription)
+        rootDescription:CreateCheckbox(addonTable.Locales.COMBAT, callback("combat"))
+        rootDescription:CreateCheckbox(addonTable.Locales.WORLD, callback("world"))
+        rootDescription:CreateCheckbox(addonTable.Locales.INSTANCE, callback("instance"))
+        rootDescription:CreateCheckbox(addonTable.Locales.SKYRIDING, callback("skyriding"))
+        rootDescription:CreateCheckbox(addonTable.Locales.MOUNTED, callback("mounted"))
+      end)
     end
 
     if frame then

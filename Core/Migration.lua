@@ -79,6 +79,22 @@ local function Textsv6(group)
   end
 end
 
+local function ShowConditionsv7(group)
+  group.show = {
+    combat = true,
+    mounted = true,
+    skyriding = true,
+    world = true,
+    instance = true,
+  }
+  for i = #group.entries, 1, -1 do
+    local entry = group.entries[i]
+    if entry.kind == "group" then
+      ShowConditionsv7(entry)
+    end
+  end
+end
+
 function addonTable.Core.UpgradeDesign(design)
   if not design.version or design.version < 1 then
     AddAlignment(design)
@@ -101,6 +117,11 @@ function addonTable.Core.UpgradeDesign(design)
   if design.version < 6 then
     Textsv6(design)
     design.version = 6
+  end
+
+  if design.version < 9 then
+    ShowConditionsv7(design)
+    design.version = 9
   end
 end
 

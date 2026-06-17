@@ -779,6 +779,16 @@ addonTable.Designer.WidgetConfiguration = {
                 return details.padding * 100
               end,
             },
+            { kind = "spacer" },
+            {
+              label = addonTable.Locales.SHOW_WHEN,
+              kind = "situationDropdown",
+              setter = function(details, value)
+              end,
+              getter = function(details)
+                return details.show
+              end,
+            },
           }
         }
       }

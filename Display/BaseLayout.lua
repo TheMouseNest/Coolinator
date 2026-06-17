@@ -3,15 +3,6 @@ local addonTable = select(2, ...)
 
 addonTable.Display.BaseLayoutManagerMixin = {}
 function addonTable.Display.BaseLayoutManagerMixin:OnLoad()
-  self.wrappersPool = CreateFramePool("Frame", UIParent, nil, function(_, frame)
-    frame:SetScript("OnShow", nil)
-    frame:SetScript("OnHide", nil)
-    frame:SetScript("OnSizeChanged", nil)
-    frame:ClearAllPoints()
-    frame:Hide()
-    frame:SetParent(UIParent)
-  end)
-
   self.toArrange = {}
 end
 
@@ -37,8 +28,9 @@ local function AnchorStandalone(widget, anchor)
 end
 
 function addonTable.Display.BaseLayoutManagerMixin:GetGroup(details)
-  local wrapper = self.wrappersPool:Acquire()
+  local wrapper = self.groupPool:Acquire()
   wrapper:Show()
+  wrapper:Setup(details)
   wrapper.children = {}
   wrapper.details = details
   for _, entry in ipairs(details.entries) do
