@@ -1,7 +1,7 @@
 ---@class addonTableCoolinator
 local addonTable = select(2, ...)
-addonTable.Locales = CopyTable(PLATYNATOR_LOCALES.enUS)
-for key, translation in pairs(PLATYNATOR_LOCALES[GetLocale()]) do
+addonTable.Locales = CopyTable(COOLINATOR_LOCALES.enUS)
+for key, translation in pairs(COOLINATOR_LOCALES[GetLocale()]) do
   addonTable.Locales[key] = translation
 end
 for key, translation in pairs(addonTable.Locales) do
