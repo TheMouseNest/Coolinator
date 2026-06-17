@@ -4,6 +4,13 @@ local addonTable = select(2, ...)
 addonTable.Display.LayoutManagerMixin = CreateFromMixins(addonTable.Display.BaseLayoutManagerMixin)
 function addonTable.Display.LayoutManagerMixin:OnLoad()
   addonTable.Display.BaseLayoutManagerMixin.OnLoad(self)
+  self:SetScript("OnEvent", self.OnEvent)
+  self:RegisterUnitEvent("UNIT_ENTERED_VEHICLE", "player")
+  self:RegisterUnitEvent("UNIT_EXITED_VEHICLE", "player")
+
+  self.disabled = {}
+
+  self.groupPool = addonTable.Display.GeneratePool(addonTable.Display.GroupMixin)
   self.abilityWrappersPool = CreateFramePool("Frame", UIParent, nil, function(_, frame)
     frame:SetScript("OnShow", nil)
     frame:SetScript("OnHide", nil)
@@ -22,14 +29,13 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
     self.classPools[key] = addonTable.Display.GeneratePool(mixin)
   end
 
-
   addonTable.CallbackRegistry:RegisterCallback("Layout", self.Layout, self)
   addonTable.CallbackRegistry:RegisterCallback("Designer.Open", function()
-    self.disabled = true
+    self.disabled.designer = true
     self:Delayout()
   end)
   addonTable.CallbackRegistry:RegisterCallback("Designer.Close", function()
-    self.disabled = false
+    self.disabled.designer = nil
     self:Layout()
   end)
 
@@ -147,6 +153,8 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
 end
 
 function addonTable.Display.LayoutManagerMixin:Delayout()
+  local oldPending = self.pending
+  self.pending = true
   self.cooldownPool:ReleaseAll()
   self.auraIconPool:ReleaseAll()
   self.abilityWrappersPool:ReleaseAll()
@@ -156,14 +164,16 @@ function addonTable.Display.LayoutManagerMixin:Delayout()
   for _, pool in pairs(self.classPools) do
     pool:ReleaseAll()
   end
-  self.wrappersPool:ReleaseAll()
+  self.groupPool:ReleaseAll()
 
   self:SetScript("OnUpdate", nil)
   self.toArrange = {}
+
+  self.pending = oldPending
 end
 
 function addonTable.Display.LayoutManagerMixin:Layout()
-  if self.disabled then
+  if next(self.disabled) then
     return
   end
   self.pending = true
@@ -191,6 +201,20 @@ function addonTable.Display.LayoutManagerMixin:Layout()
 
   wrapper:SetParent(UIParent)
   wrapper:Show()
+
+  self.root = wrapper
+
+  if addonTable.Config.Get(addonTable.Config.Options.FADE_WHEN_MOUNTED) then
+    self.inCombat = InCombatLockdown()
+    self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
+    self:RegisterEvent("PLAYER_REGEN_DISABLED")
+    self:RegisterEvent("PLAYER_REGEN_ENABLED")
+    self:ApplySituation()
+  else
+    self:UnregisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
+    self:UnregisterEvent("PLAYER_REGEN_DISABLED")
+    self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+  end
 
   self.pending = false
 end
@@ -243,7 +267,7 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
       frame:Setup(aura, details)
       return frame
     end
-  elseif details.resource.kind == "aura" and addonTable.Constants.AurasFromItems[spellID] then
+  elseif details.resource.kind == "aura" and addonTable.Constants.AurasFromItems[details.resource.itemID] then
     local frame = self.auraFromItemPool:Acquire()
     frame:Show()
     frame:Setup(details)
@@ -305,5 +329,36 @@ function addonTable.Display.LayoutManagerMixin:GetBar(details)
     bar:Show()
     bar:Setup(details)
     return bar
+  end
+end
+
+function addonTable.Display.LayoutManagerMixin:OnEvent(eventName)
+  if eventName == "UNIT_ENTERED_VEHICLE" then
+    self.disabled.vehicle = true
+    self:Delayout()
+  elseif eventName == "UNIT_EXITED_VEHICLE" then
+    self.disabled.vehicle = nil
+  elseif eventName == "PLAYER_REGEN_DISABLED" then
+    self.inCombat = true
+    self:ApplySituation()
+  elseif eventName == "PLAYER_REGEN_ENABLED" then
+    self.inCombat = false
+    self:ApplySituation()
+  elseif eventName == "PLAYER_MOUNT_DISPLAY_CHANGED" then
+    C_Timer.After(0, function()
+      self:ApplySituation()
+    end)
+  end
+end
+
+function addonTable.Display.LayoutManagerMixin:ApplySituation()
+  self.root:SetAlpha(1)
+
+  if self.inCombat then
+    return
+  end
+
+  if IsMounted() then
+    self.root:SetAlpha(0.5)
   end
 end

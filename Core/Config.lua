@@ -9,6 +9,7 @@ local settings = {
   COMPRESS_LAYOUT = {key = "compress_layout", default = true, refresh = {addonTable.Constants.RefreshReason.Design}},
   USE_BLIZZARD_WIDGETS = {key = "use_blizzard_widgets", default = false, refresh = {addonTable.Constants.RefreshReason.Design}},
   SHOW_KEYBINDINGS = {key = "show_keybindings", default = false, refresh = {addonTable.Constants.RefreshReason.Design}},
+  FADE_WHEN_MOUNTED = {key = "fade_when_mounted", default = false, refresh = {addonTable.Constants.RefreshReason.Design}},
 
   CURRENT_SKIN = {key = "current_skin", default = "blizzard"},
 }

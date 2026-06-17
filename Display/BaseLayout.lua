@@ -3,15 +3,6 @@ local addonTable = select(2, ...)
 
 addonTable.Display.BaseLayoutManagerMixin = {}
 function addonTable.Display.BaseLayoutManagerMixin:OnLoad()
-  self.wrappersPool = CreateFramePool("Frame", UIParent, nil, function(_, frame)
-    frame:SetScript("OnShow", nil)
-    frame:SetScript("OnHide", nil)
-    frame:SetScript("OnSizeChanged", nil)
-    frame:ClearAllPoints()
-    frame:Hide()
-    frame:SetParent(UIParent)
-  end)
-
   self.toArrange = {}
 end
 
@@ -37,8 +28,11 @@ local function AnchorStandalone(widget, anchor)
 end
 
 function addonTable.Display.BaseLayoutManagerMixin:GetGroup(details)
-  local wrapper = self.wrappersPool:Acquire()
+  local wrapper = self.groupPool:Acquire()
   wrapper:Show()
+  wrapper:SetAlpha(details.layout == "standalone" and 1 or details.alpha)
+  wrapper:SetScale(details.layout == "standalone" and 1 or details.scale)
+  wrapper:Setup(details)
   wrapper.children = {}
   wrapper.details = details
   for _, entry in ipairs(details.entries) do
@@ -156,9 +150,6 @@ function addonTable.Display.BaseLayoutManagerMixin:ArrangeGroup(wrapper, details
     end
     PixelUtil.SetSize(wrapper, width, maxHeight)
 
-    wrapper:SetAlpha(details.alpha)
-    wrapper:SetScale(details.scale)
-
     self:AddHooksForChanges(wrapper.children)
   elseif details.layout == "vertical" then
     local point = "BOTTOM"
@@ -182,8 +173,6 @@ function addonTable.Display.BaseLayoutManagerMixin:ArrangeGroup(wrapper, details
       height = height - details.padding * offsetSize
     end
     PixelUtil.SetSize(wrapper, maxWidth, height)
-    wrapper:SetAlpha(details.alpha)
-    wrapper:SetScale(details.scale)
 
     self:AddHooksForChanges(wrapper.children)
   else -- standalone
@@ -192,7 +181,5 @@ function addonTable.Display.BaseLayoutManagerMixin:ArrangeGroup(wrapper, details
         child:ApplySize()
       end
     end
-    wrapper:SetAlpha(1)
-    wrapper:SetScale(1)
   end
 end

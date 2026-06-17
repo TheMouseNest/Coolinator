@@ -202,7 +202,7 @@ local function GenerateKindOptions(parent, options)
           wrapper.button = tabsPool:Acquire()
           wrapper.button:SetText(entry.label)
           wrapper.button:GetScript("OnShow")(wrapper.button) -- auto size
-            wrapper.button:Show()
+          wrapper.button:Show()
           wrapper:SetAllPoints()
           wrapper.children = {entry}
           entry:SetParent(wrapper)

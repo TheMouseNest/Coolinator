@@ -45,7 +45,7 @@ addonTable.Designer.Defaults = {
     alpha = 1,
     scale = 1,
     alignment = "CENTER",
-    entries = {}
+    entries = {},
   },
   AuraIcon = {
     kind = "icon",

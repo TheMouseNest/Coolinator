@@ -215,3 +215,12 @@ function addonTable.Designer.BarWithIconMixin:ApplySize()
     self.statusBar:SetPoint(self.details.icon.position == "left" and "TOP" or "BOTTOM")
   end
 end
+
+addonTable.Designer.GroupMixin = {}
+
+function addonTable.Designer.GroupMixin:OnLoad()
+end
+
+function addonTable.Designer.GroupMixin:Setup(details)
+  self.details = details
+end

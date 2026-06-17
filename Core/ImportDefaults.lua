@@ -143,7 +143,7 @@ function addonTable.Core.GenerateDefaultCDMLayout()
     layout = "standalone",
     entries = {
       result
-    }
+    },
   }
   addonTable.Core.RemoveDeadGroups(final)
   return final

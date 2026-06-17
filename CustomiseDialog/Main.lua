@@ -298,6 +298,13 @@ local function SetupBehaviour(parent)
   compressLayout:SetPoint("TOP")
   table.insert(allFrames, compressLayout)
 
+  local fadeWhenMounted = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.FADE_WHEN_MOUNTED, 28, function(value)
+    addonTable.Config.Set(addonTable.Config.Options.FADE_WHEN_MOUNTED, not addonTable.Config.Get(addonTable.Config.Options.FADE_WHEN_MOUNTED))
+  end)
+  fadeWhenMounted.option = addonTable.Config.Options.FADE_WHEN_MOUNTED
+  fadeWhenMounted:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, fadeWhenMounted)
+
   local useBlizzardWidgets = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.USE_BLIZZARD_WIDGETS, 28, function(value)
     addonTable.Config.Set(addonTable.Config.Options.USE_BLIZZARD_WIDGETS, not addonTable.Config.Get(addonTable.Config.Options.USE_BLIZZARD_WIDGETS))
   end)

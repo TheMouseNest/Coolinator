@@ -41,6 +41,7 @@ L["EDIT_THE_ICONS_AND_BARS_ONSCREEN"] = "Edit the icons and bars onscreen by cli
 L["INCOMPATIBLE_WIDGET_TYPE"] = "Incompatible widget type"
 L["BEHAVIOUR"] = "Behaviour"
 L["REMOVE_SPACING_FOR_HIDDEN_AURAS"] = "Remove spacing for hidden auras"
+L["FADE_WHEN_MOUNTED"] = "Fade when mounted"
 L["USE_BLIZZARD_WIDGETS"] = "Use Blizzard widgets (no styling)"
 L["SHOW_KEYBINDINGS"] = "Show keybindings"
 

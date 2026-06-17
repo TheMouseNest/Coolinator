@@ -5,7 +5,7 @@ local LSM = LibStub("LibSharedMedia-3.0")
 
 addonTable.Display.ClassResourceStatusBar = {}
 
-local function GenerateStatusBar(self)
+function addonTable.Display.GenerateStatusBar(self)
   self:SetScript("OnEvent", self.OnEvent)
 
   self.statusBar = CreateFrame("StatusBar", nil, self)

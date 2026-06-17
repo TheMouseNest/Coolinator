@@ -66,6 +66,7 @@ function addonTable.Designer.LayoutManagerMixin:OnLoad()
   addonTable.Display.BaseLayoutManagerMixin.OnLoad(self)
   self:SetScript("OnEvent", self.OnEvent)
 
+  self.groupPool = addonTable.Display.GeneratePool(addonTable.Designer.GroupMixin, "")
   self.iconPool = addonTable.Display.GeneratePool(addonTable.Designer.IconMixin, "")
   self.barPool = addonTable.Display.GeneratePool(addonTable.Designer.BarMixin, "")
   self.barIconPool = addonTable.Display.GeneratePool(addonTable.Designer.BarWithIconMixin, "")
@@ -148,10 +149,11 @@ function addonTable.Designer.LayoutManagerMixin:GetIcon(details)
 end
 
 function addonTable.Designer.LayoutManagerMixin:Delayout()
+  self.pending = true
   self.iconPool:ReleaseAll()
   self.barPool:ReleaseAll()
   self.barIconPool:ReleaseAll()
-  self.wrappersPool:ReleaseAll()
+  self.groupPool:ReleaseAll()
 
   self.insertHorizontal:Hide()
   self.insertVertical:Hide()
@@ -159,6 +161,7 @@ function addonTable.Designer.LayoutManagerMixin:Delayout()
   self:SetScript("OnUpdate", nil)
   self:UnregisterAllEvents()
   self.toArrange = {}
+  self.pending = false
 end
 
 local function CheckChildren(details, checker)
