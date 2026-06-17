@@ -112,7 +112,7 @@ function addonTable.Display.AbilityStatusBarMixin:UpdateSpellByID(spellID)
   self.wrapper:SetAlphaFromBoolean(baseDuration:IsZero(), 0, 1)
 
   self.ticker = C_Timer.NewTicker(0.1, function()
-    baseDuration = C_Spell.GetSpellCooldownDuration(spellID)
+    baseDuration = C_Spell.GetSpellCooldownDuration(spellID, true)
     self.wrapper:SetAlphaFromBoolean(baseDuration:IsZero(), 0, 1)
   end)
 end
