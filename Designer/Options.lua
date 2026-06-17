@@ -193,6 +193,7 @@ local function GenerateKindOptions(parent, options)
       for _, entry in ipairs(paths[details.resource.kind]["*"] or {}) do
         if tabMap[entry.label] then
           local wrapper = tabMap[entry.label]
+          entry:SetParent(wrapper)
           entry:SetPoint("TOP", wrapper.children[#wrapper.children], "BOTTOM", 0, -30)
           entry:Show()
           table.insert(wrapper.children, entry)
@@ -216,6 +217,7 @@ local function GenerateKindOptions(parent, options)
         for _, entry in ipairs(paths[details.resource.kind][details.resource.resource] or {}) do
           if tabMap[entry.label] then
             local wrapper = tabMap[entry.label]
+            entry:SetParent(wrapper)
             entry:SetPoint("TOP", wrapper.children[#wrapper.children], "BOTTOM", 0, -30)
             entry:Show()
             table.insert(wrapper.children, entry)
