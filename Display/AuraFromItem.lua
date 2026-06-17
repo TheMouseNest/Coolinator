@@ -37,7 +37,7 @@ trackerFrame:SetScript("OnEvent", function(_, eventName, _, _, spellID)
     for spellID, time in pairs(trackerFrame.recorded) do
       if not addonTable.Constants.AurasFromItems[spellID].deathPersistent then
         trackerFrame.recorded[spellID] = nil
-        if trackerFrame.callbacksBySpellID then
+        if trackerFrame.callbacksBySpellID[spellID] then
           trackerFrame.callbacksBySpellID[spellID]()
         end
       end
