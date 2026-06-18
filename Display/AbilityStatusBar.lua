@@ -43,7 +43,6 @@ function addonTable.Display.AbilityStatusBarMixin:Enable(details)
     if not self.spellID then
       return
     end
-    print("in")
     local override = C_Spell.GetOverrideSpell(self.details.resource.spellID)
     if override ~= self.spellID then
       self:UpdateSpellByID(override)
