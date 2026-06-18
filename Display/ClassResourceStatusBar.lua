@@ -181,6 +181,119 @@ local function GenerateBarForResource(primaryResource, label)
   mixin.ApplySize = SizeStatusBar
 end
 
+local function GeneratePipResource(secondaryResource, label, divisor)
+  divisor = divisor or 1
+
+  addonTable.Display.ClassResourceStatusBar[label] = {}
+  local mixin = addonTable.Display.ClassResourceStatusBar[label]
+
+  mixin.OnLoad = addonTable.Display.GenerateStatusBar
+
+  function mixin:OnEvent(eventName, ...)
+    self:Import()
+  end
+
+  function mixin:Setup(details)
+    self:RegisterUnitEvent("UNIT_POWER_UPDATE", "player")
+    self:RegisterUnitEvent("UNIT_MAXPOWER", "player")
+
+    self.rawWidth, self.rawHeight, self.borderWidth, self.borderHeight, self.lowerScale = addonTable.Display.ApplyStatusBar(details, self.statusBar, self.border, self.borderMask, self.background)
+    self.details = details
+    self.index = details.index
+    self.statusBar:SetMinMaxValues(0, divisor)
+
+    self.borderWrapper:SetFrameLevel(self.statusBar:GetFrameLevel() + 2)
+
+    self:Import()
+  end
+
+  function mixin:Disable()
+    self:UnregisterAllEvents()
+  end
+
+  function mixin:Import()
+    local max = UnitPowerMax("player", secondaryResource)
+    local current = UnitPower("player", secondaryResource, true)
+
+    if max < self.index then
+      self:Hide()
+      return
+    else
+      self:Show()
+    end
+
+    local value = current/divisor
+    self.border:SetVertexColor(self.details.border.color.r, self.details.border.color.g, self.details.border.color.b)
+    if value >= self.index then
+      self.border:SetVertexColor(self.details.border.readyColor.r, self.details.border.readyColor.g, self.details.border.readyColor.b)
+      self.statusBar:SetValue(divisor)
+    elseif math.floor(value) < self.index then
+      self:SetShown(self.details.showEmpty)
+      self.statusBar:SetValue(0)
+    else
+      self.statusBar:SetValue(current%divisor)
+    end
+  end
+
+  mixin.ApplySize = SizeStatusBar
+end
+
+local function GenerateRunesResource(label)
+  addonTable.Display.ClassResourceStatusBar[label] = {}
+  local mixin = addonTable.Display.ClassResourceStatusBar[label]
+
+  function mixin:OnLoad()
+    addonTable.Display.GenerateStatusBar(self)
+    self.duration = C_DurationUtil.CreateDuration()
+  end
+
+  function mixin:OnEvent(eventName, ...)
+    self:Import()
+  end
+
+  function mixin:Setup(details)
+    self:RegisterEvent("RUNE_POWER_UPDATE")
+
+    self.rawWidth, self.rawHeight, self.borderWidth, self.borderHeight, self.lowerScale = addonTable.Display.ApplyStatusBar(details, self.statusBar, self.border, self.borderMask, self.background)
+    self.details = details
+    self.index = self.details.index
+
+    self.statusBar:SetMinMaxValues(0, 400)
+
+    self.borderWrapper:SetFrameLevel(self.statusBar:GetFrameLevel() + 2)
+
+    self:Import()
+  end
+
+  function mixin:Disable()
+    self:UnregisterAllEvents()
+  end
+
+  function mixin:Import()
+    local times = {}
+    for i = 1, 5 do
+      table.insert(times, {GetRuneCooldown(i)})
+    end
+    table.sort(times, function(a, b) return a[1] < b[1] end)
+    local startTime, duration, isRuneReady = unpack(times[self.index])
+
+    self:SetShown(self.details.showEmpty or startTime ~= 0 or isRuneReady)
+
+    self.border:SetVertexColor(self.details.border.color.r, self.details.border.color.g, self.details.border.color.b)
+    if isRuneReady then
+      self.border:SetVertexColor(self.details.border.readyColor.r, self.details.border.readyColor.g, self.details.border.readyColor.b)
+      self.statusBar:SetValue(400)
+    elseif  startTime ~= 0 then
+      self.duration:SetTimeFromStart(startTime, duration)
+      self.statusBar:SetTimerDuration(self.duration)
+    else
+      self.statusBar:SetValue(0)
+    end
+  end
+
+  mixin.ApplySize = SizeStatusBar
+end
+
 GenerateBarForResource(Enum.PowerType.Energy, "energy")
 GenerateBarForResource(Enum.PowerType.Mana, "mana")
 GenerateBarForResource(Enum.PowerType.Rage, "rage")
@@ -190,6 +303,10 @@ GenerateBarForResource(Enum.PowerType.Focus, "focus")
 GenerateBarForResource(Enum.PowerType.Insanity, "insanity")
 GenerateBarForResource(Enum.PowerType.Pain, "pain")
 GenerateBarForResource(Enum.PowerType.LunarPower, "lunar-power")
+GeneratePipResource(Enum.PowerType.SoulShards, "soul-shards", 10)
+GeneratePipResource(Enum.PowerType.HolyPower, "holy-power")
+GeneratePipResource(Enum.PowerType.ComboPoints, "combo-points")
+GenerateRunesResource("runes")
 
 GenerateBarForAuraResource(205473, 5, "icicles")
 GenerateBarForAuraResource(260286, 3, "tip-of-the-spear")

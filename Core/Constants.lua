@@ -52,7 +52,7 @@ addonTable.Constants.ClassResources = {
   [1455] = {},
   -- Demon Hunter
   ["DEMONHUNTER"] = {"fury", "pain"},
-  [577] = {"havoc"}, -- Havoc,
+  [577] = {"fury"}, -- Havoc,
   [581] = {"pain"}, -- Vengeance
   [1480] = {"pain"}, -- Devourer
   [1456] = {},
@@ -156,6 +156,7 @@ addonTable.Constants.BarClassResourceLabelMap = {
   ["maelstrom"] = MAELSTROM,
   ["soul-shards"] = SOUL_SHARDS,
   ["stagger"] = STAGGER,
+  ["tip-of-the-spear"] = addonTable.Locales.TIP_OF_THE_SPEAR,
 }
 
 addonTable.Constants.IconResourceLabelMap = {

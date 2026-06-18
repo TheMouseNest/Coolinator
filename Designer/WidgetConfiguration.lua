@@ -459,7 +459,7 @@ addonTable.Designer.WidgetConfiguration = {
             {
               label = addonTable.Locales.WIDTH,
               kind = "slider",
-              min = 50, max = 300,
+              min = 20, max = 300,
               formatter = function(value) return value .. "%" end,
               setter = function(details, value)
                 details.width = value / 100
@@ -638,6 +638,18 @@ addonTable.Designer.WidgetConfiguration = {
       ["lunar-power"] = {
         barTextureNoForegroundColor,
         classBarThresholds,
+      },
+      ["runes"] = {
+        fullBarTextures
+      },
+      ["holy-power"] = {
+        fullBarTextures
+      },
+      ["combo-points"] = {
+        fullBarTextures
+      },
+      ["soul-shards"] = {
+        fullBarTextures
       },
     }
   },

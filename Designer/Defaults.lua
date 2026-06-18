@@ -37,16 +37,52 @@ local function GetPrimaryClassResource(resource, fgColor, bgColor, t1, t2, t3)
   }
 end
 
-addonTable.Designer.Defaults = {
-  Group = {
-    kind = "group",
-    layout = "horizontal",
-    padding = 0.2,
+local Group = {
+  kind = "group",
+  layout = "horizontal",
+  padding = 0.2,
+  alpha = 1,
+  scale = 1,
+  alignment = "CENTER",
+  entries = {},
+}
+
+local function GetPipGroup(resource, limit, ready, fill, empty)
+  local pip = {
+    kind = "bar",
+    resource = {kind = "class", resource = resource},
+    width = 0.3,
+    height = 0.8,
+    scale = 1.5,
     alpha = 1,
-    scale = 1,
-    alignment = "CENTER",
-    entries = {},
-  },
+    layout = "horizontal",
+    foreground = {
+      asset = "Cooli: Fade Bottom",
+      color = fill,
+    },
+    background = {
+      asset = "Cooli: Solid White",
+      color = empty,
+    },
+    border = {
+      asset = "Cooli: 7px",
+      color = GetColor("9d9d9d"),
+      readyColor = ready,
+    },
+  }
+  local group = CopyTable(Group)
+  group.locked = true
+  for i = 1, limit do
+    table.insert(group.entries, CopyTable(pip))
+    group.entries[#group.entries].index = #group.entries
+    group.entries[#group.entries].showEmpty = true
+  end
+
+  return group
+end
+
+addonTable.Designer.Defaults = {
+  Group = Group,
   AuraIcon = {
     kind = "icon",
     style = "blizzard",
@@ -178,6 +214,10 @@ addonTable.Designer.Defaults = {
         {limit = 1, color = {r = 1, g = 1, b = 0}, fadedColor = {r = 0.7, g = 0.7, b = 0}},
         {limit = 2, color = {r = 1, g = 0, b = 0}, fadedColor = {r = 0.7, g = 0, b = 0}},
       }
-    }
+    },
+    ["soul-shards"] = GetPipGroup("soul-shards", 5, GetColor("7100b3"), GetColor("e23cff"), GetColor("dfa0ff", .3)),
+    ["holy-power"] = GetPipGroup("holy-power", 5, GetColor("ba7c00"), GetColor("ffc021"), GetColor("fff899", .3)),
+    ["combo-points"] = GetPipGroup("combo-points", 7, GetColor("b4006c"), GetColor("ff2f32"), GetColor("ffaaab", .3)),
+    ["runes"] = GetPipGroup("runes", 5, GetColor("00479d"), GetColor("58a9ff"), GetColor("a7ddff", .3)),
   }
 }

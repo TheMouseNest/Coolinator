@@ -275,10 +275,11 @@ local function GenerateKindOptions(parent, options)
   return container
 end
 
-local function GetMetaDetails(detailsList)
+local function GetMetaDetails(detailsList, nested)
   if #detailsList <= 1 then
     return detailsList[1]
   end
+  local mapping = {}
   local detailsMeta = {
     __newindex = function(tbl, index, value)
       for _, d in ipairs(detailsList) do
@@ -286,7 +287,19 @@ local function GetMetaDetails(detailsList)
       end
     end,
     __index = function(tbl, index)
-      return detailsList[1][index]
+      if type(detailsList[1][index]) == "table" and not nested then
+        if mapping[index] then
+          return mapping[index]
+        end
+        local list = {}
+        for _, details in ipairs(detailsList) do
+          table.insert(list, details[index])
+        end
+        mapping[index] = GetMetaDetails(list, true)
+        return mapping[index]
+      else
+        return detailsList[1][index]
+      end
     end
   }
   local details = {}

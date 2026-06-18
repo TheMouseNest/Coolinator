@@ -21,12 +21,14 @@ addonTable.Assets.BarBordersSliced = {
   ["Cooli: Transparent"] = {file = "Interface/AddOns/Coolinator/Assets/Special/transparent.png", width = 20, height = 20, isTransparent = true, margin = 0.5, extra = 0, modifier = 1},
 
   ["Cooli: 1px"] = {file = "Interface/AddOns/Coolinator/Assets/BarBorders/1px-square.png", width = 20, height = 20, has4k = false, masked = true, margin = 0.3, extra = 0, modifier = 0.35, DPIScale = 1/2},
+  ["Cooli: 7px"] = {file = "Interface/AddOns/Coolinator/Assets/BarBorders/7px-square.png", width = 20, height = 20, has4k = false, masked = true, margin = 0.45, extra = 0, modifier = 0.35, DPIScale = 1/2},
 
   ["Cooli: Blizzard Midnight"] = {file = "Interface/AddOns/Coolinator/Assets/BarBorders/blizzard-midnight.png", width = 34, height = 34, margin = 0.35, extra = 12, modifier = 0.4},
 }
 
 addonTable.Assets.BarMasks = {
   ["Cooli: Solid"] = {file = "Interface/AddOns/Coolinator/Assets/Special/white.png", width = 10, height = 10},
+  ["Cooli: 7px"] = {file = "Interface/AddOns/Coolinator/Assets/BarBorders/7px-square-mask.png", width = 20, height = 20},
 }
 
 addonTable.Assets.IconBorders = {
