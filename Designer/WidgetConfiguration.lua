@@ -146,6 +146,17 @@ local fullBarTextures = {
     },
   }
 }
+local pipBarTextures = CopyTable(fullBarTextures)
+table.insert(pipBarTextures.entries, 3, {
+  label = addonTable.Locales.READY_BORDER_COLOR,
+  kind = "colorPicker",
+  setter = function(details, value)
+    details.border.readyColor = value
+  end,
+  getter = function(details)
+    return details.border.readyColor
+  end,
+})
 local barTextureNoForegroundColor = {
   label = addonTable.Locales.TEXTURES,
   entries = {
@@ -640,16 +651,19 @@ addonTable.Designer.WidgetConfiguration = {
         classBarThresholds,
       },
       ["runes"] = {
-        fullBarTextures
+        pipBarTextures
       },
       ["holy-power"] = {
-        fullBarTextures
+        pipBarTextures
       },
       ["combo-points"] = {
-        fullBarTextures
+        pipBarTextures
       },
       ["soul-shards"] = {
-        fullBarTextures
+        pipBarTextures
+      },
+      ["essence"] = {
+        pipBarTextures
       },
     }
   },
