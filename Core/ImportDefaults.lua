@@ -17,8 +17,14 @@ function addonTable.Core.GenerateDefaultCDMLayout()
   spellEssential = tFilter(spellEssential, function(id) return C_CooldownViewer.GetCooldownViewerCooldownInfo(id).flags ~= Enum.CooldownSetSpellFlags.HideByDefault end, true)
   spellUtility = tFilter(spellUtility, function(id) return C_CooldownViewer.GetCooldownViewerCooldownInfo(id).flags ~= Enum.CooldownSetSpellFlags.HideByDefault end, true)
 
-  auraTracked = tFilter(auraTracked, function(id) return C_CooldownViewer.GetCooldownViewerCooldownInfo(id).flags ~= Enum.CooldownSetSpellFlags.HideByDefault end, true)
-  auraBars = tFilter(auraBars, function(id) return C_CooldownViewer.GetCooldownViewerCooldownInfo(id).flags ~= Enum.CooldownSetSpellFlags.HideByDefault end, true)
+  auraTracked = tFilter(auraTracked, function(id)
+    local flags = C_CooldownViewer.GetCooldownViewerCooldownInfo(id).flags
+    return bit.band(Enum.CooldownSetSpellFlags.HideByDefault, flags) == 0
+  end, true)
+  auraBars = tFilter(auraBars, function(id)
+    local flags = C_CooldownViewer.GetCooldownViewerCooldownInfo(id).flags
+    return bit.band(Enum.CooldownSetSpellFlags.HideByDefault, flags) == 0
+  end, true)
 
   local result = {
     kind = "group",
