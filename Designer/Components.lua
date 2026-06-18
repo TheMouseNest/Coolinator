@@ -50,7 +50,7 @@ function addonTable.Designer.IconMixin:UpdateBindingText()
     return
   end
   local binding
-  if self.details.resource.spellID then
+  if self.details.resource.spellID and self.details.resource.kind == "ability" then
     binding = addonTable.State.Bindings.spells[C_Spell.GetBaseSpell(self.details.resource.spellID)]
   elseif self.details.resource.itemID then
     binding = addonTable.State.Bindings.items[self.details.resource.itemID]
