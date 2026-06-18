@@ -23,7 +23,7 @@ function addonTable.Core.AutoGenerateLayout(name)
 end
 
 local actionButtons = {
-  { prefix = "ACTIONBUTTON", count = 12, start = 1},
+  { prefix = "ACTIONBUTTON", count = 12, start = 97},
   { prefix = "MULTIACTIONBAR1BUTTON", count = 12, start = 61},
   { prefix = "MULTIACTIONBAR2BUTTON", count = 12, start = 49},
   { prefix = "MULTIACTIONBAR3BUTTON", count = 12, start = 25},
@@ -42,14 +42,14 @@ function addonTable.Core.StoreKeyBindings()
       local key1 = GetBindingKey(details.prefix .. i)
       if key1 then
         local action = details.start + i - 1
-        local actionType, id = GetActionInfo(action)
+        local actionType, id, subType = GetActionInfo(action)
         if actionType == "spell" then
           id = C_Spell.GetBaseSpell(id)
         end
         local text = GetBindingText(key1, 1)
-        if actionType == "spell" and spellMap[id] == nil then
+        if (actionType == "spell" or actionType == "macro" and subType == "spell") and spellMap[id] == nil then
           spellMap[id] = {binding = text, action = action}
-        elseif actionType == "item" and itemMap[id] == nil then
+        elseif (actionType == "item" or actionType == "macro" and subType == "item") and itemMap[id] == nil then
           itemMap[id] = {binding = text, action = action}
         end
       end
@@ -115,6 +115,7 @@ frame:RegisterEvent("SPELLS_CHANGED")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 frame:RegisterEvent("UPDATE_BINDINGS")
+frame:RegisterEvent("UPDATE_MACROS")
 frame:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
 frame:RegisterEvent("ACTIVE_PLAYER_SPECIALIZATION_CHANGED")
 frame:RegisterEvent("TRAIT_CONFIG_UPDATED")
@@ -129,7 +130,7 @@ frame:SetScript("OnEvent", function(_, eventName, data1, data2)
     addonTable.CallbackRegistry:TriggerEvent("Layout")
   elseif eventName == "PLAYER_EQUIPMENT_CHANGED" then
     addonTable.CallbackRegistry:TriggerEvent("Layout")
-  elseif eventName == "UPDATE_BINDINGS" or eventName == "ACTIONBAR_SLOT_CHANGED" then
+  elseif eventName == "UPDATE_BINDINGS" or eventName == "ACTIONBAR_SLOT_CHANGED" or eventName == "UPDATE_MACROS" then
     addonTable.State.Bindings = addonTable.Core.StoreKeyBindings()
     addonTable.CallbackRegistry:TriggerEvent("UpdateKeyBindings")
   end
