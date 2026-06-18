@@ -24,7 +24,10 @@ end
 
 local actionButtons = {
   { prefix = "ACTIONBUTTON", count = 12, start = 1},
-  { prefix = "ACTIONBUTTON", count = 12, start = 97},
+  { prefix = "ACTIONBUTTON", count = 12, start = 73}, -- Bonus bars
+  { prefix = "ACTIONBUTTON", count = 12, start = 85}, -- Bonus bars
+  { prefix = "ACTIONBUTTON", count = 12, start = 97}, -- Bonus bars
+  { prefix = "ACTIONBUTTON", count = 12, start = 109}, -- Bonus bars
   { prefix = "MULTIACTIONBAR1BUTTON", count = 12, start = 61},
   { prefix = "MULTIACTIONBAR2BUTTON", count = 12, start = 49},
   { prefix = "MULTIACTIONBAR3BUTTON", count = 12, start = 25},
