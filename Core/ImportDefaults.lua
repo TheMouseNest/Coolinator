@@ -62,12 +62,21 @@ function addonTable.Core.GenerateDefaultCDMLayout()
     }
   }
 
+  local seen = {}
   for _, id in ipairs(spellUtility) do
-    table.insert(result.entries[1].entries, {kind = "icon", resource = {kind = "ability", spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))}, height = 1, scale = 1, alpha = 1, style = "blizzard", showTooltips = true})
+    local spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))
+    if not seen[spellID] then
+      table.insert(result.entries[1].entries, {kind = "icon", resource = {kind = "ability", spellID = spellID}, height = 1, scale = 1, alpha = 1, style = "blizzard", showTooltips = true})
+    end
+    seen[spellID] = true
   end
 
   for _, id in ipairs(spellEssential) do
-    table.insert(result.entries[2].entries, {kind = "icon", resource = {kind = "ability", spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))}, height = 1, scale = 1, alpha = 1, style = "blizzard", showTooltips = true})
+    local spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))
+    if not seen[spellID] then
+      table.insert(result.entries[2].entries, {kind = "icon", resource = {kind = "ability", spellID = spellID}, height = 1, scale = 1, alpha = 1, style = "blizzard", showTooltips = true})
+    end
+    seen[spellID] = true
   end
 
   for _, id in ipairs(auraTracked) do

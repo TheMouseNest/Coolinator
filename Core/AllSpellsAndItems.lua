@@ -30,7 +30,7 @@ function addonTable.Core.GetAllAbilities()
 
   local function AutoIncludeBase(spellID)
     local base = C_Spell.GetBaseSpell(spellID)
-    if base then
+    if base and not seen[base] then
       seen[base] = true
     end
   end
@@ -47,13 +47,19 @@ function addonTable.Core.GetAllAbilities()
   end
   for _, ability in ipairs(abilityTracked) do
     local info = C_CooldownViewer.GetCooldownViewerCooldownInfo(ability)
+    local spellID = addonTable.Core.GetSpellFromCDMInfo(info)
+    if not seen[spellID] then
+      table.insert(result, spellID)
+    end
     RecordSeen(info)
-    table.insert(result, addonTable.Core.GetSpellFromCDMInfo(info))
   end
   for _, ability in ipairs(abilityBars) do
     local info = C_CooldownViewer.GetCooldownViewerCooldownInfo(ability)
+    local spellID = addonTable.Core.GetSpellFromCDMInfo(info)
+    if not seen[spellID] then
+      table.insert(result, spellID)
+    end
     RecordSeen(info)
-    table.insert(result, addonTable.Core.GetSpellFromCDMInfo(info))
   end
 
   -- Pull in remaing spells from spellbook, just in case Blizzard missed one
