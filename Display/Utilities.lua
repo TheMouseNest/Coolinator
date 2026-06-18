@@ -80,7 +80,6 @@ function addonTable.Display.GeneratePool(mixin, template)
     frame:Hide()
   end, false, function(frame)
     Mixin(frame, mixin)
-    frame.kind = "bar"
     frame:OnLoad()
   end)
 end
