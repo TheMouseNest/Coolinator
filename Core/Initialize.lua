@@ -23,6 +23,7 @@ function addonTable.Core.AutoGenerateLayout(name)
 end
 
 local actionButtons = {
+  { prefix = "ACTIONBUTTON", count = 12, start = 1},
   { prefix = "ACTIONBUTTON", count = 12, start = 97},
   { prefix = "MULTIACTIONBAR1BUTTON", count = 12, start = 61},
   { prefix = "MULTIACTIONBAR2BUTTON", count = 12, start = 49},
