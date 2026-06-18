@@ -294,7 +294,13 @@ local function GenerateEssenceResource(label)
       self.statusBar:SetValue(partial)
       self:SetScript("OnUpdate", function()
         partial = UnitPartialPower("player", secondaryResource)
-        self.statusBar:SetValue(partial, Enum.StatusBarInterpolation.ExponentialEaseOut)
+        if partial < self.statusBar:GetValue() then -- Gone backwards, so we're done
+          self.statusBar:SetValue(1000, Enum.StatusBarInterpolation.ExponentialEaseOut)
+          self.border:SetVertexColor(self.details.border.readyColor.r, self.details.border.readyColor.g, self.details.border.readyColor.b)
+          self:SetScript("OnUpdate", nil)
+        else
+          self.statusBar:SetValue(partial, Enum.StatusBarInterpolation.ExponentialEaseOut)
+        end
       end)
     end
   end
