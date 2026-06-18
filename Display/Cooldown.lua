@@ -132,13 +132,22 @@ function addonTable.Display.CooldownMixin:Enable()
   self:RegisterEvent("SPELL_UPDATE_USABLE")
   self:RegisterEvent("SPELL_UPDATE_CHARGES")
 
-  addonTable.CallbackRegistry:RegisterCallback("UpdateSpellIcons", function(_, spellID)
+  addonTable.CallbackRegistry:RegisterCallback("Update.SpellIcons", function(_, spellID)
     if self.spellID and (not spellID or C_Spell.GetBaseSpell(self.spellID) == spellID) then
       self.Icon:SetTexture(C_Spell.GetSpellTexture(self.spellID))
     end
   end, self)
-  addonTable.CallbackRegistry:RegisterCallback("UpdateKeyBindings", function(_, spellID)
+  addonTable.CallbackRegistry:RegisterCallback("Update.KeyBindings", function(_, spellID)
     self:UpdateBindingText()
+  end, self)
+  addonTable.CallbackRegistry:RegisterCallback("Update.SpellsDisplay", function(_, spellID)
+    if not self.spellID then
+      return
+    end
+    local override = C_Spell.GetOverrideSpell(self.details.resource.spellID)
+    if self.spellID and override ~= self.spellID then
+      self:UpdateSpellByID(override)
+    end
   end, self)
 end
 
@@ -150,7 +159,7 @@ function addonTable.Display.CooldownMixin:Disable()
   self.spellID = nil
 
   self:UnregisterAllEvents()
-  addonTable.CallbackRegistry:UnregisterCallback("UpdateSpellIcons", self)
+  addonTable.CallbackRegistry:UnregisterCallback("Update.SpellIcons", self)
 end
 
 function addonTable.Display.CooldownMixin:Setup(details)

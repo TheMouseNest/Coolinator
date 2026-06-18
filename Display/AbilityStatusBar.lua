@@ -33,9 +33,20 @@ end
 function addonTable.Display.AbilityStatusBarMixin:Enable(details)
   self:RegisterEvent("SPELL_UPDATE_COOLDOWN")
 
-  addonTable.CallbackRegistry:RegisterCallback("UpdateSpellIcons", function(_, spellID)
+  addonTable.CallbackRegistry:RegisterCallback("Update.SpellIcons", function(_, spellID)
     if self.spellID and (not spellID or C_Spell.GetBaseSpell(self.spellID) == spellID) then
       self.Icon:SetTexture(C_Spell.GetSpellTexture(self.spellID))
+    end
+  end, self)
+
+  addonTable.CallbackRegistry:RegisterCallback("Update.SpellsDisplay", function(_, spellID)
+    if not self.spellID then
+      return
+    end
+    print("in")
+    local override = C_Spell.GetOverrideSpell(self.details.resource.spellID)
+    if override ~= self.spellID then
+      self:UpdateSpellByID(override)
     end
   end, self)
 end

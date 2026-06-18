@@ -125,14 +125,16 @@ frame:SetScript("OnEvent", function(_, eventName, data1, data2)
   elseif (eventName == "TRAIT_CONFIG_UPDATED" or eventName == "ACTIVE_PLAYER_SPECIALIZATION_CHANGED") and addonTable.State.CDM then
     TriggerUpdate()
   elseif eventName == "SPELL_UPDATE_ICON" and addonTable.State.CDM then
-    addonTable.CallbackRegistry:TriggerEvent("UpdateSpellIcons", data1)
+    addonTable.CallbackRegistry:TriggerEvent("Update.SpellIcons", data1)
   elseif eventName == "PLAYER_ENTERING_WORLD" and not data1 and not data2 then
     addonTable.CallbackRegistry:TriggerEvent("Layout")
   elseif eventName == "PLAYER_EQUIPMENT_CHANGED" then
     addonTable.CallbackRegistry:TriggerEvent("Layout")
   elseif eventName == "UPDATE_BINDINGS" or eventName == "ACTIONBAR_SLOT_CHANGED" or eventName == "UPDATE_MACROS" then
     addonTable.State.Bindings = addonTable.Core.StoreKeyBindings()
-    addonTable.CallbackRegistry:TriggerEvent("UpdateKeyBindings")
+    addonTable.CallbackRegistry:TriggerEvent("Update.KeyBindings")
+  elseif eventName == "SPELLS_CHANGED" then
+    addonTable.CallbackRegistry:TriggerEvent("Update.SpellsDisplay")
   end
 end)
 

@@ -28,8 +28,9 @@ addonTable.Constants.Events = {
   "AuraBarsChanged",
 
   "Layout",
-  "UpdateSpellIcons",
-  "UpdateKeyBindings",
+  "Update.SpellIcons",
+  "Update.KeyBindings",
+  "Update.SpellsDisplay",
 
   "Designer.Open",
   "Designer.Close",
