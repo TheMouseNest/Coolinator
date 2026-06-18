@@ -341,7 +341,7 @@ local function GenerateRunesResource(label)
 
   function mixin:Import()
     local times = {}
-    for i = 1, 5 do
+    for i = 1, 6 do
       table.insert(times, {GetRuneCooldown(i)})
     end
     table.sort(times, function(a, b) return a[1] < b[1] end)
