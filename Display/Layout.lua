@@ -220,7 +220,7 @@ function addonTable.Display.LayoutManagerMixin:Layout()
 end
 
 function addonTable.Display.LayoutManagerMixin:GetIcon(details)
-  if details.resource.kind == "ability" and self.useBlizzardWidgets and addonTable.State.CDM.abilityMap[spellID] then
+  if details.resource.kind == "ability" and self.useBlizzardWidgets and addonTable.State.CDM.abilityMap[details.resource.spellID] then
     local spellID = addonTable.Utilities.IsAbilitySpellKnown(details.resource.spellID)
     if not spellID then
       return
