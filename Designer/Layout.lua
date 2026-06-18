@@ -188,7 +188,7 @@ local function Degroup(groupDetails)
   for _, entry in ipairs(groupDetails.entries) do
     if entry.kind == "group" and (entry.layout == groupDetails.layout or #entry.entries == 1) and entry.alpha == 1 and entry.scale == 1 and entry.padding == groupDetails.padding and entry.alignment == groupDetails.alignment then
       tAppendAll(final, entry.entries)
-    else
+    elseif (entry.kind ~= "group" or #entry.entries > 0) then
       table.insert(final, entry)
     end
   end
