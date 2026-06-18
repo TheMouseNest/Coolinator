@@ -227,11 +227,75 @@ local function GeneratePipResource(secondaryResource, label, divisor)
     if value >= self.index then
       self.border:SetVertexColor(self.details.border.readyColor.r, self.details.border.readyColor.g, self.details.border.readyColor.b)
       self.statusBar:SetValue(divisor)
-    elseif math.floor(value) < self.index then
+    elseif math.ceil(value) < self.index then
       self:SetShown(self.details.showEmpty)
       self.statusBar:SetValue(0)
     else
       self.statusBar:SetValue(current%divisor)
+    end
+  end
+
+  mixin.ApplySize = SizeStatusBar
+end
+
+local function GenerateEssenceResource(label)
+  local secondaryResource = Enum.PowerType.Essence
+  local divisor = 1
+
+  addonTable.Display.ClassResourceStatusBar[label] = {}
+  local mixin = addonTable.Display.ClassResourceStatusBar[label]
+
+  mixin.OnLoad = addonTable.Display.GenerateStatusBar
+
+  function mixin:OnEvent(eventName, ...)
+    self:Import()
+  end
+
+  function mixin:Setup(details)
+    self:RegisterUnitEvent("UNIT_POWER_UPDATE", "player")
+    self:RegisterUnitEvent("UNIT_MAXPOWER", "player")
+
+    self.rawWidth, self.rawHeight, self.borderWidth, self.borderHeight, self.lowerScale = addonTable.Display.ApplyStatusBar(details, self.statusBar, self.border, self.borderMask, self.background)
+    self.details = details
+    self.index = details.index
+    self.statusBar:SetMinMaxValues(0, 1000)
+
+    self.borderWrapper:SetFrameLevel(self.statusBar:GetFrameLevel() + 2)
+
+    self:Import()
+  end
+
+  function mixin:Disable()
+    self:UnregisterAllEvents()
+  end
+
+  function mixin:Import()
+    local max = UnitPowerMax("player", secondaryResource)
+    local current = UnitPower("player", secondaryResource)
+
+    if max < self.index then
+      self:Hide()
+      return
+    else
+      self:Show()
+    end
+
+    self:SetScript("OnUpdate", nil)
+    local value = current/divisor
+    self.border:SetVertexColor(self.details.border.color.r, self.details.border.color.g, self.details.border.color.b)
+    if value >= self.index then
+      self.border:SetVertexColor(self.details.border.readyColor.r, self.details.border.readyColor.g, self.details.border.readyColor.b)
+      self.statusBar:SetValue(1000)
+    elseif value < self.index - 1 then
+      self:SetShown(self.details.showEmpty)
+      self.statusBar:SetValue(0)
+    else
+      local partial = UnitPartialPower("player", secondaryResource)
+      self.statusBar:SetValue(partial)
+      self:SetScript("OnUpdate", function()
+        partial = UnitPartialPower("player", secondaryResource)
+        self.statusBar:SetValue(partial, Enum.StatusBarInterpolation.ExponentialEaseOut)
+      end)
     end
   end
 
@@ -306,6 +370,7 @@ GenerateBarForResource(Enum.PowerType.LunarPower, "lunar-power")
 GeneratePipResource(Enum.PowerType.SoulShards, "soul-shards", 10)
 GeneratePipResource(Enum.PowerType.HolyPower, "holy-power")
 GeneratePipResource(Enum.PowerType.ComboPoints, "combo-points")
+GenerateEssenceResource("essence")
 GenerateRunesResource("runes")
 
 GenerateBarForAuraResource(205473, 5, "icicles")

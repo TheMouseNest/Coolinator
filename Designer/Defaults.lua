@@ -219,5 +219,6 @@ addonTable.Designer.Defaults = {
     ["holy-power"] = GetPipGroup("holy-power", 5, GetColor("ba7c00"), GetColor("ffc021"), GetColor("fff899", .3)),
     ["combo-points"] = GetPipGroup("combo-points", 7, GetColor("b4006c"), GetColor("ff2f32"), GetColor("ffaaab", .3)),
     ["runes"] = GetPipGroup("runes", 5, GetColor("00479d"), GetColor("58a9ff"), GetColor("a7ddff", .3)),
+    ["essence"] = GetPipGroup("essence", 5, GetColor("00479d"), GetColor("58a9ff"), GetColor("a7ddff", .3)),
   }
 }
