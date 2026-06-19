@@ -171,7 +171,7 @@ local function Degroup(groupDetails)
   end
   local final = {}
   for _, entry in ipairs(groupDetails.entries) do
-    if entry.kind == "group" and (entry.layout == groupDetails.layout or #entry.entries == 1) and entry.alpha == 1 and entry.scale == 1 and entry.padding == groupDetails.padding and entry.alignment == groupDetails.alignment then
+    if entry.kind == "group" and (entry.layout == groupDetails.layout and entry.padding == groupDetails.padding and entry.alignment == groupDetails.alignment or #entry.entries == 1) and entry.alpha == 1 and entry.scale == 1 then
       tAppendAll(final, entry.entries)
     elseif (entry.kind ~= "group" or #entry.entries > 0) then
       table.insert(final, entry)
@@ -582,7 +582,7 @@ function addonTable.Designer.LayoutManagerMixin:StartMovingRoot(root)
     local anchorFrame
     local point = group.children[insertIndex]
     if layout ~= group.details.layout then
-      if altIndex == -1 then
+      if altIndex == -1 or insertIndex > #group.details.entries then
         anchorFrame = group
       else
         anchorFrame = group.children[altIndex]
