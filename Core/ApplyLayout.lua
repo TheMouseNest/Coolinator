@@ -90,7 +90,6 @@ function addonTable.Core.ApplyLayoutToCDM(layout)
     [SAVE_FIELD_ID_CATEGORY_OVERRIDES] = {
       [Enum.CooldownViewerCategory.TrackedBuff] = #auras > 0 and auras or nil,
       [Enum.CooldownViewerCategory.TrackedBar] = #bars > 0 and bars or nil,
-      [Enum.CooldownViewerCategory.HiddenAura] = nil, -- Nothing is hidden
       [Enum.CooldownViewerCategory.Essential] = abilitySpells,
     },
   }

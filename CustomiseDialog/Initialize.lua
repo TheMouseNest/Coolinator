@@ -26,6 +26,7 @@ function addonTable.CustomiseDialog.Initialize()
     template = "UIPanelDynamicResizeButtonTemplate"
   end
   local button = CreateFrame("Button", nil, optionsFrame, template)
+  button.padding = 40
   button:SetText(addonTable.Locales.OPEN_OPTIONS)
   DynamicResizeButton_Resize(button)
   button:SetPoint("CENTER", optionsFrame, 0, -30)
