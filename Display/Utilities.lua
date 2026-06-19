@@ -3,19 +3,6 @@ local addonTable = select(2, ...)
 
 local LSM = LibStub("LibSharedMedia-3.0")
 
---[[function addonTable.Display.ApplyAnchor(frame, anchor)
-  frame:ClearAllPoints()
-  if #anchor == 0 then
-    frame:SetPoint("CENTER")
-  elseif #anchor == 3 then
-    PixelUtil.SetPoint(frame, anchor[1], frame:GetParent(), "CENTER", anchor[2], anchor[3])
-  elseif #anchor == 2 then
-    PixelUtil.SetPoint(frame, "CENTER", frame:GetParent(), "CENTER", anchor[1], anchor[2])
-  elseif #anchor == 1 then
-    frame:SetPoint("TOP", frame:GetParent(), "CENTER")
-  end
-end]]
-
 function addonTable.Display.ApplyStatusBar(details, statusBar, border, borderMask, background)
   local borderDetails = LSM:Fetch("ninesliceborder", details.border.asset, true) or LSM:Fetch("ninesliceborder", "Cooli: 1px")
   assert(borderDetails)

@@ -103,9 +103,19 @@ function addonTable.Designer.LayoutManagerMixin:OnLoad()
   self.dragButton = GetButton(self, "Interface/AddOns/Coolinator/Assets/Buttons/drag.png")
   self.dragButton:SetSize(40, 40)
 
-  addonTable.CallbackRegistry:RegisterCallback("Designer.Open", self.Layout, self)
-  addonTable.CallbackRegistry:RegisterCallback("Designer.Layout", self.Layout, self)
-  addonTable.CallbackRegistry:RegisterCallback("Designer.Close", self.Delayout, self)
+  addonTable.CallbackRegistry:RegisterCallback("Designer.Open", function()
+    self.open = true
+    self:Layout()
+  end)
+  addonTable.CallbackRegistry:RegisterCallback("Designer.Layout", function()
+    if self.open then
+      self:Layout()
+    end
+  end)
+  addonTable.CallbackRegistry:RegisterCallback("Designer.Close", function()
+    self:Delayout()
+    self.open = false
+  end)
   addonTable.CallbackRegistry:RegisterCallback("Designer.Options", function(_, new)
     self.selection = new
   end, self)

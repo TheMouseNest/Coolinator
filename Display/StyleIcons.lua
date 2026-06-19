@@ -8,20 +8,35 @@ local function SetupText(fontString, details)
     fontString:SetScale(font.size * details.scale)
     fontString:SetTextScale(1)
     addonTable.Display.ApplyAnchor(fontString, details.anchor, 1/details.scale/font.size)
+    fontString:SetWidth(addonTable.Constants.nativeSize * details.widthLimit / details.scale / font.size)
+    fontString:SetSmoothScaling(true)
   else
     fontString:SetScale(1)
     fontString:SetTextScale(font.size * details.scale)
     addonTable.Display.ApplyAnchor(fontString, details.anchor, 1)
+    fontString:SetWidth(addonTable.Constants.nativeSize * details.widthLimit)
+    fontString:SetSmoothScaling(false)
   end
   fontString:SetTextColor(details.color.r, details.color.g, details.color.b)
-  fontString:SetWidth(addonTable.Constants.nativeSize * details.widthLimit)
-  fontString:SetJustifyH(details.alignment)
+  fontString:SetJustifyH(details.anchor[1] == nil and "CENTER" or details.anchor[1]:match("RIGHT") or details.anchor[1]:match("LEFT") or "CENTER")
+
+  fontString:SetShown(details.visible)
+end
+
+local function Compare(a, b)
 end
 
 function addonTable.Display.StyleIcon(styleSettings, parent, icon, count, keybinding, maskedTextures, cooldowns)
+  local details = parent.details
+
   local font = addonTable.Config.Get(addonTable.Config.Options.NUMBER_FONT)
-  local styleID = styleSettings.id .. "_" .. font.asset .. tostring(font.flags.shadow) .. tostring(font.flags.outline) .. tostring(font.flags.slug) .. font.size
-  if parent.styleSet == styleID and icon == parent.Icon then
+  local styleID = {
+    id = styleSettings.id,
+    font = font,
+    texts = details.texts,
+    textsOnly = details.textsOnly,
+  }
+  if parent.styleSet and tCompare(styleID, parent.styleSet, 5) and icon == parent.Icon then
     return
   end
   if icon ~= parent.Icon then
@@ -35,8 +50,6 @@ function addonTable.Display.StyleIcon(styleSettings, parent, icon, count, keybin
     parent.border:SetPoint("CENTER")
     parent.Mask = parent:CreateMaskTexture()
   end
-
-  local details = parent.details
 
   for _, c in ipairs(cooldowns) do
     local text = c:GetRegions()
@@ -90,5 +103,8 @@ function addonTable.Display.StyleIcon(styleSettings, parent, icon, count, keybin
     t:AddMaskTexture(mask)
   end
 
-  parent.styleSet = styleID
+  icon:SetShown(not details.textsOnly)
+  parent.border:SetShown(not details.textsOnly)
+
+  parent.styleSet = CopyTable(styleID)
 end

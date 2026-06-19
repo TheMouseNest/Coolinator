@@ -43,7 +43,6 @@ local iconTexts = {
     color = GetColor("b3b3b3"),
     visible = true,
     widthLimit = 0.8,
-    alignment = "RIGHT",
   },
   count = {
     anchor = {"BOTTOMRIGHT", 18, -18},
@@ -51,7 +50,6 @@ local iconTexts = {
     color = GetColor("ffffff"),
     visible = true,
     widthLimit = 0.8,
-    alignment = "RIGHT",
   },
   cooldown = {
     anchor = {},
@@ -60,7 +58,6 @@ local iconTexts = {
     visible = true,
     showFractions = false,
     widthLimit = 0.9,
-    alignment = "CENTER",
   }
 }
 

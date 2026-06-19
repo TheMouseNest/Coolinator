@@ -86,7 +86,7 @@ function addonTable.Designer.IconMixin:Setup(details)
     self.Icon:SetDesaturated(not C_Item.DoesItemExist(location))
   end
   self.Icon:SetTexture(texture)
-  self.CountFrame.text:SetText("")
+  self.CountFrame.text:SetText("2")
   self:UpdateBindingText()
 
   addonTable.Display.StyleIcon({id = self.details.style}, self, self.Icon, self.CountFrame.text, self.KeyBindingFrame.text, {self.Icon}, {self.BaseCooldown})

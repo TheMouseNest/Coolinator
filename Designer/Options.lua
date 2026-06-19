@@ -5,6 +5,74 @@ local function Announce()
   addonTable.CallbackRegistry:TriggerEvent("Designer.Layout")
 end
 
+local pixelStep = 0.5
+
+local function RoundPixel(pixel)
+  return Round(pixel / pixelStep) * pixelStep
+end
+
+local GetIconTextPositioning
+
+local function UpdateWidgetPoints(preview, w, snapping, offsetX, offsetY)
+  snapping = snapping or 2
+  offsetX = offsetX or 0
+  offsetY = offsetY or 0
+  local left, bottom, width, height = w:GetRect()
+  local widgetRect = {left = left + offsetX, bottom = bottom + offsetY, width = width, height = height}
+  left, bottom, width, height = preview:GetRect()
+  local previewRect = {left = left, bottom = bottom, width = width, height = height}
+  local widgetCenter = {x = widgetRect.left + widgetRect.width / 2, y = widgetRect.bottom + widgetRect.height / 2}
+  local previewCenter = {x = previewRect.left + previewRect.width / 2, y = previewRect.bottom + previewRect.height / 2}
+
+  local point, x, y = "", 0, 0
+
+  local snapX, snapY, xLock, yLock = 0, 0, false, false
+  if math.abs(widgetCenter.y - previewCenter.y) < snapping then
+    snapY = previewCenter.y - widgetCenter.y
+    point = point
+    yLock = true
+  elseif widgetCenter.y < previewCenter.y then
+    point = "TOP" .. point
+    y = widgetRect.bottom + widgetRect.height - previewCenter.y
+  else
+    point = "BOTTOM" .. point
+    y = widgetRect.bottom - previewCenter.y
+  end
+
+  if math.abs(widgetCenter.x - previewCenter.x) < snapping then
+    snapX = previewCenter.x - widgetCenter.x
+    xLock = true
+    point = point
+  elseif widgetCenter.x < previewCenter.x then
+    point = point .. "LEFT"
+    x = widgetRect.left - previewCenter.x
+  else
+    point = point .. "RIGHT"
+    x = widgetRect.left + widgetRect.width - previewCenter.x
+  end
+
+  if point == "" then
+    w.details.anchor = {}
+  elseif x == 0 and y == 0 then
+    w.details.anchor = {point}
+  else
+    w.details.anchor = {point, RoundPixel(x), RoundPixel(y)}
+  end
+  DevTools_Dump(w.details.anchor)
+
+  if x ~= 0 then
+    snapX = RoundPixel(x) - x
+  end
+  if y ~= 0 then
+    snapY = RoundPixel(y) - y
+  end
+
+  -- snapX, snapY used to offset other widgets to keep them all consistent to each other
+  -- xLock, yLock used to prevent a widget shifting because its been centered on an axis
+  -- (this prevents infinite loops from the shifts bouncing around)
+  return snapX, snapY, xLock, yLock
+end
+
 local function GenerateOptions(parent, yOffset, xOffset, entries)
   local allFrames = {}
 
@@ -55,6 +123,8 @@ local function GenerateOptions(parent, yOffset, xOffset, entries)
       frame = addonTable.CustomiseDialog.Components.GetColorPicker(parent, e.label, 28 + xOffset, Setter)
     elseif e.kind == "colorPickerWithCheckbox" then
       frame = addonTable.CustomiseDialog.Components.GetColorPickerWithCheckbox(parent, e.label, 28 + xOffset, Setter)
+    elseif e.kind == "iconTexts" then
+      frame = GetIconTextPositioning(parent, 615339)
     end
 
     if frame then
@@ -74,6 +144,247 @@ local function GenerateOptions(parent, yOffset, xOffset, entries)
   end
 
   return allFrames
+end
+
+local function GetSelectorMarker(frame, isHover)
+  local texture = frame:CreateTexture()
+  texture:SetTexture("Interface/AddOns/Coolinator/Assets/selection-outline.png")
+  texture:SetVertexColor(78/255, 165/255, 252/255, isHover and 0.45 or 0.8)
+  texture:SetTextureSliceMargins(45, 45, 45, 45)
+  texture:SetTextureSliceMode(Enum.UITextureSliceMode.Tiled)
+  texture:SetScale(0.25)
+  texture:SetAllPoints()
+
+  return frame
+end
+
+function GetIconTextPositioning(rootParent, iconID)
+  local container = CreateFrame("Frame", nil, rootParent)
+  container:SetPoint("LEFT")
+  container:SetPoint("RIGHT")
+  container:SetHeight(300)
+  local previewInset = CreateFrame("Frame", nil, container, "InsetFrameTemplate")
+  previewInset:SetSize(160, 120)
+  previewInset:SetPoint("TOP")
+
+  local preview = CreateFrame("Frame", nil, previewInset)
+
+  preview:SetPoint("TOP")
+
+  preview:SetAllPoints()
+  preview:SetFlattensRenderLayers(true)
+  preview:SetScale(3)
+
+  preview:SetSize(40, 40)
+
+  local wrapper = CreateFrame("Frame", nil, preview)
+  wrapper:SetSize(addonTable.Constants.nativeSize - 4, addonTable.Constants.nativeSize - 4)
+  wrapper:SetPoint("CENTER")
+  wrapper.Icon = wrapper:CreateTexture(nil, "ARTWORK")
+  wrapper.Icon:SetTexture(iconID)
+  wrapper.Icon:SetPoint("CENTER")
+  wrapper.Icon:SetAllPoints()
+  wrapper.Icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
+
+  local expectedTexts = {"keybinding", "count", "cooldown"}
+
+  local widgetOptions = {}
+  for _, kind in ipairs(expectedTexts) do
+    local optionsContainer = CreateFrame("Frame", nil, container)
+    optionsContainer:SetPoint("TOP", preview, "BOTTOM", 0, -30)
+    optionsContainer:SetPoint("LEFT")
+    optionsContainer:SetPoint("RIGHT")
+    optionsContainer:SetHeight(10)
+    optionsContainer.allFrames = GenerateOptions(optionsContainer, 0, 0, addonTable.Designer.IconTextsConfig[kind])
+
+    widgetOptions[kind] = optionsContainer
+  end
+
+  local titleText = container:CreateFontString(nil, nil, "GameFontHighlightLarge")
+  titleText:SetPoint("TOP", previewInset, "BOTTOM", 0, -10)
+  titleText:SetJustifyH("RIGHT")
+  titleText:SetPoint("RIGHT", -40, 0)
+  titleText:SetShadowOffset(1, -1)
+
+  local titleMap = {
+    countdown = addonTable.Locales.COUNTDOWN,
+    stacks = addonTable.Locales.STACKS,
+  }
+
+  local selectedMarker = GetSelectorMarker(CreateFrame("Frame", nil, container), false)
+  local hoverMarker = GetSelectorMarker(CreateFrame("Frame", nil, container), true)
+  local selection = nil
+
+  local keyboardTrap = CreateFrame("Frame", nil, container)
+  keyboardTrap:Hide()
+
+  local function OffsetWidgets(x, y)
+    UpdateWidgetPoints(preview, selection, 0.4, x, y)
+    Announce()
+  end
+
+  keyboardTrap:SetScript("OnKeyDown", function(_, key)
+    keyboardTrap:SetPropagateKeyboardInput(false)
+    local amount = pixelStep
+    if IsShiftKeyDown() then
+      amount = amount * 4
+    end
+    if key == "LEFT" then
+      OffsetWidgets(-amount, 0)
+    elseif key == "RIGHT" then
+      OffsetWidgets(amount, 0)
+    elseif key == "UP" then
+      OffsetWidgets(0, amount)
+    elseif key == "DOWN" then
+      OffsetWidgets(0, -amount)
+    elseif key == "DELETE" then
+      selection.details.visible = false
+      Announce()
+    else
+      keyboardTrap:SetPropagateKeyboardInput(true)
+    end
+  end)
+  keyboardTrap:RegisterEvent("PLAYER_REGEN_ENABLED")
+  keyboardTrap:RegisterEvent("PLAYER_REGEN_DISABLED")
+  keyboardTrap:SetScript("OnEvent", function(_, event)
+    keyboardTrap:SetShown(event == "PLAYER_REGEN_ENABLED" and selection)
+  end)
+
+  local function UpdateSelection()
+    if selection then
+      selectedMarker:Show()
+      selectedMarker:SetFrameStrata("HIGH")
+      selectedMarker:ClearAllPoints()
+      selectedMarker:SetPoint("TOPLEFT", selection, "TOPLEFT", -2, 2)
+      selectedMarker:SetPoint("BOTTOMRIGHT", selection, "BOTTOMRIGHT", 2, -2)
+
+      for kind, optionsContainer in pairs(widgetOptions) do
+        if kind == selection.kind then
+          optionsContainer:Show()
+          optionsContainer.details = selection.details
+          for _, f in ipairs(optionsContainer.allFrames) do
+            if f.getInitData then
+              f:Init(f.getInitData(selection.details))
+            end
+            f:SetValue(f.Getter())
+          end
+        else
+          optionsContainer:Hide()
+        end
+      end
+
+      titleText:Show()
+      titleText:SetText(titleMap[selection.kind])
+      keyboardTrap:SetShown(not InCombatLockdown())
+    else
+      titleText:Hide()
+      for _, optionsContainer in pairs(widgetOptions) do
+        optionsContainer:Hide()
+      end
+      selectedMarker:Hide()
+      keyboardTrap:Hide()
+    end
+  end
+
+  local function ToggleSelection(w)
+    if selection == w then
+      selection = nil
+    else
+      selection = w
+    end
+    UpdateSelection()
+  end
+  local function ForceSelection(w)
+    selection = w
+    UpdateSelection()
+  end
+
+  preview.widgets = {}
+
+  for _, key in ipairs(expectedTexts) do
+    local w = CreateFrame("Frame", nil, wrapper)
+    w:SetSize(1, 1)
+    preview.widgets[key] = w
+    w.text = w:CreateFontString(nil, nil, "GameFontNormal")
+    w.kind = key
+    w:SetMovable(true)
+    w:EnableMouse(true)
+    w:RegisterForDrag("LeftButton")
+    w:SetScript("OnEnter", function()
+      hoverMarker:Show()
+      hoverMarker:SetFrameStrata("HIGH")
+      hoverMarker:ClearAllPoints()
+      hoverMarker:SetPoint("TOPLEFT", w, "TOPLEFT", -2, 2)
+      hoverMarker:SetPoint("BOTTOMRIGHT", w, "BOTTOMRIGHT", 2, -2)
+    end)
+    w:SetScript("OnLeave", function()
+      hoverMarker:Hide()
+    end)
+    w:SetScript("OnDragStart", function()
+      w:StartMoving()
+      ForceSelection(w)
+    end)
+    w:SetScript("OnDragStop", function()
+      w:StopMovingOrSizing()
+      UpdateWidgetPoints(preview, w, 1)
+      ForceSelection(w)
+      Announce()
+    end)
+    w:SetScript("OnMouseUp", function()
+      ToggleSelection(w)
+    end)
+  end
+
+  preview.widgets.cooldown.text:SetText(3)
+  preview.widgets.count.text:SetText(2)
+  preview.widgets.keybinding.text:SetText("s-2")
+
+  function container:SetValue(details)
+    container.details = details.texts
+    wrapper.Icon:SetShown(not details.textsOnly)
+
+    local font = addonTable.Config.Get(addonTable.Config.Options.NUMBER_FONT)
+    for _, key in ipairs(expectedTexts) do
+      local text = preview.widgets[key].text
+      local textDetails = details.texts[key]
+      if textDetails then
+        text:ClearAllPoints()
+        text:SetFontObject(addonTable.CurrentFont)
+        if font.slug then
+          text:SetSmoothScaling(true)
+          text:SetTextScale(1)
+          text:SetScale(textDetails.scale)
+        else
+          text:SetSmoothScaling(false)
+          text:SetTextScale(textDetails.scale)
+          text:SetScale(1)
+        end
+        text:SetPoint(textDetails.anchor[1] or "CENTER")
+        text:SetTextColor(textDetails.color.r, textDetails.color.g, textDetails.color.b)
+        if key == "cooldown" then
+          if textDetails.showFractions then
+            text:SetText("2.9")
+          else
+            text:SetText("3")
+          end
+        end
+        if textDetails.visible then
+          preview.widgets[key]:SetAlpha(1)
+        else
+          preview.widgets[key]:SetAlpha(0.5)
+        end
+        local w, h = text:GetSize()
+        preview.widgets[key]:SetSize(w * text:GetScale(), h * text:GetScale())
+        preview.widgets[key].details = textDetails
+
+        addonTable.Display.ApplyAnchor(preview.widgets[key], {textDetails.anchor[1], textDetails.anchor[2], textDetails.anchor[3]})
+      end
+    end
+
+    UpdateSelection()
+  end
+
+  return container
 end
 
 local function GenerateKindOptions(parent, options)
@@ -275,11 +586,12 @@ local function GenerateKindOptions(parent, options)
   return container
 end
 
-local function GetMetaDetails(detailsList, nested)
+local function GetMetaDetails(detailsList)
   if #detailsList <= 1 then
     return detailsList[1]
   end
   local mapping = {}
+  local lastTbl = {}
   local detailsMeta = {
     __newindex = function(tbl, index, value)
       for _, d in ipairs(detailsList) do
@@ -287,20 +599,21 @@ local function GetMetaDetails(detailsList, nested)
       end
     end,
     __index = function(tbl, index)
-      if type(detailsList[1][index]) == "table" and not nested then
-        if mapping[index] then
+      if type(detailsList[1][index]) == "table" and index ~= "color" then
+        if mapping[index] and lastTbl[index] == detailsList[1][index] then
           return mapping[index]
         end
         local list = {}
         for _, details in ipairs(detailsList) do
           table.insert(list, details[index])
         end
-        mapping[index] = GetMetaDetails(list, true)
+        lastTbl[index] = detailsList[1][index]
+        mapping[index] = GetMetaDetails(list)
         return mapping[index]
       else
         return detailsList[1][index]
       end
-    end
+    end,
   }
   local details = {}
   setmetatable(details, detailsMeta)

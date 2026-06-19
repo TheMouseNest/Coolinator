@@ -95,6 +95,7 @@ local function TriggerUpdate()
         return
       end
       addonTable.CallbackRegistry:TriggerEvent("Layout")
+      addonTable.CallbackRegistry:TriggerEvent("Designer.Layout")
     end
   end)
 end
@@ -134,8 +135,10 @@ frame:SetScript("OnEvent", function(_, eventName, data1, data2)
     addonTable.CallbackRegistry:TriggerEvent("Update.SpellIcons", data1)
   elseif eventName == "PLAYER_ENTERING_WORLD" and not data1 and not data2 then
     addonTable.CallbackRegistry:TriggerEvent("Layout")
+    addonTable.CallbackRegistry:TriggerEvent("Designer.Layout")
   elseif eventName == "PLAYER_EQUIPMENT_CHANGED" then
     addonTable.CallbackRegistry:TriggerEvent("Layout")
+    addonTable.CallbackRegistry:TriggerEvent("Designer.Layout")
   elseif eventName == "UPDATE_BINDINGS" or eventName == "ACTIONBAR_SLOT_CHANGED" or eventName == "UPDATE_MACROS" then
     addonTable.State.Bindings = addonTable.Core.StoreKeyBindings()
     addonTable.CallbackRegistry:TriggerEvent("Update.KeyBindings")

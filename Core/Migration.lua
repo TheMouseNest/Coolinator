@@ -92,7 +92,6 @@ local function Textsv7(group)
         color = GetColor("b3b3b3"),
         visible = true,
         widthLimit = 0.8,
-        alignment = "RIGHT",
       }
       entry.texts.count = {
         anchor = {"BOTTOMRIGHT", 18, -18},
@@ -100,7 +99,6 @@ local function Textsv7(group)
         color = GetColor("ffffff"),
         visible = true,
         widthLimit = 0.8,
-        alignment = "RIGHT",
       }
       entry.texts.cooldown = {
         anchor = {},
@@ -109,7 +107,6 @@ local function Textsv7(group)
         visible = true,
         showFractions = false,
         widthLimit = 0.9,
-        alignment = "CENTER",
       }
     end
   end

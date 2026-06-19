@@ -391,6 +391,28 @@ addonTable.Designer.WidgetConfiguration = {
                 return details.style
               end,
             },
+            { kind = "spacer" },
+            {
+              label = addonTable.Locales.ONLY_SHOW_TEXTS,
+              kind = "checkbox",
+              setter = function(details, value)
+                details.textsOnly = value
+              end,
+              getter = function(details)
+                return details.textsOnly
+              end,
+            }
+          }
+        },
+        {
+          label = addonTable.Locales.TEXTS,
+          entries = {
+            {
+              label = "",
+              kind = "iconTexts",
+              setter = function() end,
+              getter = function(details) return details end,
+            },
           }
         }
       }
@@ -798,5 +820,110 @@ addonTable.Designer.WidgetConfiguration = {
         }
       }
     }
+  }
+}
+
+addonTable.Designer.IconTextsConfig = {
+  ["cooldown"] = {
+    {
+      label = addonTable.Locales.VISIBLE,
+      kind = "checkbox",
+      setter = function(details, value)
+        details.visible = value
+      end,
+      getter = function(details)
+        return details.visible
+      end,
+    },
+    {
+      label = addonTable.Locales.SCALE,
+      kind = "slider",
+      min = 1, max = 300,
+      valuePattern = "%d%%",
+      setter = function(details, value)
+        details.scale = value / 100
+      end,
+      getter = function(details)
+        return details.scale * 100
+      end,
+    },
+    {
+      label = addonTable.Locales.COLOR,
+      kind = "colorPicker",
+      setter = function(details, value)
+        details.color = value
+      end,
+      getter = function(details)
+        return details.color
+      end,
+    },
+  },
+  ["count"] = {
+    {
+      label = addonTable.Locales.VISIBLE,
+      kind = "checkbox",
+      setter = function(details, value)
+        details.visible = value
+      end,
+      getter = function(details)
+        return details.visible
+      end,
+    },
+    {
+      label = addonTable.Locales.SCALE,
+      kind = "slider",
+      min = 1, max = 300,
+      valuePattern = "%d%%",
+      setter = function(details, value)
+        details.scale = value / 100
+      end,
+      getter = function(details)
+        return details.scale * 100
+      end,
+    },
+    {
+      label = addonTable.Locales.COLOR,
+      kind = "colorPicker",
+      setter = function(details, value)
+        details.color = value
+      end,
+      getter = function(details)
+        return details.color
+      end,
+    },
+  },
+  ["keybinding"] = {
+    {
+      label = addonTable.Locales.VISIBLE,
+      kind = "checkbox",
+      setter = function(details, value)
+        details.visible = value
+      end,
+      getter = function(details)
+        return details.visible
+      end,
+    },
+    {
+      label = addonTable.Locales.SCALE,
+      kind = "slider",
+      min = 1, max = 300,
+      valuePattern = "%d%%",
+      setter = function(details, value)
+        details.scale = value / 100
+      end,
+      getter = function(details)
+        return details.scale * 100
+      end,
+    },
+    {
+      label = addonTable.Locales.COLOR,
+      kind = "colorPicker",
+      setter = function(details, value)
+        details.color = value
+      end,
+      getter = function(details)
+        return details.color
+      end,
+    },
   }
 }
