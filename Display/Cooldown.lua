@@ -207,7 +207,8 @@ function addonTable.Display.CooldownMixin:UpdateSpellByID(spellID, activationOff
   else
     self.ChargesCooldown:Clear()
   end
-  local baseDuration = C_Spell.GetSpellCooldownDuration(spellID, true)
+  local ignoreGCD = addonTable.Constants.GCD ~= spellID
+  local baseDuration = C_Spell.GetSpellCooldownDuration(spellID, ignoreGCD)
   self.BaseCooldown:SetCooldownFromDurationObject(baseDuration)
   local gcd = C_Spell.GetSpellCooldown(spellID).isOnGCD
   if gcd == nil then

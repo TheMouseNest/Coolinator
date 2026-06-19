@@ -72,6 +72,7 @@ function addonTable.Display.AbilityStatusBarMixin:Setup(details)
 
   self.borderWrapper:SetFrameLevel(self.statusBar:GetFrameLevel() + 2)
 
+  self.Icon:SetShown(details.icon.show)
 end
 
 function addonTable.Display.AbilityStatusBarMixin:ApplySize()
@@ -116,13 +117,14 @@ function addonTable.Display.AbilityStatusBarMixin:UpdateSpellByID(spellID)
     self.ticker:Cancel()
   end
 
-  local baseDuration = C_Spell.GetSpellCooldownDuration(spellID, true)
+  local ignoreGCD = addonTable.Constants.GCD ~= spellID
+  local baseDuration = C_Spell.GetSpellCooldownDuration(spellID, ignoreGCD)
   self.statusBar:SetTimerDuration(baseDuration, nil, Enum.StatusBarTimerDirection.RemainingTime)
 
   self.wrapper:SetAlphaFromBoolean(baseDuration:IsZero(), 0, 1)
 
   self.ticker = C_Timer.NewTicker(0.1, function()
-    baseDuration = C_Spell.GetSpellCooldownDuration(spellID, true)
+    baseDuration = C_Spell.GetSpellCooldownDuration(spellID, ignoreGCD)
     self.wrapper:SetAlphaFromBoolean(baseDuration:IsZero(), 0, 1)
   end)
 end

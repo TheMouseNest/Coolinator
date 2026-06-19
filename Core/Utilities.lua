@@ -84,6 +84,9 @@ function addonTable.Utilities.IsAbilitySpellKnown(spellID)
   if C_SpellBook.IsSpellKnown(spellID, Enum.SpellBookSpellBank.Player) or C_SpellBook.IsSpellKnown(spellID, Enum.SpellBookSpellBank.Pet) then
     return spellID
   end
+  if spellID == addonTable.Constants.GCD then
+    return spellID
+  end
 
   return nil
 end

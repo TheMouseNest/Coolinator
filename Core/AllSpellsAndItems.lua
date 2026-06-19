@@ -96,6 +96,8 @@ function addonTable.Core.GetAllAbilities()
     end
   end
 
+  table.insert(result, addonTable.Constants.GCD) -- Global Cooldown
+
   return result
 end
 

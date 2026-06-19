@@ -20,6 +20,8 @@ addonTable.Constants = {
   DefaultName = "DEFAULT",
 
   nativeSize = 40,
+
+  GCD = 61304,
 }
 addonTable.Constants.Events = {
   "SettingChanged",
