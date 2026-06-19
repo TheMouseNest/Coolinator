@@ -76,6 +76,8 @@ function addonTable.Core.Initialize()
 end
 
 local function TriggerUpdate()
+  addonTable.CurrentNumberFont = addonTable.Core.GetFont()
+
   C_Timer.After(0.1, function()
     if CooldownViewerSettings.layoutManager.currentSpecTag ~= CooldownViewerUtil.GetCurrentClassAndSpecTag() then
       addonTable.State.CDM = nil
@@ -143,6 +145,8 @@ frame:SetScript("OnEvent", function(_, eventName, data1, data2)
 end)
 
 EventUtil.ContinueAfterAllEvents(function()
+  addonTable.CurrentNumberFont = addonTable.Core.GetFont()
+
   addonTable.Core.AutoGenerateLayout()
   addonTable.SpellEquivalence = addonTable.Core.GenerateSpellOverrides()
   C_Timer.After(0.1, function()

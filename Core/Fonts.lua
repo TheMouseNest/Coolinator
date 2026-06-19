@@ -5,14 +5,12 @@ local LSM = LibStub("LibSharedMedia-3.0")
 
 local fonts = {}
 
-function addonTable.Core.GetFontByDesign(design)
-  local id = design.font.asset
-  local outline = design.font.outline and "OUTLINE" or ""
-  local shadow = design.font.shadow and "SHADOW" or ""
-  local slug = ""
-  if addonTable.Constants.IsRetail and (outline ~= "" or shadow == "") then
-    slug = design.font.slug and "SLUG" or ""
-  end
+function addonTable.Core.GetFont()
+  local font = addonTable.Config.Get(addonTable.Config.Options.NUMBER_FONT)
+  local id = font.asset
+  local outline = font.flags.outline and "OUTLINE" or ""
+  local shadow = font.flags.shadow and "SHADOW" or ""
+  local slug = font.flags.slug and "SLUG" or ""
   local key = id:lower() .. outline .. shadow .. slug
   if not fonts[key] then
     addonTable.Core.CreateFont(id, outline, shadow, slug, false)
@@ -83,10 +81,6 @@ function addonTable.Core.CreateFont(assetKey, outline, shadow, slug, useDefault)
     error("duplicate font creation " .. key)
   end
   local globalName = "CoolinatorFont" .. key
-
-  if addonTable.Constants.OldFontMapping[assetKey] then
-    assetKey = addonTable.Constants.OldFontMapping[assetKey]
-  end
 
   local path = LSM:Fetch(LSM.MediaType.FONT, assetKey, not useDefault)
   if not path then

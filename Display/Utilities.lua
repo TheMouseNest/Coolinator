@@ -83,3 +83,17 @@ function addonTable.Display.GeneratePool(mixin, template)
     frame:OnLoad()
   end)
 end
+
+function addonTable.Display.ApplyAnchor(frame, anchor, scale)
+  scale = scale or 1
+  frame:ClearAllPoints()
+  if #anchor == 0 then
+    frame:SetPoint("CENTER")
+  elseif #anchor == 3 then
+    PixelUtil.SetPoint(frame, anchor[1], frame:GetParent(), "CENTER", anchor[2] * scale, anchor[3] * scale)
+  elseif #anchor == 2 then
+    PixelUtil.SetPoint(frame, "CENTER", frame:GetParent(), "CENTER", anchor[1] * scale, anchor[2] * scale)
+  elseif #anchor == 1 then
+    frame:SetPoint(anchor[1], frame:GetParent(), "CENTER")
+  end
+end

@@ -88,6 +88,7 @@ function addonTable.Display.AuraFromItemMixin:Setup(details)
   self.details = details
   self.data = addonTable.Constants.AurasFromItems[details.resource.spellID]
   self.Icon:SetTexture(C_Spell.GetSpellTexture(self.details.resource.spellID))
+  self:SetMouseMotionEnabled(addonTable.Config.Get(addonTable.Config.Options.SHOW_TOOLTIPS))
   self:Import()
   trackerFrame.callbacksBySpellID[self.details.resource.spellID] = function()
     self:Import()

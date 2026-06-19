@@ -234,15 +234,18 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
       ability:ClearAllPoints()
       ability:SetPoint("CENTER", frame)
       ability:SetScale(0.8)
-      frame:SetShown(ability:IsShown())
-    end
-    frame:Show()
-    frame:SetSize(addonTable.Constants.nativeSize - 4, addonTable.Constants.nativeSize - 4)
-    local _, _, overlay = ability:GetRegions()
-    overlay:Hide()
-    addonTable.Display.StyleIcon({id  = details.style}, frame, ability.Icon, ability.ChargeCount.Current, {ability.Icon}, {ability.Cooldown})
+      ability:SetMouseMotionEnabled(addonTable.Config.Get(addonTable.Config.Options.SHOW_TOOLTIPS))
 
-    return frame
+      frame:SetShown(ability:IsShown())
+      frame:Show()
+      frame.details = details
+      frame:SetSize(addonTable.Constants.nativeSize - 4, addonTable.Constants.nativeSize - 4)
+      local _, _, overlay = ability:GetRegions()
+      overlay:Hide()
+      addonTable.Display.StyleIcon({id  = details.style}, frame, ability.Icon, ability.ChargeCount.Current, nil, {ability.Icon}, {ability.Cooldown})
+
+      return frame
+    end
 
   elseif details.resource.kind == "ability" then
     if not addonTable.Utilities.IsAbilitySpellKnown(details.resource.spellID) then
@@ -251,6 +254,7 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
     local frame = self.cooldownPool:Acquire()
     frame:Show()
     frame:Enable()
+    frame.details = details
     frame:Setup(details)
     return frame
 
@@ -262,7 +266,9 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
     local auraIndex = addonTable.State.CDM.auraOrder[addonTable.State.CDM.auraMap[spellID]]
     local aura = self.auraIcons[auraIndex]
     if aura then
+      aura:SetMouseMotionEnabled(addonTable.Config.Get(addonTable.Config.Options.SHOW_TOOLTIPS))
       local frame = self.auraIconPool:Acquire()
+      frame.details = details
       frame.auraIndex = auraIndex
       frame:Setup(aura, details)
       return frame

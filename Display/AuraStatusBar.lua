@@ -70,6 +70,7 @@ function addonTable.Display.AuraStatusBarMixin:Setup(sourceWidget, details)
   local widgets = sourceFrames[sourceWidget]
   sourceWidget:SetParent(self)
   self.widgets = widgets
+  widgets.source:SetMouseMotionEnabled(addonTable.Config.Get(addonTable.Config.Options.SHOW_TOOLTIPS))
 
   self.rawWidth, self.rawHeight, self.borderWidth, self.borderHeight, self.lowerScale = addonTable.Display.ApplyStatusBar(details, statusBar, widgets.border, widgets.borderMask, widgets.background)
 

@@ -391,17 +391,6 @@ addonTable.Designer.WidgetConfiguration = {
                 return details.style
               end,
             },
-            { kind = "spacer" },
-            {
-              label = addonTable.Locales.SHOW_TOOLTIPS,
-              kind = "checkbox",
-              setter = function(details, value)
-                details.showTooltips = value
-              end,
-              getter = function(details)
-                return details.showTooltips
-              end,
-            }
           }
         }
       }

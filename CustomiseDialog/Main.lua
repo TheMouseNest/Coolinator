@@ -305,6 +305,13 @@ local function SetupBehaviour(parent)
   fadeWhenMounted:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
   table.insert(allFrames, fadeWhenMounted)
 
+  local showTooltips = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_TOOLTIPS, 28, function(value)
+    addonTable.Config.Set(addonTable.Config.Options.SHOW_TOOLTIPS, not addonTable.Config.Get(addonTable.Config.Options.SHOW_TOOLTIPS))
+  end)
+  showTooltips.option = addonTable.Config.Options.SHOW_TOOLTIPS
+  showTooltips:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, showTooltips)
+
   local useBlizzardWidgets = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.USE_BLIZZARD_WIDGETS, 28, function(value)
     addonTable.Config.Set(addonTable.Config.Options.USE_BLIZZARD_WIDGETS, not addonTable.Config.Get(addonTable.Config.Options.USE_BLIZZARD_WIDGETS))
   end)
@@ -334,10 +341,101 @@ local function SetupBehaviour(parent)
   return container
 end
 
+local function SetupFont(parent)
+  local container = CreateFrame("Frame", nil, parent)
+
+  local allFrames = {}
+
+  local fontDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.FONT)
+  fontDropdown:SetPoint("TOP")
+  table.insert(allFrames, fontDropdown)
+
+  local outlineCheckbox = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_OUTLINE, 28, function(value)
+    local font = addonTable.Config.Get(addonTable.Config.Options.NUMBER_FONT)
+    font.flags.outline = not font.flags.outline
+    addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Design] = true})
+  end)
+  outlineCheckbox:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, outlineCheckbox)
+
+  local shadowCheckbox = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_SHADOW, 28, function(value)
+    local font = addonTable.Config.Get(addonTable.Config.Options.NUMBER_FONT)
+    font.flags.shadow = not font.flags.shadow
+    addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Design] = true})
+  end)
+  shadowCheckbox:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, shadowCheckbox)
+
+  local fontSize = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.FONT_SIZE, 6, 60, function(val) return ("%dpx"):format(val) end, function(value)
+    local font = addonTable.Config.Get(addonTable.Config.Options.NUMBER_FONT)
+    local oldSize = font.size
+    font.size = value / 12
+    if Round(font.size * 100) ~= Round(oldSize * 100) then
+      addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Design] = true})
+    end
+  end)
+  fontSize:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
+  table.insert(allFrames, fontSize)
+
+  local fontFixCheckbox = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.ENABLE_IF_LINES_FALLING_OFF_FONT, 28, function(value)
+    local font = addonTable.Config.Get(addonTable.Config.Options.NUMBER_FONT)
+    font.flags.slug = not font.flags.slug
+    addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Design] = true})
+  end)
+  fontFixCheckbox:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  table.insert(allFrames, fontFixCheckbox)
+
+  local function Update()
+    local font = addonTable.Config.Get(addonTable.Config.Options.NUMBER_FONT)
+    outlineCheckbox:SetValue(font.flags.outline)
+    shadowCheckbox:SetValue(font.flags.shadow)
+    fontFixCheckbox:SetValue(not font.flags.slug)
+    fontSize:SetValue(font.size * 12)
+
+    for _, f in ipairs(allFrames) do
+      if f.DropDown then
+        f:SetValue()
+      end
+    end
+
+    local LibSharedMedia = LibStub("LibSharedMedia-3.0")
+    local fonts = CopyTable(LibSharedMedia:List("font"))
+    table.sort(fonts)
+
+    fontDropdown.DropDown:SetupMenu(function(_, rootDescription)
+      for index, label in ipairs(fonts) do
+        local radio = rootDescription:CreateRadio(label,
+          function()
+            local asset = addonTable.Config.Get(addonTable.Config.Options.NUMBER_FONT).asset
+            return label == asset
+          end,
+          function()
+            local font = addonTable.Config.Get(addonTable.Config.Options.NUMBER_FONT)
+            local oldAsset = font.asset
+            if label ~= oldAsset then
+              font.asset = label
+              addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Design] = true})
+            end
+          end
+        )
+        radio:AddInitializer(function(button, elementDescription, menu)
+          button.fontString:SetFontObject(addonTable.Core.GetFontByID(label))
+        end)
+      end
+      rootDescription:SetScrollMode(30 * 20)
+    end)
+  end
+
+  container:SetScript("OnShow", Update)
+
+  return container
+end
+
 local TabSetups = {
   {callback = SetupGeneral, name = addonTable.Locales.GENERAL},
   {callback = SetupDesigner, name = addonTable.Locales.DESIGNER},
   {callback = SetupBehaviour, name = addonTable.Locales.BEHAVIOUR},
+  {callback = SetupFont, name = addonTable.Locales.FONT},
 }
 
 function addonTable.CustomiseDialog.Toggle()

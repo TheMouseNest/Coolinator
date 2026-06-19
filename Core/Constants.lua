@@ -14,7 +14,7 @@ addonTable.Constants = {
 
   ButtonFrameOffset = 5,
 
-  DefaultFont = "Roboto Condensed Bold",
+  DefaultFont = "Arial Narrow",
   FontFamilies = {"roman", "korean", "simplifiedchinese", "traditionalchinese", "russian"},
 
   DefaultName = "DEFAULT",

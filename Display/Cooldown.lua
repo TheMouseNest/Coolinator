@@ -28,13 +28,10 @@ function addonTable.Display.CooldownMixin:OnLoad()
   self.CountFrame = CreateFrame("Frame", nil, self)
   self.CountFrame:SetAllPoints(self.Icon)
   self.CountFrame.text = self.CountFrame:CreateFontString(nil, nil, "NumberFontNormal")
-  self.CountFrame.text:SetPoint("BOTTOMRIGHT", -2, -2)
 
   self.KeyBindingFrame = CreateFrame("Frame", nil, self)
   self.KeyBindingFrame:SetAllPoints(self.Icon)
   self.KeyBindingFrame.text = self.KeyBindingFrame:CreateFontString(nil, nil, "NumberFontNormal")
-  self.KeyBindingFrame.text:SetPoint("TOPRIGHT", -2, -2)
-  self.KeyBindingFrame.text:SetTextColor(0.7, 0.7, 0.7)
   self.KeyBindingFrame.text:SetWidth(addonTable.Constants.nativeSize - 6)
   self.KeyBindingFrame.text:SetWordWrap(false)
   self.KeyBindingFrame.text:SetJustifyH("RIGHT")
@@ -51,7 +48,7 @@ function addonTable.Display.CooldownMixin:OnLoad()
 end
 
 function addonTable.Display.CooldownMixin:Style()
-  addonTable.Display.StyleIcon({id = self.details.style}, self, self.Icon, self.CountFrame.text,
+  addonTable.Display.StyleIcon({id = self.details.style}, self, self.Icon, self.CountFrame.text, self.KeyBindingFrame.text,
     {self.Icon, self.NotUsable},
     {self.BaseCooldown, self.ChargesCooldown,}
   )
@@ -179,7 +176,7 @@ function addonTable.Display.CooldownMixin:Setup(details)
   self:UpdateBindingText()
   self:Style()
 
-  self:SetMouseMotionEnabled(details.showTooltips)
+  self:SetMouseMotionEnabled(addonTable.Config.Get(addonTable.Config.Options.SHOW_TOOLTIPS))
 end
 
 function addonTable.Display.CooldownMixin:UpdateBindingText()

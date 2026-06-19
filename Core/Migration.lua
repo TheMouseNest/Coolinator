@@ -79,6 +79,42 @@ local function Textsv6(group)
   end
 end
 
+local function Textsv7(group)
+  for i = #group.entries, 1, -1 do
+    local entry = group.entries[i]
+    if entry.kind == "group" then
+      Textsv7(entry)
+    elseif entry.kind == "icon" then
+      entry.showTooltips = nil
+      entry.texts.keybinding = {
+        anchor = {"TOPRIGHT", 18, 18},
+        scale = Round(14/12 * 100) / 100,
+        color = GetColor("b3b3b3"),
+        visible = true,
+        widthLimit = 0.9,
+        alignment = "RIGHT",
+      }
+      entry.texts.count = {
+        anchor = {"BOTTOMRIGHT", 18, -18},
+        scale = 1,
+        color = GetColor("ffffff"),
+        visible = true,
+        widthLimit = 0.9,
+        alignment = "RIGHT",
+      }
+      entry.texts.cooldown = {
+        anchor = {},
+        scale = Round(20/12 * 100) / 100,
+        color = GetColor("FFFFFF"),
+        visible = true,
+        showFractions = false,
+        widthLimit = 0.9,
+        alignment = "CENTER",
+      }
+    end
+  end
+end
+
 function addonTable.Core.UpgradeDesign(design)
   if not design.version or design.version < 1 then
     AddAlignment(design)
@@ -101,6 +137,11 @@ function addonTable.Core.UpgradeDesign(design)
   if design.version < 6 then
     Textsv6(design)
     design.version = 6
+  end
+
+  if design.version < 7 then
+    Textsv7(design)
+    design.version = 7
   end
 end
 

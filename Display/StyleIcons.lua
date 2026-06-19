@@ -1,8 +1,27 @@
 ---@class addonTableCoolinator
 local addonTable = select(2, ...)
 
-function addonTable.Display.StyleIcon(styleSettings, parent, icon, count, maskedTextures, cooldowns)
-  if parent.styleSet == styleSettings.id and icon == parent.Icon then
+local function SetupText(fontString, details)
+  local font = addonTable.Config.Get(addonTable.Config.Options.NUMBER_FONT)
+  fontString:SetFontObject(addonTable.CurrentNumberFont)
+  if font.flags.slug then
+    fontString:SetScale(font.size * details.scale)
+    fontString:SetTextScale(1)
+    addonTable.Display.ApplyAnchor(fontString, details.anchor, 1/details.scale/font.size)
+  else
+    fontString:SetScale(1)
+    fontString:SetTextScale(font.size * details.scale)
+    addonTable.Display.ApplyAnchor(fontString, details.anchor, 1)
+  end
+  fontString:SetTextColor(details.color.r, details.color.g, details.color.b)
+  fontString:SetWidth(addonTable.Constants.nativeSize * details.widthLimit)
+  fontString:SetJustifyH(details.alignment)
+end
+
+function addonTable.Display.StyleIcon(styleSettings, parent, icon, count, keybinding, maskedTextures, cooldowns)
+  local font = addonTable.Config.Get(addonTable.Config.Options.NUMBER_FONT)
+  local styleID = styleSettings.id .. "_" .. font.asset .. tostring(font.flags.shadow) .. tostring(font.flags.outline) .. tostring(font.flags.slug) .. font.size
+  if parent.styleSet == styleID and icon == parent.Icon then
     return
   end
   if icon ~= parent.Icon then
@@ -16,7 +35,17 @@ function addonTable.Display.StyleIcon(styleSettings, parent, icon, count, masked
     parent.border:SetPoint("CENTER")
     parent.Mask = parent:CreateMaskTexture()
   end
-  local styleID = styleSettings.id
+
+  local details = parent.details
+
+  for _, c in ipairs(cooldowns) do
+    local text = c:GetRegions()
+    SetupText(text, details.texts.cooldown)
+  end
+  SetupText(count, details.texts.count)
+  if keybinding then
+    SetupText(keybinding, details.texts.keybinding)
+  end
 
   parent.Mask:SetAllPoints(icon)
 
@@ -34,7 +63,7 @@ function addonTable.Display.StyleIcon(styleSettings, parent, icon, count, masked
   local mask = parent.Mask
   mask:SetBlockingLoadsRequested(true)
 
-  if styleID == "square" then
+  if styleSettings.id == "square" then
     local asset = addonTable.Assets.IconBorders["Cooli: 1px"]
     mask:SetTexture(asset.mask, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
     parent.border:SetTexture(asset.file)
@@ -45,7 +74,7 @@ function addonTable.Display.StyleIcon(styleSettings, parent, icon, count, masked
         c:SetSwipeTexture(asset.mask)
       end
     end
-  else--if styleID == "blizzard" then
+  else--if styleSettings.id == "blizzard" then
     mask:SetTexture("Interface/AddOns/Coolinator/Assets/IconBorders/blizzard-mask.png", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
     parent.border:SetTexture("Interface/AddOns/Coolinator/Assets/IconBorders/blizzard.png")
     parent.border:SetVertexColor(1, 1, 1)
