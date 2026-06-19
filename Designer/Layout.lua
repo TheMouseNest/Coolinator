@@ -169,15 +169,17 @@ local function Degroup(groupDetails)
       Degroup(entry)
     end
   end
-  local final = {}
-  for _, entry in ipairs(groupDetails.entries) do
-    if entry.kind == "group" and (entry.layout == groupDetails.layout and entry.padding == groupDetails.padding and entry.alignment == groupDetails.alignment or #entry.entries == 1) and entry.alpha == 1 and entry.scale == 1 then
-      tAppendAll(final, entry.entries)
-    elseif (entry.kind ~= "group" or #entry.entries > 0) then
-      table.insert(final, entry)
+  if groupDetails.layout ~= "standalone" then
+    local final = {}
+    for _, entry in ipairs(groupDetails.entries) do
+      if entry.kind == "group" and (entry.layout == groupDetails.layout and entry.padding == groupDetails.padding and entry.alignment == groupDetails.alignment or #entry.entries == 1) and entry.alpha == 1 and entry.scale == 1 then
+        tAppendAll(final, entry.entries)
+      elseif (entry.kind ~= "group" or #entry.entries > 0) then
+        table.insert(final, entry)
+      end
     end
+    groupDetails.entries = final
   end
-  groupDetails.entries = final
 end
 
 local function IsSimilarEnough(details1, details2)
@@ -318,7 +320,7 @@ function addonTable.Designer.LayoutManagerMixin:GetDeepestGroupOverlapping(root,
     return nil
   end
   for _, g in ipairs(currentGroup.children) do
-    if g ~= root and g.details.kind == "group" and g:Intersects(root) and (DoesRootOverlapSufficiently(root, g) or currentGroup.details.layout == "standalone") then
+    if g.details ~= root.details and g.details.kind == "group" and g:Intersects(root) and (DoesRootOverlapSufficiently(root, g) or currentGroup.details.layout == "standalone") then
       local nested = self:GetDeepestGroupOverlapping(root, g)
       if nested and DoesRootOverlapSufficiently(root, nested) then
         return nested
@@ -426,6 +428,7 @@ function addonTable.Designer.LayoutManagerMixin:InsertRootAt(root)
   local group = self:GetDeepestGroupOverlapping(root, self.root)
   if not group then
     local details = root.details
+    details.anchor = nil
     local point, _, relativePoint, x, y = root:GetPoint(1)
     local new = CopyTable(addonTable.Designer.Defaults.Group)
     table.insert(new.entries, details)
@@ -582,7 +585,7 @@ function addonTable.Designer.LayoutManagerMixin:StartMovingRoot(root)
     local anchorFrame
     local point = group.children[insertIndex]
     if layout ~= group.details.layout then
-      if altIndex == -1 or insertIndex > #group.details.entries then
+      if altIndex == -1 or insertIndex and insertIndex > #group.details.entries then
         anchorFrame = group
       else
         anchorFrame = group.children[altIndex]
@@ -616,6 +619,10 @@ function addonTable.Designer.LayoutManagerMixin:StartMovingRoot(root)
 end
 
 function addonTable.Designer.LayoutManagerMixin:StopMovingRoot(root)
+  if not root.isMoving then
+    return
+  end
+  root.isMoving = nil
   root:StopMovingOrSizing()
   root:SetScript("OnDragStart", nil)
   root:SetScript("OnDragStop", nil) -- Necessary to prevent OnDragStop firing twice (second time is when hiden in relayout)
@@ -624,8 +631,8 @@ function addonTable.Designer.LayoutManagerMixin:StopMovingRoot(root)
   if details.kind == "group" then
     details = details.entries[1]
     self:InsertRootAt(root)
-    local parent = self:GetForDetails(details, self.root):GetParent()
-    self.selection = {parent.details.kind == "group" and parent.details or details}
+    local parent = self:GetForDetails(details, self.root)
+    self.selection = {parent and parent:GetParent().details or details}
     self:UpdateSelection()
   else
     self:InsertRootAt(root)
