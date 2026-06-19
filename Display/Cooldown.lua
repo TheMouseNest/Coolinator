@@ -78,11 +78,11 @@ function addonTable.Display.CooldownMixin:OnEvent(eventName, data, ...)
     elseif self.equipmentSlot then
       self:UpdateItemByEquipmentSlot(self.equipmentSlot)
     end
-  elseif eventName == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" and C_Spell.GetBaseSpell(data) == C_Spell.GetBaseSpell(self.spellID) then
+  elseif eventName == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" and self.spellID and C_Spell.GetBaseSpell(data) == C_Spell.GetBaseSpell(self.spellID) then
     self:SetActivationAlert(true)
-  elseif eventName == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" and C_Spell.GetBaseSpell(data) == C_Spell.GetBaseSpell(self.spellID) then
+  elseif eventName == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" and self.spellID and C_Spell.GetBaseSpell(data) == C_Spell.GetBaseSpell(self.spellID) then
     self:SetActivationAlert(false)
-  elseif eventName == "SPELL_RANGE_CHECK_UPDATE" and data == self.spellID then
+  elseif eventName == "SPELL_RANGE_CHECK_UPDATE" and self.spellID and data == self.spellID then
     local isInRange, checkedRange = ...
     if not checkedRange or isInRange then
       self.Icon:SetVertexColor(1, 1, 1, 1)
