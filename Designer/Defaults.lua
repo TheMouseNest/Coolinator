@@ -36,6 +36,33 @@ local function GetPrimaryClassResource(resource, fgColor, bgColor, t1, t2, t3)
     }
   }
 end
+local iconTexts = {
+  keybinding = {
+    anchor = {"TOPRIGHT", 18, 18},
+    scale = Round(13/12 * 100) / 100,
+    color = GetColor("b3b3b3"),
+    visible = true,
+    widthLimit = 0.8,
+    alignment = "RIGHT",
+  },
+  count = {
+    anchor = {"BOTTOMRIGHT", 18, -18},
+    scale = 1,
+    color = GetColor("ffffff"),
+    visible = true,
+    widthLimit = 0.8,
+    alignment = "RIGHT",
+  },
+  cooldown = {
+    anchor = {},
+    scale = Round(20/12 * 100) / 100,
+    color = GetColor("FFFFFF"),
+    visible = true,
+    showFractions = false,
+    widthLimit = 0.9,
+    alignment = "CENTER",
+  }
+}
 
 local Group = {
   kind = "group",
@@ -87,25 +114,29 @@ addonTable.Designer.Defaults = {
     kind = "icon",
     style = "blizzard",
     resource = {kind = "aura", spellID = 0},
-    height = 1, scale = 1, alpha = 1
+    height = 1, scale = 1, alpha = 1,
+    texts = iconTexts,
   },
   AbilityIcon = {
     kind = "icon",
     style = "blizzard",
     resource = {kind = "ability", spellID = 0},
-    height = 1, scale = 1, alpha = 1
+    height = 1, scale = 1, alpha = 1,
+    texts = iconTexts,
   },
   ItemIcon = {
     kind = "icon",
     style = "blizzard",
     resource = {kind = "item", itemID = 0},
-    height = 1, scale = 1, alpha = 1
+    height = 1, scale = 1, alpha = 1,
+    texts = iconTexts,
   },
   EquipmentIcon = {
     kind = "icon",
     style = "blizzard",
     resource = {kind = "equipment", equipmentSlot = 0},
-    height = 1, scale = 1, alpha = 1
+    height = 1, scale = 1, alpha = 1,
+    texts = iconTexts,
   },
   AuraBar = {
     kind = "bar",
