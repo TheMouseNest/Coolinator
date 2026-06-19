@@ -5,8 +5,9 @@ addonTable.Display.LayoutManagerMixin = CreateFromMixins(addonTable.Display.Base
 function addonTable.Display.LayoutManagerMixin:OnLoad()
   addonTable.Display.BaseLayoutManagerMixin.OnLoad(self)
   self:SetScript("OnEvent", self.OnEvent)
-  self:RegisterUnitEvent("UNIT_ENTERED_VEHICLE", "player")
-  self:RegisterUnitEvent("UNIT_EXITED_VEHICLE", "player")
+  self:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
+  self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR")
+  self:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR")
 
   self.disabled = {}
 
@@ -338,13 +339,16 @@ function addonTable.Display.LayoutManagerMixin:GetBar(details)
   end
 end
 
-function addonTable.Display.LayoutManagerMixin:OnEvent(eventName)
-  if eventName == "UNIT_ENTERED_VEHICLE" then
-    self.disabled.vehicle = true
-    self:Delayout()
-  elseif eventName == "UNIT_EXITED_VEHICLE" then
-    self.disabled.vehicle = nil
-    self:Layout()
+function addonTable.Display.LayoutManagerMixin:OnEvent(eventName, data)
+  if eventName == "UPDATE_BONUS_ACTIONBAR" or eventName == "UPDATE_VEHICLE_ACTIONBAR" or "UPDATE_OVERRIDE_ACTIONBAR" then
+    if (C_ActionBar.HasVehicleActionBar() and UnitVehicleSkin("player") and UnitVehicleSkin("player") ~= "") or
+      (C_ActionBar.HasOverrideActionBar() and C_ActionBar.GetOverrideBarSkin() and C_ActionBar.GetOverrideBarSkin() ~= 0) then
+      self.disabled.vehicle = true
+      self:Delayout()
+    elseif self.disabled.vehicle then
+      self.disabled.vehicle = nil
+      self:Layout()
+    end
   elseif eventName == "PLAYER_REGEN_DISABLED" then
     self.inCombat = true
     self:ApplySituation()
