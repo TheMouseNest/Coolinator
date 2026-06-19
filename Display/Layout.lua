@@ -344,6 +344,7 @@ function addonTable.Display.LayoutManagerMixin:OnEvent(eventName)
     self:Delayout()
   elseif eventName == "UNIT_EXITED_VEHICLE" then
     self.disabled.vehicle = nil
+    self:Layout()
   elseif eventName == "PLAYER_REGEN_DISABLED" then
     self.inCombat = true
     self:ApplySituation()
