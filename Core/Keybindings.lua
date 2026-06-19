@@ -56,7 +56,7 @@ function addonTable.Core.StoreKeyBindings()
       if key1 then
         local action = details.start + i - 1
         local actionType, id, subType = GetActionInfo(action)
-        if actionType == "spell" then
+        if subType == "spell" then
           id = C_Spell.GetBaseSpell(id)
         end
         local text = GetBindingText(key1, 1)
