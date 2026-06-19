@@ -349,7 +349,7 @@ function GetIconTextPositioning(rootParent, iconID)
       local textDetails = details.texts[key]
       if textDetails then
         text:ClearAllPoints()
-        text:SetFontObject(addonTable.CurrentFont)
+        text:SetFontObject(addonTable.CurrentNumberFont)
         if font.slug then
           text:SetSmoothScaling(true)
           text:SetTextScale(1)
