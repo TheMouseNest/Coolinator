@@ -60,7 +60,7 @@ function addonTable.Core.StoreKeyBindings()
           id = C_Spell.GetBaseSpell(id)
         end
         local text = GetBindingText(key1, 1)
-        if not seenBinding[text] then
+        if not seenBinding[text] and actionType then
           if (actionType == "spell" or actionType == "macro" and subType == "spell") and spellMap[id] == nil then
             spellMap[id] = {binding = text, action = action}
           elseif (actionType == "item" or actionType == "macro" and subType == "item") and itemMap[id] == nil then
