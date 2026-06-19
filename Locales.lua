@@ -102,6 +102,8 @@ L["GROW_FROM"] = "Grow from"
 L["STYLE"] = "Style"
 L["BLIZZARD"] = "Blizzard"
 L["SQUARE"] = "Square"
+L["CENTER_HORIZONTAL"] = "Center Horizontal"
+L["CENTER_VERTICAL"] = "Center Vertical"
 
 L["LAYOUT"] = "Layout"
 L["TRANSPARENCY"] = "Transparency"

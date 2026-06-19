@@ -819,6 +819,50 @@ function addonTable.Designer.LayoutManagerMixin:UpdateSelectionJustOne()
       self:StopMovingRoot(frame)
     end)
     self.dragButton:RegisterForDrag("LeftButton")
+    if parentDetails.layout == "standalone" then
+      -- Shortcut to center horizontally or vertically
+      self.dragButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+      self.dragButton:SetScript("OnClick", function(_, button)
+        if button == "RightButton" then
+          MenuUtil.CreateContextMenu(UIParent, function(_, rootDescription)
+            if (details.anchor[1] == "TOP" or details.anchor[1] == "BOTTOM") and (details.anchor[4] == nil or details.anchor[4] == 0) then
+              rootDescription:CreateTitle(GRAY_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.CENTER_HORIZONTAL))
+            else
+              rootDescription:CreateButton(addonTable.Locales.CENTER_HORIZONTAL, function()
+                if details.anchor[1] == "TOPLEFT" or details.anchor[1] == "TOPRIGHT" or details.anchor[1] == "TOP" then
+                  details.anchor = {"TOP", "UIParent", "TOP", 0, details.anchor[5]}
+                elseif details.anchor[1] == "BOTTOMLEFT" or details.anchor[1] == "BOTTOMRIGHT" or details.anchor[1] == "BOTTOM" then
+                  details.anchor = {"BOTTOM", "UIParent", "BOTTOM", 0, details.anchor[5]}
+                else
+                  local halfFrameHeight = frame:GetHeight() * frame:GetEffectiveScale() / UIParent:GetScale() / 2
+                  local offsetY = UIParent:GetHeight() / 2 + details.anchor[5] - halfFrameHeight
+                  details.anchor = {"BOTTOM", "UIParent", "BOTTOM", 0, offsetY}
+                end
+                Announce()
+              end)
+            end
+            if (details.anchor[1] == "LEFT" or details.anchor[1] == "RIGHT") and (details.anchor[5] == nil or details.anchor[5] == 0) then
+              rootDescription:CreateTitle(GRAY_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.CENTER_VERTICAL))
+            else
+              rootDescription:CreateButton(addonTable.Locales.CENTER_VERTICAL, function()
+                if details.anchor[1] == "TOPRIGHT" or details.anchor[1] == "BOTTOMRIGHT" or details.anchor[1] == "RIGHT" then
+                  details.anchor = {"RIGHT", "UIParent", "RIGHT", details.anchor[4] or 0, 0}
+                elseif details.anchor[1] == "TOPLEFT" or details.anchor[1] == "BOTTOMLEFT" or details.anchor[1] == "LEFT" then
+                  details.anchor = {"LEFT", "UIParent", "LEFT", details.anchor[4], 0}
+                else
+                  local halfFrameWidth = frame:GetWidth() * frame:GetEffectiveScale() / UIParent:GetScale() / 2
+                  local offsetX = UIParent:GetWidth() / 2 + details.anchor[4] - halfFrameWidth
+                  details.anchor = {"LEFT", "UIParent", "LEFT", offsetX, 0}
+                end
+                Announce()
+              end)
+            end
+          end)
+        end
+      end)
+    else
+      self.dragButton:SetScript("OnClick", nil)
+    end
   end
   if parentDetails.layout ~= "standalone" then
     self.selectParentButton:Show()
