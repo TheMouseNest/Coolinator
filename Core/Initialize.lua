@@ -22,47 +22,6 @@ function addonTable.Core.AutoGenerateLayout(name)
   end
 end
 
-local actionButtons = {
-  { prefix = "ACTIONBUTTON", count = 12, start = 1},
-  { prefix = "ACTIONBUTTON", count = 12, start = 73}, -- Bonus bars
-  { prefix = "ACTIONBUTTON", count = 12, start = 85}, -- Bonus bars
-  { prefix = "ACTIONBUTTON", count = 12, start = 97}, -- Bonus bars
-  { prefix = "ACTIONBUTTON", count = 12, start = 109}, -- Bonus bars
-  { prefix = "MULTIACTIONBAR1BUTTON", count = 12, start = 61},
-  { prefix = "MULTIACTIONBAR2BUTTON", count = 12, start = 49},
-  { prefix = "MULTIACTIONBAR3BUTTON", count = 12, start = 25},
-  { prefix = "MULTIACTIONBAR4BUTTON", count = 12, start = 37},
-  { prefix = "MULTIACTIONBAR5BUTTON", count = 12, start = 145},
-  { prefix = "MULTIACTIONBAR6BUTTON", count = 12, start = 157},
-  { prefix = "MULTIACTIONBAR6BUTTON", count = 12, start = 169},
-  { prefix = "ACTIONBUTTON", count = 12, start = 121},
-}
-
-function addonTable.Core.StoreKeyBindings()
-  local spellMap = {}
-  local itemMap = {}
-  for _, details in ipairs(actionButtons) do
-    for i = 1, details.count do
-      local key1 = GetBindingKey(details.prefix .. i)
-      if key1 then
-        local action = details.start + i - 1
-        local actionType, id, subType = GetActionInfo(action)
-        if actionType == "spell" then
-          id = C_Spell.GetBaseSpell(id)
-        end
-        local text = GetBindingText(key1, 1)
-        if (actionType == "spell" or actionType == "macro" and subType == "spell") and spellMap[id] == nil then
-          spellMap[id] = {binding = text, action = action}
-        elseif (actionType == "item" or actionType == "macro" and subType == "item") and itemMap[id] == nil then
-          itemMap[id] = {binding = text, action = action}
-        end
-      end
-    end
-  end
-
-  return {spells = spellMap, items = itemMap}
-end
-
 function addonTable.Core.Initialize()
   addonTable.Config.InitializeData()
   addonTable.SlashCmd.Initialize()
@@ -126,6 +85,7 @@ frame:RegisterEvent("UPDATE_MACROS")
 frame:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
 frame:RegisterEvent("ACTIVE_PLAYER_SPECIALIZATION_CHANGED")
 frame:RegisterEvent("TRAIT_CONFIG_UPDATED")
+frame:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
 frame:SetScript("OnEvent", function(_, eventName, data1, data2)
   if eventName == "ADDON_LOADED" and data1 == "Coolinator" then
     addonTable.Core.Initialize()
@@ -139,7 +99,7 @@ frame:SetScript("OnEvent", function(_, eventName, data1, data2)
   elseif eventName == "PLAYER_EQUIPMENT_CHANGED" then
     addonTable.CallbackRegistry:TriggerEvent("Layout")
     addonTable.CallbackRegistry:TriggerEvent("Designer.Layout")
-  elseif eventName == "UPDATE_BINDINGS" or eventName == "ACTIONBAR_SLOT_CHANGED" or eventName == "UPDATE_MACROS" then
+  elseif eventName == "UPDATE_BINDINGS" or eventName == "ACTIONBAR_SLOT_CHANGED" or eventName == "UPDATE_MACROS" or eventName == "UPDATE_SHAPESHIFT_FORM" then
     addonTable.State.Bindings = addonTable.Core.StoreKeyBindings()
     addonTable.CallbackRegistry:TriggerEvent("Update.KeyBindings")
   elseif eventName == "SPELLS_CHANGED" then
