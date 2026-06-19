@@ -88,10 +88,10 @@ local function Textsv7(group)
       entry.showTooltips = nil
       entry.texts.keybinding = {
         anchor = {"TOPRIGHT", 18, 18},
-        scale = Round(14/12 * 100) / 100,
+        scale = Round(13/12 * 100) / 100,
         color = GetColor("b3b3b3"),
         visible = true,
-        widthLimit = 0.9,
+        widthLimit = 0.8,
         alignment = "RIGHT",
       }
       entry.texts.count = {
@@ -99,7 +99,7 @@ local function Textsv7(group)
         scale = 1,
         color = GetColor("ffffff"),
         visible = true,
-        widthLimit = 0.9,
+        widthLimit = 0.8,
         alignment = "RIGHT",
       }
       entry.texts.cooldown = {
@@ -139,9 +139,9 @@ function addonTable.Core.UpgradeDesign(design)
     design.version = 6
   end
 
-  if design.version < 7 then
+  if design.version < 8 then
     Textsv7(design)
-    design.version = 7
+    design.version = 8
   end
 end
 
