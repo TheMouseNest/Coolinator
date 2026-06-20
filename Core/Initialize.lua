@@ -32,6 +32,8 @@ function addonTable.Core.Initialize()
 
   addonTable.CustomiseDialog.Initialize()
   addonTable.Designer.Initialize()
+
+  CreateFrame("Frame", "CoolinatorPrimaryGroupAnchor")
 end
 
 local function TriggerUpdate()
@@ -121,7 +123,6 @@ EventUtil.ContinueAfterAllEvents(function()
       return
     end
 
-    CreateFrame("Frame", "CoolinatorPrimaryGroupAnchor")
     addonTable.Display.LayoutManager = addonTable.Utilities.InitFrameWithMixin(UIParent, addonTable.Display.LayoutManagerMixin)
     addonTable.Designer.LayoutManager = addonTable.Utilities.InitFrameWithMixin(UIParent, addonTable.Designer.LayoutManagerMixin)
   end)
