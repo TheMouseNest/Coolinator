@@ -76,7 +76,7 @@ function addonTable.Display.AuraStatusBarMixin:Setup(sourceWidget, details)
 
   widgets.borderWrapper:SetFrameLevel(widgets.statusBar:GetFrameLevel() + 2)
 
-  widgets.duration:SetScale(2)
+  widgets.duration:SetScale(self.lowerScale)
 
   widgets.icon:SetShown(details.icon.show)
 
