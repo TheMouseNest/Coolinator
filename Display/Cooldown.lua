@@ -285,7 +285,7 @@ function addonTable.Display.CooldownMixin:UpdateItemByID(itemID)
   local durationObject = C_DurationUtil.CreateDuration()
   durationObject:SetTimeFromStart(start, duration)
   self.ChargesCooldown:SetCooldownFromDurationObject(durationObject)
-  self.CountFrame.text:SetText("")
+  self.CountFrame.text:SetText(C_Item.GetItemCount(self.itemID, false, true))
   self.Icon:SetTexture(C_Item.GetItemIconByID(self.itemID))
 
   if C_Item.GetItemCount(self.itemID) == 0 then
@@ -313,7 +313,7 @@ function addonTable.Display.CooldownMixin:UpdateItemByEquipmentSlot(equipmentSlo
   local durationObject = C_DurationUtil.CreateDuration()
   durationObject:SetTimeFromStart(start, duration)
   self.BaseCooldown:SetCooldownFromDurationObject(durationObject)
-  self.CountFrame.text:SetText("")
+  self.CountFrame.text:SetText(C_Item.GetItemCount(C_Item.GetItemID(location), false, true))
   self.Icon:SetTexture(C_Item.GetItemIcon(location))
 
   self.NotUsable:Hide()
