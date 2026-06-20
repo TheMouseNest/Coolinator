@@ -166,7 +166,7 @@ function addonTable.Display.CooldownMixin:Enable()
       return
     end
     local override = C_Spell.GetOverrideSpell(self.details.resource.spellID)
-    if self.spellID and override ~= self.spellID then
+    if override ~= self.spellID then
       self:UpdateSpellByID(override)
     end
   end, self)
@@ -258,7 +258,7 @@ function addonTable.Display.CooldownMixin:UpdateSpellByID(spellID, activationOff
   if not activationOff then
     self:SetActivationAlert(C_SpellActivationOverlay.IsSpellOverlayed(spellID))
   end
-C_Spell.EnableSpellRangeCheck(self.spellID, true)
+  C_Spell.EnableSpellRangeCheck(self.spellID, true)
   if C_Spell.IsSpellInRange(self.spellID, "target") == false then
     self.Icon:SetVertexColor(0.8, 0, 0, 1)
   else
