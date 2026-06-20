@@ -416,7 +416,7 @@ function addonTable.Designer.LayoutManagerMixin:GetInsertDirection(root, group)
 
   local child = group.children[index]
 
-  if child.details.kind ~= root.details.kind and child.details.kind ~= "group" then
+  if child.details.kind ~= root.details.kind and (child.details.kind ~= "group" or child.details.entries[1].kind ~= root.details.kind) then
     index = -1
   end
 
