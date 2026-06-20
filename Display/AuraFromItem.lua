@@ -93,6 +93,7 @@ function addonTable.Display.AuraFromItemMixin:Setup(details)
   trackerFrame.callbacksBySpellID[self.details.resource.spellID] = function()
     self:Import()
   end
+  self.BaseCooldown:SetDrawSwipe(details.showSwipe)
   addonTable.Display.StyleIcon({id  = details.style}, self, self.Icon, nil, nil, {self.Icon}, {{text = true, widget = self.BaseCooldown}})
 end
 

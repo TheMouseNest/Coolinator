@@ -48,6 +48,8 @@ function addonTable.Display.AuraIconMixin:Setup(sourceWidget, details)
   widgets.debuffBorder:Setup(details)
   widgets.debuffBorder:SetFrameLevel(self:GetFrameLevel() + 4)
 
+  widgets.cooldown:SetDrawSwipe(details.showSwipe)
+
   self:SetShown(widgets.source:IsShown())
 end
 
