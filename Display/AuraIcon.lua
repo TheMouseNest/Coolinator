@@ -41,7 +41,7 @@ function addonTable.Display.AuraIconMixin:Setup(sourceWidget, details)
 
   widgets.source:SetMouseMotionEnabled(addonTable.Config.Get(addonTable.Config.Options.SHOW_TOOLTIPS))
   self:SetMouseMotionEnabled(addonTable.Config.Get(addonTable.Config.Options.SHOW_TOOLTIPS))
-  addonTable.Display.StyleIcon({id  = details.style}, self, widgets.icon, widgets.count, nil, {widgets.icon}, {widgets.cooldown})
+  addonTable.Display.StyleIcon({id  = details.style}, self, widgets.icon, widgets.count, nil, {widgets.icon}, {{swipe = true, text = true, widget = widgets.cooldown}})
 
   widgets.debuffBorder:SetAllPoints(widgets.icon)
   widgets.debuffBorder:Setup(details)

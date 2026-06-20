@@ -52,8 +52,11 @@ function addonTable.Display.StyleIcon(styleSettings, parent, icon, count, keybin
   end
 
   for _, c in ipairs(cooldowns) do
-    local text = c:GetRegions()
+    local text = c.widget:GetRegions()
     SetupText(text, details.texts.cooldown)
+    c.widget:SetDrawSwipe(c.swipe and not details.textsOnly)
+    c.widget:SetDrawEdge(c.edge and not details.textsOnly)
+    c.widget:SetHideCountdownNumbers(not c.text and details.texts.cooldown.visible)
   end
   SetupText(count, details.texts.count)
   if keybinding then
@@ -93,8 +96,8 @@ function addonTable.Display.StyleIcon(styleSettings, parent, icon, count, keybin
     parent.border:SetVertexColor(1, 1, 1)
     parent.border:SetSize(50+5, 50+5)
     for _, c in ipairs(cooldowns) do
-      if c:GetDrawSwipe() then
-        c:SetSwipeTexture("Interface/HUD/UI-HUD-CoolDownManager-Icon-Swipe")
+      if c.widget:GetDrawSwipe() then
+        c.widget:SetSwipeTexture("Interface/HUD/UI-HUD-CoolDownManager-Icon-Swipe")
       end
     end
   end

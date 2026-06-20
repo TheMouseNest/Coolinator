@@ -74,7 +74,7 @@ end
 function addonTable.Display.CooldownMixin:Style()
   addonTable.Display.StyleIcon({id = self.details.style}, self, self.Icon, self.CountFrame.text, self.KeyBindingFrame.text,
     {self.Icon, self.NotUsable},
-    {self.BaseCooldown, self.ChargesCooldown,}
+    {{swipe = true, text = true, widget = self.BaseCooldown}, {edge = true, text = true, widget = self.ChargesCooldown},}
   )
 end
 
@@ -241,7 +241,7 @@ function addonTable.Display.CooldownMixin:UpdateSpellByID(spellID, activationOff
     local chargeDuration = C_Spell.GetSpellChargeDuration(spellID)
     self.ChargesCooldown:SetCooldownFromDurationObject(chargeDuration)
     self.ChargesCooldown:SetAlphaFromBoolean(C_Spell.GetSpellCharges(spellID))
-    self.ChargesCooldown:SetHideCountdownNumbers(cooldownInfo.isActive and not cooldownInfo.isOnGCD)
+    self.ChargesCooldown:SetHideCountdownNumbers(not self.details.texts.cooldown.visible or cooldownInfo.isActive and not cooldownInfo.isOnGCD)
   else
     self.ChargesCooldown:Clear()
   end
@@ -249,7 +249,7 @@ function addonTable.Display.CooldownMixin:UpdateSpellByID(spellID, activationOff
   if cooldownInfo.isActive then
     local baseDuration = C_Spell.GetSpellCooldownDuration(spellID, self.ignoreGCD)
     self.BaseCooldown:SetCooldownFromDurationObject(baseDuration)
-    self.BaseCooldown:SetHideCountdownNumbers(cooldownInfo.isOnGCD)
+    self.BaseCooldown:SetHideCountdownNumbers(not self.details.texts.cooldown.visible or cooldownInfo.isOnGCD)
   end
 
   self.Icon:SetTexture(C_Spell.GetSpellTexture(spellID))
@@ -258,8 +258,7 @@ function addonTable.Display.CooldownMixin:UpdateSpellByID(spellID, activationOff
   if not activationOff then
     self:SetActivationAlert(C_SpellActivationOverlay.IsSpellOverlayed(spellID))
   end
-
-  C_Spell.EnableSpellRangeCheck(self.spellID, true)
+C_Spell.EnableSpellRangeCheck(self.spellID, true)
   if C_Spell.IsSpellInRange(self.spellID, "target") == false then
     self.Icon:SetVertexColor(0.8, 0, 0, 1)
   else

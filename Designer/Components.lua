@@ -89,7 +89,7 @@ function addonTable.Designer.IconMixin:Setup(details)
   self.CountFrame.text:SetText("2")
   self:UpdateBindingText()
 
-  addonTable.Display.StyleIcon({id = self.details.style}, self, self.Icon, self.CountFrame.text, self.KeyBindingFrame.text, {self.Icon}, {self.BaseCooldown})
+  addonTable.Display.StyleIcon({id = self.details.style}, self, self.Icon, self.CountFrame.text, self.KeyBindingFrame.text, {self.Icon}, {{swipe = true, text = true, widget = self.BaseCooldown}})
 end
 
 function addonTable.Designer.IconMixin:OnEnter()
