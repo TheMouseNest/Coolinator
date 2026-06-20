@@ -145,6 +145,8 @@ L["CENTER"] = "Center"
 L["TOP"] = "Top"
 L["BOTTOM"] = "Bottom"
 L["ALIGNMENT"] = "Alignment"
+L["SHOW_SWIPE"] = "Show swipe"
+L["DESATURATE_ON_COOLDOWN"] = "Desaturate on cooldown"
 
 L["PLEASE_RELOAD_TO_GET_COOLINATOR_WORKING_REASON_X"] = "Please reload to get Coolinator working. Reason (%s)"
 L["DUE_TO_AURA_BARS_CHANGING_RELOAD_REQUIRED"] = "Due to aura bars changing a reload is required for Coolinator function"

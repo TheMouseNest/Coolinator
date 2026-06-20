@@ -198,6 +198,9 @@ function addonTable.Display.CooldownMixin:Setup(details)
     self:UpdateItemByEquipmentSlot(details.resource.equipmentSlot)
   end
 
+  self.BaseCooldown:SetScript("OnCooldownDone", nil)
+  self.BaseCooldown:SetDrawSwipe(details.showSwipe)
+  self.ChargesCooldown:SetDrawEdge(details.showSwipe)
   if self.details.texts.cooldown.showFractions then
     self.BaseCooldown:SetCountdownFormatter(auraFormatter)
     self.ChargesCooldown:SetCountdownFormatter(auraFormatter)
@@ -205,6 +208,7 @@ function addonTable.Display.CooldownMixin:Setup(details)
     self.BaseCooldown:SetCountdownFormatter(nil)
     self.ChargesCooldown:SetCountdownFormatter(nil)
   end
+  self.desaturateCooldown = details.desaturateCooldown
 
   self:UpdateBindingText()
   self:Style()
@@ -250,6 +254,16 @@ function addonTable.Display.CooldownMixin:UpdateSpellByID(spellID, activationOff
     local baseDuration = C_Spell.GetSpellCooldownDuration(spellID, self.ignoreGCD)
     self.BaseCooldown:SetCooldownFromDurationObject(baseDuration)
     self.BaseCooldown:SetHideCountdownNumbers(not self.details.texts.cooldown.visible or cooldownInfo.isOnGCD)
+    if self.desaturateCooldown and not cooldownInfo.isOnGCD then
+      self.Icon:SetDesaturated(baseDuration:IsActive())
+    else
+      self.Icon:SetDesaturated(false)
+    end
+    self.BaseCooldown:SetScript("OnCooldownDone", function()
+      self.Icon:SetDesaturated(false)
+    end)
+  else
+    self.Icon:SetDesaturated(false)
   end
 
   self.Icon:SetTexture(C_Spell.GetSpellTexture(spellID))

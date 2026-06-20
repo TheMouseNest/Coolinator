@@ -112,6 +112,20 @@ local function Textsv7(group)
   end
 end
 
+local function Iconsv9(group)
+  for i = #group.entries, 1, -1 do
+    local entry = group.entries[i]
+    if entry.kind == "group" then
+      Iconsv9(entry)
+    elseif entry.kind == "icon" then
+      if entry.resource.kind == "ability" then
+        entry.desaturateCooldown = false
+      end
+      entry.showSwipe = true
+    end
+  end
+end
+
 function addonTable.Core.UpgradeDesign(design)
   if not design.version or design.version < 1 then
     AddAlignment(design)
@@ -139,6 +153,11 @@ function addonTable.Core.UpgradeDesign(design)
   if design.version < 8 then
     Textsv7(design)
     design.version = 8
+  end
+
+  if design.version < 9 then
+    Iconsv9(design)
+    design.version = 9
   end
 end
 

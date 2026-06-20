@@ -418,19 +418,50 @@ addonTable.Designer.WidgetConfiguration = {
       }
     },
     ["ability"] = {
-      {
-        label = addonTable.Locales.GENERAL,
-        entries = {
-          {
-            label = addonTable.Locales.SHOW_ICON,
-            kind = "checkbox",
-            setter = function(details, value)
-              details.texts.cooldown.showFractions = value
-            end,
-            getter = function(details)
-              return details.texts.cooldown.showFractions
-            end,
-          },
+      ["*"] = {
+        {
+          label = addonTable.Locales.GENERAL,
+          entries = {
+            {
+              label = addonTable.Locales.SHOW_SWIPE,
+              kind = "checkbox",
+              setter = function(details, value)
+                details.showSwipe = value
+              end,
+              getter = function(details)
+                return details.showSwipe
+              end,
+            },
+            {
+              label = addonTable.Locales.DESATURATE_ON_COOLDOWN,
+              kind = "checkbox",
+              setter = function(details, value)
+                details.desaturateCooldown = value
+              end,
+              getter = function(details)
+                return details.desaturateCooldown
+              end,
+            },
+          }
+        }
+      }
+    },
+    ["aura"] = {
+      ["*"] = {
+        {
+          label = addonTable.Locales.GENERAL,
+          entries = {
+            {
+              label = addonTable.Locales.SHOW_SWIPE,
+              kind = "checkbox",
+              setter = function(details, value)
+                details.showSwipe = value
+              end,
+              getter = function(details)
+                return details.showSwipe
+              end,
+            },
+          }
         }
       }
     }
