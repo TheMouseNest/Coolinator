@@ -599,7 +599,7 @@ local function GetMetaDetails(detailsList)
       end
     end,
     __index = function(tbl, index)
-      if type(detailsList[1][index]) == "table" and index ~= "color" then
+      if type(detailsList[1][index]) == "table" and not index:match("[Cc]olor") then
         if mapping[index] and lastTbl[index] == detailsList[1][index] then
           return mapping[index]
         end
