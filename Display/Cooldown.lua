@@ -201,21 +201,29 @@ end
 function addonTable.Display.CooldownMixin:UpdateSpellByID(spellID, activationOff)
   self.spellID = spellID
 
-  local chargeDuration = C_Spell.GetSpellChargeDuration(spellID)
-  if chargeDuration then
+  local chargesInfo = C_Spell.GetSpellCharges(spellID)
+  local cooldownInfo = C_Spell.GetSpellCooldown(spellID)
+
+  if chargesInfo and chargesInfo.isActive then
+    local chargeDuration = C_Spell.GetSpellChargeDuration(spellID)
     self.ChargesCooldown:SetCooldownFromDurationObject(chargeDuration)
+    self.ChargesCooldown:SetAlphaFromBoolean(C_Spell.GetSpellCharges(spellID))
+    self.ChargesCooldown:SetHideCountdownNumbers(cooldownInfo.isActive)
   else
     self.ChargesCooldown:Clear()
   end
-  local ignoreGCD = addonTable.Constants.GCD ~= spellID
-  local baseDuration = C_Spell.GetSpellCooldownDuration(spellID, ignoreGCD)
-  self.BaseCooldown:SetCooldownFromDurationObject(baseDuration)
-  local gcd = C_Spell.GetSpellCooldown(spellID).isOnGCD
-  if gcd == nil then
-    gcd = false
-  end
 
-  self.BaseCooldown:SetAlphaFromBoolean(gcd, 0, 1)
+  if cooldownInfo.isActive then
+    local ignoreGCD = addonTable.Constants.GCD ~= spellID
+    local baseDuration = C_Spell.GetSpellCooldownDuration(spellID, ignoreGCD)
+    self.BaseCooldown:SetCooldownFromDurationObject(baseDuration)
+    local gcd = C_Spell.GetSpellCooldown(spellID).isOnGCD
+    if gcd == nil then
+      gcd = false
+    end
+
+    self.BaseCooldown:SetAlphaFromBoolean(gcd, 0, 1)
+  end
 
   self.Icon:SetTexture(C_Spell.GetSpellTexture(spellID))
   self:UpdateSpellCharges()
