@@ -72,7 +72,9 @@ function addonTable.Core.GenerateDefaultCDMLayout()
   for _, id in ipairs(spellUtility) do
     local spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))
     if not seen[spellID] then
-      table.insert(result.entries[1].entries, {kind = "icon", resource = {kind = "ability", spellID = spellID}, height = 1, scale = 1, alpha = 1, style = "blizzard", showTooltips = true, texts = CopyTable(addonTable.Designer.Defaults.AbilityIcon.texts)})
+      local entry = CopyTable(addonTable.Designer.Defaults.AbilityIcon)
+      entry.resource.spellID = spellID
+      table.insert(result.entries[1].entries, entry)
     end
     seen[spellID] = true
   end
@@ -80,13 +82,17 @@ function addonTable.Core.GenerateDefaultCDMLayout()
   for _, id in ipairs(spellEssential) do
     local spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))
     if not seen[spellID] then
-      table.insert(result.entries[2].entries, {kind = "icon", resource = {kind = "ability", spellID = spellID}, height = 1, scale = 1, alpha = 1, style = "blizzard", showTooltips = true, texts = CopyTable(addonTable.Designer.Defaults.AbilityIcon.texts)})
+      local entry = CopyTable(addonTable.Designer.Defaults.AbilityIcon)
+      entry.resource.spellID = spellID
+      table.insert(result.entries[2].entries, entry)
     end
     seen[spellID] = true
   end
 
   for _, id in ipairs(auraTracked) do
-    table.insert(result.entries[3].entries, {kind = "icon", resource = {kind = "aura", spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))}, height = 1, scale = 1, alpha = 1, style = "blizzard", showTooltips = true, texts = CopyTable(addonTable.Designer.Defaults.AuraIcon.texts)})
+    local entry = CopyTable(addonTable.Designer.Defaults.AuraIcon)
+    entry.resource.spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))
+    table.insert(result.entries[3].entries, entry)
   end
 
   local barGroups = {

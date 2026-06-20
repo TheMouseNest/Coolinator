@@ -113,6 +113,8 @@ addonTable.Designer.Defaults = {
     resource = {kind = "aura", spellID = 0},
     height = 1, scale = 1, alpha = 1,
     texts = iconTexts,
+    showSwipe = true,
+    showIcon = true,
   },
   AbilityIcon = {
     kind = "icon",
@@ -120,6 +122,9 @@ addonTable.Designer.Defaults = {
     resource = {kind = "ability", spellID = 0},
     height = 1, scale = 1, alpha = 1,
     texts = iconTexts,
+    showSwipe = true,
+    showIcon = true,
+    desaturateCooldown = false,
   },
   ItemIcon = {
     kind = "icon",
@@ -127,6 +132,8 @@ addonTable.Designer.Defaults = {
     resource = {kind = "item", itemID = 0},
     height = 1, scale = 1, alpha = 1,
     texts = iconTexts,
+    showSwipe = true,
+    showIcon = true,
   },
   EquipmentIcon = {
     kind = "icon",
@@ -134,6 +141,8 @@ addonTable.Designer.Defaults = {
     resource = {kind = "equipment", equipmentSlot = 0},
     height = 1, scale = 1, alpha = 1,
     texts = iconTexts,
+    showSwipe = true,
+    showIcon = true,
   },
   AuraBar = {
     kind = "bar",
