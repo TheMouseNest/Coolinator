@@ -54,7 +54,7 @@ L["VISIBLE"] = "Visible"
 L["SHOW_FRACTIONS"] = "Show fractions"
 L["SHOW_FRACTIONS_ABILITY_COOLDOWNS_ONLY"] = "Show fractions (ability cooldowns only)"
 L["TEXTS"] = "Texts"
-L["ONLY_SHOW_TEXTS"] = "Only show texts"
+L["SHOW_ICON"] = "Show icon"
 L["SHOW_GCD_SWIPE"] = "Show GCD swipe"
 
 L["ENTER_PROFILE_NAME"] = "Enter Profile Name:"

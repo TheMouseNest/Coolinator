@@ -35,6 +35,7 @@ function addonTable.Display.StyleIcon(styleSettings, parent, icon, count, keybin
     font = font,
     texts = details.texts,
     textsOnly = details.textsOnly,
+    showIcon = details.showIcon,
   }
   if parent.styleSet and tCompare(styleID, parent.styleSet, 5) and icon == parent.Icon then
     return
@@ -54,8 +55,6 @@ function addonTable.Display.StyleIcon(styleSettings, parent, icon, count, keybin
   for _, c in ipairs(cooldowns) do
     local text = c.widget:GetRegions()
     SetupText(text, details.texts.cooldown)
-    c.widget:SetDrawSwipe(c.swipe and not details.textsOnly)
-    c.widget:SetDrawEdge(c.edge and not details.textsOnly)
     c.widget:SetHideCountdownNumbers(not c.text and details.texts.cooldown.visible)
   end
   SetupText(count, details.texts.count)
@@ -106,8 +105,8 @@ function addonTable.Display.StyleIcon(styleSettings, parent, icon, count, keybin
     t:AddMaskTexture(mask)
   end
 
-  icon:SetShown(not details.textsOnly)
-  parent.border:SetShown(not details.textsOnly)
+  icon:SetShown(details.showIcon)
+  parent.border:SetShown(details.showIcon)
 
   parent.styleSet = CopyTable(styleID)
 end

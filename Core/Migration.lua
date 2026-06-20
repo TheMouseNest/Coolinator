@@ -126,6 +126,19 @@ local function Iconsv9(group)
   end
 end
 
+local function Iconsv10(group)
+  for i = #group.entries, 1, -1 do
+    local entry = group.entries[i]
+    if entry.kind == "group" then
+      Iconsv10(entry)
+    elseif entry.kind == "icon" then
+      entry.showIcon = not entry.textsOnly
+      entry.showSwipe = not entry.textsOnly
+      entry.textsOnly = nil
+    end
+  end
+end
+
 function addonTable.Core.UpgradeDesign(design)
   if not design.version or design.version < 1 then
     AddAlignment(design)
@@ -158,6 +171,11 @@ function addonTable.Core.UpgradeDesign(design)
   if design.version < 9 then
     Iconsv9(design)
     design.version = 9
+  end
+
+  if design.version < 10 then
+    Iconsv10(design)
+    design.version = 10
   end
 end
 

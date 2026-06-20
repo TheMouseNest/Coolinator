@@ -247,7 +247,7 @@ function addonTable.Display.LayoutManagerMixin:GetIcon(details)
       frame:SetSize(addonTable.Constants.nativeSize - 4, addonTable.Constants.nativeSize - 4)
       local _, _, overlay = ability:GetRegions()
       overlay:Hide()
-      addonTable.Display.StyleIcon({id  = details.style}, frame, ability.Icon, ability.ChargeCount.Current, nil, {ability.Icon}, {{swipe = true, text = true, widget = ability.Cooldown}})
+      addonTable.Display.StyleIcon({id  = details.style}, frame, ability.Icon, ability.ChargeCount.Current, nil, {ability.Icon}, {{text = true, widget = ability.Cooldown}})
 
       return frame
     end

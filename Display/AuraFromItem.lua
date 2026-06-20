@@ -93,7 +93,7 @@ function addonTable.Display.AuraFromItemMixin:Setup(details)
   trackerFrame.callbacksBySpellID[self.details.resource.spellID] = function()
     self:Import()
   end
-  addonTable.Display.StyleIcon({id  = details.style}, self, self.Icon, nil, nil, {self.Icon}, {{swipe = true, text = true, widget = self.BaseCooldown}})
+  addonTable.Display.StyleIcon({id  = details.style}, self, self.Icon, nil, nil, {self.Icon}, {{text = true, widget = self.BaseCooldown}})
 end
 
 function addonTable.Display.AuraFromItemMixin:Import()

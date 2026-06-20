@@ -393,15 +393,25 @@ addonTable.Designer.WidgetConfiguration = {
             },
             { kind = "spacer" },
             {
-              label = addonTable.Locales.ONLY_SHOW_TEXTS,
+              label = addonTable.Locales.SHOW_ICON,
               kind = "checkbox",
               setter = function(details, value)
-                details.textsOnly = value
+                details.showIcon = value
               end,
               getter = function(details)
-                return details.textsOnly
+                return details.showIcon
               end,
-            }
+            },
+            {
+              label = addonTable.Locales.SHOW_SWIPE,
+              kind = "checkbox",
+              setter = function(details, value)
+                details.showSwipe = value
+              end,
+              getter = function(details)
+                return details.showSwipe
+              end,
+            },
           }
         },
         {
@@ -423,16 +433,6 @@ addonTable.Designer.WidgetConfiguration = {
           label = addonTable.Locales.GENERAL,
           entries = {
             {
-              label = addonTable.Locales.SHOW_SWIPE,
-              kind = "checkbox",
-              setter = function(details, value)
-                details.showSwipe = value
-              end,
-              getter = function(details)
-                return details.showSwipe
-              end,
-            },
-            {
               label = addonTable.Locales.DESATURATE_ON_COOLDOWN,
               kind = "checkbox",
               setter = function(details, value)
@@ -446,25 +446,6 @@ addonTable.Designer.WidgetConfiguration = {
         }
       }
     },
-    ["aura"] = {
-      ["*"] = {
-        {
-          label = addonTable.Locales.GENERAL,
-          entries = {
-            {
-              label = addonTable.Locales.SHOW_SWIPE,
-              kind = "checkbox",
-              setter = function(details, value)
-                details.showSwipe = value
-              end,
-              getter = function(details)
-                return details.showSwipe
-              end,
-            },
-          }
-        }
-      }
-    }
   },
   ["bar"] = {
     ["*"] = {

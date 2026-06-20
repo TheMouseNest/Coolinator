@@ -74,7 +74,7 @@ end
 function addonTable.Display.CooldownMixin:Style()
   addonTable.Display.StyleIcon({id = self.details.style}, self, self.Icon, self.CountFrame.text, self.KeyBindingFrame.text,
     {self.Icon, self.NotUsable},
-    {{swipe = true, text = true, widget = self.BaseCooldown}, {edge = true, text = true, widget = self.ChargesCooldown},}
+    {{swipe = true, text = true, widget = self.BaseCooldown}, {text = true, widget = self.ChargesCooldown},}
   )
 end
 
