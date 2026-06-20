@@ -86,8 +86,8 @@ function addonTable.Display.StyleIcon(styleSettings, parent, icon, count, keybin
     parent.border:SetVertexColor(0, 0, 0)
     parent.border:SetSize(addonTable.Constants.nativeSize, addonTable.Constants.nativeSize)
     for _, c in ipairs(cooldowns) do
-      if c:GetDrawSwipe() then
-        c:SetSwipeTexture(asset.mask)
+      if c.widget:GetDrawSwipe() then
+        c.widget:SetSwipeTexture(asset.mask)
       end
     end
   else--if styleSettings.id == "blizzard" then
