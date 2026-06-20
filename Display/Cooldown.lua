@@ -191,7 +191,6 @@ function addonTable.Display.CooldownMixin:Setup(details)
 
   if details.resource.spellID then
     self.ignoreGCD = details.resource.spellID ~= addonTable.Constants.GCD and not addonTable.Config.Get(addonTable.Config.Options.SHOW_GCD_SWIPE)
-    print(self.ignoreGCD)
     self:UpdateSpellByID(addonTable.Utilities.IsAbilitySpellKnown(details.resource.spellID) or details.resource.spellID)
   elseif details.resource.itemID then
     self:UpdateItemByID(details.resource.itemID)
