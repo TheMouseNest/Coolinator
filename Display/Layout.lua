@@ -49,19 +49,19 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
         hooksecurefunc(itemFrame, "Show", function()
           local parent = itemFrame:GetParent()
           if self.auraIconPool:IsActive(parent) then
-            parent:Show()
+            parent:NotifyActive(true)
           end
         end)
         hooksecurefunc(itemFrame, "Hide", function()
           local parent = itemFrame:GetParent()
           if self.auraIconPool:IsActive(parent) then
-            parent:Hide()
+            parent:NotifyActive(false)
           end
         end)
         hooksecurefunc(itemFrame, "SetShown", function(_, value)
           local parent = itemFrame:GetParent()
           if self.auraIconPool:IsActive(parent) then
-            parent:SetShown(value)
+            parent:NotifyActive(value)
           end
         end)
         hookedAuras[itemFrame] = true

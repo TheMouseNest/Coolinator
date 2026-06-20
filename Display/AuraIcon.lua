@@ -51,6 +51,10 @@ function addonTable.Display.AuraIconMixin:Setup(sourceWidget, details)
   self:SetShown(widgets.source:IsShown())
 end
 
+function addonTable.Display.AuraIconMixin:NotifyActive(state)
+  self:SetShown(state)
+end
+
 function addonTable.Display.AuraIconMixin:UpdateSource(sourceWidget)
   if sourceWidget ~= self.widgets.source then
     self:Setup(sourceWidget, self.details)
