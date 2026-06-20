@@ -340,7 +340,7 @@ function addonTable.Display.LayoutManagerMixin:GetBar(details)
 end
 
 function addonTable.Display.LayoutManagerMixin:OnEvent(eventName, data)
-  if eventName == "UPDATE_BONUS_ACTIONBAR" or eventName == "UPDATE_VEHICLE_ACTIONBAR" or "UPDATE_OVERRIDE_ACTIONBAR" then
+  if eventName == "UPDATE_BONUS_ACTIONBAR" or eventName == "UPDATE_VEHICLE_ACTIONBAR" or eventName == "UPDATE_OVERRIDE_ACTIONBAR" then
     if (C_ActionBar.HasVehicleActionBar() and UnitVehicleSkin("player") and UnitVehicleSkin("player") ~= "") or
       (C_ActionBar.HasOverrideActionBar() and C_ActionBar.GetOverrideBarSkin() and C_ActionBar.GetOverrideBarSkin() ~= 0) then
       self.disabled.vehicle = true
