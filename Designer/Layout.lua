@@ -182,7 +182,11 @@ local function Degroup(groupDetails)
   if groupDetails.layout ~= "standalone" then
     local final = {}
     for _, entry in ipairs(groupDetails.entries) do
-      if entry.kind == "group" and (entry.layout == groupDetails.layout and entry.padding == groupDetails.padding and entry.alignment == groupDetails.alignment or #entry.entries == 1) and entry.alpha == 1 and entry.scale == 1 then
+      if entry.kind == "group" and (
+        entry.layout == groupDetails.layout and entry.padding == groupDetails.padding and entry.alignment == groupDetails.alignment
+        or #entry.entries == 1
+      ) and entry.alpha == 1 and entry.scale == 1
+      then
         tAppendAll(final, entry.entries)
       elseif (entry.kind ~= "group" or #entry.entries > 0) then
         table.insert(final, entry)
@@ -251,7 +255,9 @@ local function GroupSimilar(groupDetails)
   end
 
   if #groupDetails.entries == 1 then
-    if groupDetails.entries[1].kind == "group" and (groupDetails.entries[1].alignment == groupDetails.alignment or groupDetails.entries[1].layout ~= groupDetails.layout) then
+    if groupDetails.entries[1].kind == "group" and (
+      groupDetails.entries[1].alignment == groupDetails.alignment or groupDetails.entries[1].layout ~= groupDetails.layout
+    ) then
       groupDetails.scale = groupDetails.entries[1].scale * groupDetails.scale
       groupDetails.alpha = groupDetails.entries[1].alpha * groupDetails.alpha
       groupDetails.layout = groupDetails.entries[1].layout
@@ -594,8 +600,8 @@ function addonTable.Designer.LayoutManagerMixin:StartMovingRoot(root)
     local altIndex, newIndex, layout = self:GetInsertDirection(root, group)
     local anchorFrame
     local point = group.children[insertIndex]
-    if layout ~= group.details.layout then
-      if altIndex == -1 or insertIndex and insertIndex > #group.details.entries then
+    if layout and layout ~= group.details.layout then
+      if altIndex == -1 then
         anchorFrame = group
       else
         anchorFrame = group.children[altIndex]
