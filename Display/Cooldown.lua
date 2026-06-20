@@ -1,6 +1,30 @@
 ---@class addonTableCoolinator
 local addonTable = select(2, ...)
 
+local auraFormatter = C_StringUtil.CreateNumericRuleFormatter()
+auraFormatter:SetBreakpoints({
+  {
+    threshold = 0,
+    step = 0.1,
+    format = "%.1f",
+  },
+  {
+    threshold = 3,
+    step = 1,
+    format = "%d",
+  },
+  {
+    threshold = 60,
+    format = COOLDOWN_DURATION_MIN,
+    components = {
+      {
+        div = 60,
+        step = 1,
+      }
+    }
+  }
+})
+
 addonTable.Display.CooldownMixin = {}
 function addonTable.Display.CooldownMixin:OnLoad()
   self:SetSize(addonTable.Constants.nativeSize - 4, addonTable.Constants.nativeSize - 4)
@@ -166,11 +190,21 @@ function addonTable.Display.CooldownMixin:Setup(details)
   self.equipmentSlot = nil
 
   if details.resource.spellID then
+    self.ignoreGCD = details.resource.spellID ~= addonTable.Constants.GCD and not addonTable.Config.Get(addonTable.Config.Options.SHOW_GCD_SWIPE)
+    print(self.ignoreGCD)
     self:UpdateSpellByID(addonTable.Utilities.IsAbilitySpellKnown(details.resource.spellID) or details.resource.spellID)
   elseif details.resource.itemID then
     self:UpdateItemByID(details.resource.itemID)
   else
     self:UpdateItemByEquipmentSlot(details.resource.equipmentSlot)
+  end
+
+  if self.details.texts.cooldown.showFractions then
+    self.BaseCooldown:SetCountdownFormatter(auraFormatter)
+    self.ChargesCooldown:SetCountdownFormatter(auraFormatter)
+  else
+    self.BaseCooldown:SetCountdownFormatter(nil)
+    self.ChargesCooldown:SetCountdownFormatter(nil)
   end
 
   self:UpdateBindingText()
@@ -204,25 +238,19 @@ function addonTable.Display.CooldownMixin:UpdateSpellByID(spellID, activationOff
   local chargesInfo = C_Spell.GetSpellCharges(spellID)
   local cooldownInfo = C_Spell.GetSpellCooldown(spellID)
 
-  if chargesInfo and chargesInfo.isActive then
+  if chargesInfo and chargesInfo.isActive  then
     local chargeDuration = C_Spell.GetSpellChargeDuration(spellID)
     self.ChargesCooldown:SetCooldownFromDurationObject(chargeDuration)
     self.ChargesCooldown:SetAlphaFromBoolean(C_Spell.GetSpellCharges(spellID))
-    self.ChargesCooldown:SetHideCountdownNumbers(cooldownInfo.isActive)
+    self.ChargesCooldown:SetHideCountdownNumbers(cooldownInfo.isActive and not cooldownInfo.isOnGCD)
   else
     self.ChargesCooldown:Clear()
   end
 
   if cooldownInfo.isActive then
-    local ignoreGCD = addonTable.Constants.GCD ~= spellID
-    local baseDuration = C_Spell.GetSpellCooldownDuration(spellID, ignoreGCD)
+    local baseDuration = C_Spell.GetSpellCooldownDuration(spellID, self.ignoreGCD)
     self.BaseCooldown:SetCooldownFromDurationObject(baseDuration)
-    local gcd = C_Spell.GetSpellCooldown(spellID).isOnGCD
-    if gcd == nil then
-      gcd = false
-    end
-
-    self.BaseCooldown:SetAlphaFromBoolean(gcd, 0, 1)
+    self.BaseCooldown:SetHideCountdownNumbers(cooldownInfo.isOnGCD)
   end
 
   self.Icon:SetTexture(C_Spell.GetSpellTexture(spellID))
@@ -256,7 +284,9 @@ function addonTable.Display.CooldownMixin:UpdateItemByID(itemID)
 
   self.ChargesCooldown:Clear()
   local start, duration, enable = C_Item.GetItemCooldown(self.itemID)
-  self.BaseCooldown:SetCooldown(start, duration)
+  local durationObject = C_DurationUtil.CreateDuration()
+  durationObject:SetTimeFromStart(start, duration)
+  self.ChargesCooldown:SetCooldownFromDurationObject(durationObject)
   self.CountFrame.text:SetText("")
   self.Icon:SetTexture(C_Item.GetItemIconByID(self.itemID))
 
@@ -282,7 +312,9 @@ function addonTable.Display.CooldownMixin:UpdateItemByEquipmentSlot(equipmentSlo
 
   self.ChargesCooldown:Clear()
   local start, duration, enable = GetInventoryItemCooldown("player", equipmentSlot)
-  self.BaseCooldown:SetCooldown(start, duration)
+  local durationObject = C_DurationUtil.CreateDuration()
+  durationObject:SetTimeFromStart(start, duration)
+  self.BaseCooldown:SetCooldownFromDurationObject(durationObject)
   self.CountFrame.text:SetText("")
   self.Icon:SetTexture(C_Item.GetItemIcon(location))
 

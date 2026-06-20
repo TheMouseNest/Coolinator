@@ -68,6 +68,7 @@ function addonTable.Display.AbilityStatusBarMixin:Setup(details)
 
   self.rawWidth, self.rawHeight, self.borderWidth, self.borderHeight, self.lowerScale = addonTable.Display.ApplyStatusBar(details, self.statusBar, self.border, self.borderMask, self.background)
 
+  self.ignoreGCD = details.resource.spellID ~= addonTable.Constants.GCD and not addonTable.Config.Get(addonTable.Config.Options.SHOW_GCD_SWIPE)
   self:UpdateSpellByID(addonTable.Utilities.IsAbilitySpellKnown(details.resource.spellID) or details.resource.spellID)
 
   self.borderWrapper:SetFrameLevel(self.statusBar:GetFrameLevel() + 2)
@@ -117,14 +118,13 @@ function addonTable.Display.AbilityStatusBarMixin:UpdateSpellByID(spellID)
     self.ticker:Cancel()
   end
 
-  local ignoreGCD = addonTable.Constants.GCD ~= spellID
-  local baseDuration = C_Spell.GetSpellCooldownDuration(spellID, ignoreGCD)
+  local baseDuration = C_Spell.GetSpellCooldownDuration(spellID, self.ignoreGCD)
   self.statusBar:SetTimerDuration(baseDuration, nil, Enum.StatusBarTimerDirection.RemainingTime)
 
   self.wrapper:SetAlphaFromBoolean(baseDuration:IsZero(), 0, 1)
 
   self.ticker = C_Timer.NewTicker(0.1, function()
-    baseDuration = C_Spell.GetSpellCooldownDuration(spellID, ignoreGCD)
+    baseDuration = C_Spell.GetSpellCooldownDuration(spellID, self.ignoreGCD)
     self.wrapper:SetAlphaFromBoolean(baseDuration:IsZero(), 0, 1)
   end)
 end

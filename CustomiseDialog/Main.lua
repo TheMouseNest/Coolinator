@@ -305,13 +305,6 @@ local function SetupBehaviour(parent)
   fadeWhenMounted:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
   table.insert(allFrames, fadeWhenMounted)
 
-  local showTooltips = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_TOOLTIPS, 28, function(value)
-    addonTable.Config.Set(addonTable.Config.Options.SHOW_TOOLTIPS, not addonTable.Config.Get(addonTable.Config.Options.SHOW_TOOLTIPS))
-  end)
-  showTooltips.option = addonTable.Config.Options.SHOW_TOOLTIPS
-  showTooltips:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
-  table.insert(allFrames, showTooltips)
-
   local useBlizzardWidgets = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.USE_BLIZZARD_WIDGETS, 28, function(value)
     addonTable.Config.Set(addonTable.Config.Options.USE_BLIZZARD_WIDGETS, not addonTable.Config.Get(addonTable.Config.Options.USE_BLIZZARD_WIDGETS))
   end)
@@ -325,6 +318,20 @@ local function SetupBehaviour(parent)
   showKeybindings.option = addonTable.Config.Options.SHOW_KEYBINDINGS
   showKeybindings:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
   table.insert(allFrames, showKeybindings)
+
+  local showTooltips = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_TOOLTIPS, 28, function(value)
+    addonTable.Config.Set(addonTable.Config.Options.SHOW_TOOLTIPS, not addonTable.Config.Get(addonTable.Config.Options.SHOW_TOOLTIPS))
+  end)
+  showTooltips.option = addonTable.Config.Options.SHOW_TOOLTIPS
+  showTooltips:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, showTooltips)
+
+  local showGCDSwip = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_GCD_SWIPE, 28, function(value)
+    addonTable.Config.Set(addonTable.Config.Options.SHOW_GCD_SWIPE, not addonTable.Config.Get(addonTable.Config.Options.SHOW_GCD_SWIPE))
+  end)
+  showGCDSwip.option = addonTable.Config.Options.SHOW_GCD_SWIPE
+  showGCDSwip:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, showGCDSwip)
 
   container:SetScript("OnShow", function()
     for _, f in ipairs(allFrames) do

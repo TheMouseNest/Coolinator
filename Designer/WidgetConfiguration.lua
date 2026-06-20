@@ -857,6 +857,18 @@ addonTable.Designer.IconTextsConfig = {
         return details.color
       end,
     },
+    {
+      label = addonTable.Locales.SHOW_FRACTIONS_ABILITY_COOLDOWNS_ONLY,
+      kind = "checkbox",
+      setter = function(details, value)
+        if details.showFractions ~= nil then
+          details.showFractions = value
+        end
+      end,
+      getter = function(details)
+        return details.showFractions
+      end,
+    },
   },
   ["count"] = {
     {
