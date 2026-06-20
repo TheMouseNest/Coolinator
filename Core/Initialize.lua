@@ -121,6 +121,7 @@ EventUtil.ContinueAfterAllEvents(function()
       return
     end
 
+    CreateFrame("Frame", "CoolinatorPrimaryGroupAnchor")
     addonTable.Display.LayoutManager = addonTable.Utilities.InitFrameWithMixin(UIParent, addonTable.Display.LayoutManagerMixin)
     addonTable.Designer.LayoutManager = addonTable.Utilities.InitFrameWithMixin(UIParent, addonTable.Designer.LayoutManagerMixin)
   end)

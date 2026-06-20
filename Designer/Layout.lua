@@ -965,6 +965,10 @@ function addonTable.Designer.LayoutManagerMixin:Layout()
 
   self.root = wrapper
 
+  if self.root.children[1] then
+    CoolinatorPrimaryGroupAnchor:SetAllPoints(self.root.children[1])
+  end
+
   self:UpdateSelection()
 
   self:AddHandlers(wrapper)

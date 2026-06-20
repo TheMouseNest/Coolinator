@@ -205,6 +205,10 @@ function addonTable.Display.LayoutManagerMixin:Layout()
 
   self.root = wrapper
 
+  if self.root.children[1] then
+    CoolinatorPrimaryGroupAnchor:SetAllPoints(self.root.children[1])
+  end
+
   if addonTable.Config.Get(addonTable.Config.Options.FADE_WHEN_MOUNTED) then
     self.inCombat = InCombatLockdown()
     self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
