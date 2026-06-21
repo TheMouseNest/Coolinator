@@ -36,16 +36,28 @@ function addonTable.Core.Initialize()
   CreateFrame("Frame", "CoolinatorPrimaryGroupAnchor")
 end
 
+local function GetCDMActiveLayout()
+  local id = CooldownViewerSettings.layoutManager.activeLayoutID
+  local layout = CooldownViewerSettings.layoutManager.layouts[id]
+  return layout and layout.layoutName
+end
+
+local function ValidateCDM()
+  if GetCDMActiveLayout() ~= "Coolinator (" .. CooldownViewerUtil.GetCurrentClassAndSpecTag() .. ")" then
+    addonTable.State.CDM = nil
+    addonTable.Dialogs.ShowConfirm(addonTable.Locales.SPEC_MISMATCH_IN_BLIZZARD_CDM, RELOADUI, CANCEL, ReloadUI)
+    return false
+  end
+  return true
+end
+
 local function TriggerUpdate()
   addonTable.CurrentNumberFont = addonTable.Core.GetFont()
 
   C_Timer.After(0.1, function()
-    if CooldownViewerSettings.layoutManager.currentSpecTag ~= CooldownViewerUtil.GetCurrentClassAndSpecTag() then
-      addonTable.State.CDM = nil
-      addonTable.Dialogs.ShowConfirm(addonTable.Locales.SPEC_MISMATCH_IN_BLIZZARD_CDM, RELOADUI, CANCEL, ReloadUI)
+    if not ValidateCDM() then
       return
     end
-
     addonTable.Core.AutoGenerateLayout()
     addonTable.SpellEquivalence = addonTable.Core.GenerateSpellOverrides()
     local layout = addonTable.Core.GetCurrentDesign()
@@ -84,6 +96,7 @@ frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 frame:RegisterEvent("UPDATE_BINDINGS")
 frame:RegisterEvent("UPDATE_MACROS")
+frame:RegisterEvent("GROUP_FORMED")
 frame:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
 frame:RegisterEvent("ACTIVE_PLAYER_SPECIALIZATION_CHANGED")
 frame:RegisterEvent("TRAIT_CONFIG_UPDATED")
@@ -91,13 +104,14 @@ frame:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
 frame:SetScript("OnEvent", function(_, eventName, data1, data2)
   if eventName == "ADDON_LOADED" and data1 == "Coolinator" then
     addonTable.Core.Initialize()
-  elseif (eventName == "TRAIT_CONFIG_UPDATED" or eventName == "ACTIVE_PLAYER_SPECIALIZATION_CHANGED") and addonTable.State.CDM then
+  elseif (eventName == "TRAIT_CONFIG_UPDATED" or eventName == "ACTIVE_PLAYER_SPECIALIZATION_CHANGED" or eventName == "GROUP_FORMED") and addonTable.State.CDM then
     TriggerUpdate()
   elseif eventName == "SPELL_UPDATE_ICON" and addonTable.State.CDM then
     addonTable.CallbackRegistry:TriggerEvent("Update.SpellIcons", data1)
   elseif eventName == "PLAYER_ENTERING_WORLD" and not data1 and not data2 then
     addonTable.CallbackRegistry:TriggerEvent("Layout")
     addonTable.CallbackRegistry:TriggerEvent("Designer.Layout")
+    C_Timer.After(0.1, ValidateCDM)
   elseif eventName == "PLAYER_EQUIPMENT_CHANGED" then
     addonTable.CallbackRegistry:TriggerEvent("Layout")
     addonTable.CallbackRegistry:TriggerEvent("Designer.Layout")

@@ -38,9 +38,11 @@ do
   end
 end
 
+local prevSpec = 1
 function addonTable.Utilities.GetSpecID()
-  local specIndex = C_SpecializationInfo.GetSpecialization()
+  local specIndex = C_SpecializationInfo.GetSpecialization() or prevSpec
   local spec = C_SpecializationInfo.GetSpecializationInfo(specIndex)
+  prevSpec = specIndex
   return spec
 end
 
