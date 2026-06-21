@@ -20,9 +20,9 @@ function addonTable.Display.AbilityStatusBarMixin:OnLoad()
   self.borderMask = self.statusBar:CreateMaskTexture()
   self.borderMask:SetAllPoints(self.statusBar)
 
-  self.Icon = self.wrapper:CreateTexture(nil, "OVERLAY")
-  self.Icon:SetSize(addonTable.Constants.nativeSize, addonTable.Constants.nativeSize)
-  self.Icon:SetPoint("CENTER")
+  self.icon = self.wrapper:CreateTexture(nil, "OVERLAY")
+  self.icon:SetSize(addonTable.Constants.nativeSize, addonTable.Constants.nativeSize)
+  self.icon:SetPoint("CENTER")
 
   self.TextsContainer = CreateFrame("Frame", nil, self.wrapper)
   self.TextsContainer:SetAllPoints()
@@ -35,7 +35,7 @@ function addonTable.Display.AbilityStatusBarMixin:Enable(details)
 
   addonTable.CallbackRegistry:RegisterCallback("Update.SpellIcons", function(_, spellID)
     if self.spellID and (not spellID or C_Spell.GetBaseSpell(self.spellID) == spellID) then
-      self.Icon:SetTexture(C_Spell.GetSpellTexture(self.spellID))
+      self.icon:SetTexture(C_Spell.GetSpellTexture(self.spellID))
     end
   end, self)
 
@@ -73,37 +73,71 @@ function addonTable.Display.AbilityStatusBarMixin:Setup(details)
 
   self.borderWrapper:SetFrameLevel(self.statusBar:GetFrameLevel() + 2)
 
-  self.Icon:SetShown(details.icon.show)
+  self.icon:SetShown(details.icon.show)
 end
 
-function addonTable.Display.AbilityStatusBarMixin:ApplySize()
+function addonTable.Display.AbilityStatusBarMixin:GetDefaultSize()
+  return PixelUtil.ConvertPixelsToUIForRegion(self.rawWidth * self.details.scale, self), PixelUtil.ConvertPixelsToUIForRegion(self.rawHeight * self.details.scale, self)
+end
+
+function addonTable.Display.AbilityStatusBarMixin:ApplySize(width, height)
+  local rawWidth, rawHeight = self.rawWidth * self.details.scale, self.rawHeight * self.details.scale
+  if self.details.autoSize then
+    if self.details.layout == "horizontal" then
+      rawWidth = width or rawWidth
+    end
+    if self.details.layout == "vertical" then
+      rawHeight = height or rawHeight
+    end
+  end
+  local statusWidth, statusHeight = self.rawWidth, self.rawHeight
+  local borderWidth, borderHeight = self.borderWidth, self.borderHeight
   if self.details.icon.show then
     local iconSize
     if self.details.layout == "vertical" then
       iconSize = self.rawWidth * self.details.scale
-      PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale + (self.borderHeight - self.rawHeight) / 2 + 1 + iconSize)
+      local offset = (self.borderHeight - self.rawHeight) / 2 + 1 + iconSize
+      local new = rawHeight - offset
+      if new >= addonTable.Assets.BarBordersSize.width * 0.1 then
+        statusHeight = new / self.details.scale
+        borderHeight = borderHeight + (rawHeight - offset - self.rawHeight * self.details.scale) / self.details.scale
+        self.icon:Show()
+      else
+        self.icon:Hide()
+      end
     else
       iconSize = self.rawHeight * self.details.scale
-      PixelUtil.SetSize(self, self.rawWidth * self.details.scale + (self.borderWidth - self.rawWidth) / 2 + 1 + iconSize, self.rawHeight * self.details.scale)
+      local offset = (self.borderWidth - self.rawWidth) / 2 + 1 + iconSize
+      local new = rawWidth - offset
+      if new >= addonTable.Assets.BarBordersSize.width * 0.1 then
+        statusWidth = new / self.details.scale
+        borderWidth = borderWidth + (rawWidth - offset - self.rawWidth * self.details.scale) / self.details.scale
+        self.icon:Show()
+      else
+        self.icon:Hide()
+      end
     end
-    PixelUtil.SetSize(self.Icon, iconSize, iconSize)
+    PixelUtil.SetSize(self.icon, iconSize, iconSize)
   else
-    PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale)
+    statusWidth, statusHeight = rawWidth / self.details.scale, rawHeight / self.details.scale
+    borderWidth = borderWidth + (statusWidth - self.rawWidth)
+    borderHeight = borderHeight + (statusHeight - self.rawHeight)
   end
-  PixelUtil.SetSize(self.statusBar, self.rawWidth * self.lowerScale, self.rawHeight * self.lowerScale)
-  PixelUtil.SetSize(self.border, self.borderWidth * self.lowerScale, self.borderHeight * self.lowerScale)
+  PixelUtil.SetSize(self, rawWidth, rawHeight)
+  PixelUtil.SetSize(self.statusBar, statusWidth * self.lowerScale, statusHeight * self.lowerScale)
+  PixelUtil.SetSize(self.border, borderWidth * self.lowerScale, borderHeight * self.lowerScale)
 
-  PixelUtil.SetPoint(self.TextsContainer.Charges, "BOTTOMRIGHT", self.Icon, "BOTTOMRIGHT", -5, 5)
+  PixelUtil.SetPoint(self.TextsContainer.Charges, "BOTTOMRIGHT", self.icon, "BOTTOMRIGHT", -5, 5)
 
-  self.Icon:ClearAllPoints()
+  self.icon:ClearAllPoints()
   self.statusBar:ClearAllPoints()
   --self.TextsContainer.Duration:ClearAllPoints()
   if self.details.layout == "horizontal" then
-    self.Icon:SetPoint(self.details.icon.position == "left" and "LEFT" or "RIGHT")
+    self.icon:SetPoint(self.details.icon.position == "left" and "LEFT" or "RIGHT")
     self.statusBar:SetPoint(self.details.icon.position == "left" and "RIGHT" or "LEFT")
     --self.TextsContainer.Duration:SetPoint("RIGHT", self.widgets.statusBar, -8, 0)
   else
-    self.Icon:SetPoint(self.details.icon.position == "left" and "BOTTOM" or "TOP")
+    self.icon:SetPoint(self.details.icon.position == "left" and "BOTTOM" or "TOP")
     self.statusBar:SetPoint(self.details.icon.position == "left" and "TOP" or "BOTTOM")
     --self.TextsContainer.Duration:SetPoint("BOTTOM", self.widgets.statusBar, 0, 8)
   end
@@ -112,7 +146,7 @@ end
 function addonTable.Display.AbilityStatusBarMixin:UpdateSpellByID(spellID)
   self.spellID = spellID
 
-  self.Icon:SetTexture(C_Spell.GetSpellTexture(spellID))
+  self.icon:SetTexture(C_Spell.GetSpellTexture(spellID))
 
   if self.ticker then
     self.ticker:Cancel()

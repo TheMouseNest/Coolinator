@@ -479,6 +479,16 @@ addonTable.Designer.WidgetConfiguration = {
             },
             { kind = "spacer" },
             {
+              label = addonTable.Locales.AUTO_SIZE,
+              kind = "checkbox",
+              setter = function(details, value)
+                details.autoSize = value
+              end,
+              getter = function(details)
+                return details.autoSize
+              end,
+            },
+            {
               label = addonTable.Locales.HEIGHT,
               kind = "slider",
               min = 50, max = 300,

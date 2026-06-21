@@ -111,9 +111,6 @@ function addonTable.Designer.IconMixin:OnLeave()
   GameTooltip:Hide()
 end
 
-function addonTable.Designer.IconMixin:ApplySize()
-end
-
 addonTable.Designer.BarMixin = {}
 
 function addonTable.Designer.BarMixin:OnLoad()
@@ -144,6 +141,10 @@ function addonTable.Designer.BarMixin:Setup(details)
   end
 
   self.borderWrapper:SetFrameLevel(self.statusBar:GetFrameLevel() + 2)
+end
+
+function addonTable.Designer.BarMixin:GetDefaultSize()
+  return PixelUtil.ConvertPixelsToUIForRegion(self.rawWidth * self.details.scale, self), PixelUtil.ConvertPixelsToUIForRegion(self.rawHeight * self.details.scale, self)
 end
 
 function addonTable.Designer.BarMixin:ApplySize()
@@ -193,22 +194,52 @@ function addonTable.Designer.BarWithIconMixin:Setup(details)
   end
 end
 
-function addonTable.Designer.BarWithIconMixin:ApplySize()
+function addonTable.Designer.BarWithIconMixin:ApplySize(width, height)
+  local rawWidth, rawHeight = self.rawWidth * self.details.scale, self.rawHeight * self.details.scale
+  if self.details.autoSize then
+    if self.details.layout == "horizontal" then
+      rawWidth = width or rawWidth
+    end
+    if self.details.layout == "vertical" then
+      rawHeight = height or rawHeight
+    end
+  end
+  local statusWidth, statusHeight = self.rawWidth, self.rawHeight
+  local borderWidth, borderHeight = self.borderWidth, self.borderHeight
   if self.details.icon.show then
     local iconSize
     if self.details.layout == "vertical" then
       iconSize = self.rawWidth * self.details.scale
-      PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale + (self.borderHeight - self.rawHeight) / 2 + 1 + iconSize)
+      local offset = (self.borderHeight - self.rawHeight) / 2 + 1 + iconSize
+      local new = rawHeight - offset
+      if new >= addonTable.Assets.BarBordersSize.width * 0.1 then
+        statusHeight = new / self.details.scale
+        borderHeight = borderHeight + (rawHeight - offset - self.rawHeight * self.details.scale) / self.details.scale
+        self.icon:Show()
+      else
+        self.icon:Hide()
+      end
     else
       iconSize = self.rawHeight * self.details.scale
-      PixelUtil.SetSize(self, self.rawWidth * self.details.scale + (self.borderWidth - self.rawWidth) / 2 + 1 + iconSize, self.rawHeight * self.details.scale)
+      local offset = (self.borderWidth - self.rawWidth) / 2 + 1 + iconSize
+      local new = rawWidth - offset
+      if new >= addonTable.Assets.BarBordersSize.width * 0.1 then
+        statusWidth = new / self.details.scale
+        borderWidth = borderWidth + (rawWidth - offset - self.rawWidth * self.details.scale) / self.details.scale
+        self.icon:Show()
+      else
+        self.icon:Hide()
+      end
     end
     PixelUtil.SetSize(self.icon, iconSize, iconSize)
   else
-    PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale)
+    statusWidth, statusHeight = rawWidth / self.details.scale, rawHeight / self.details.scale
+    borderWidth = borderWidth + (statusWidth - self.rawWidth)
+    borderHeight = borderHeight + (statusHeight - self.rawHeight)
   end
-  PixelUtil.SetSize(self.statusBar, self.rawWidth * self.lowerScale, self.rawHeight * self.lowerScale)
-  PixelUtil.SetSize(self.border, self.borderWidth * self.lowerScale, self.borderHeight * self.lowerScale)
+  PixelUtil.SetSize(self, rawWidth, rawHeight)
+  PixelUtil.SetSize(self.statusBar, statusWidth * self.lowerScale, statusHeight * self.lowerScale)
+  PixelUtil.SetSize(self.border, borderWidth * self.lowerScale, borderHeight * self.lowerScale)
 
   self.icon:ClearAllPoints()
   self.statusBar:ClearAllPoints()
@@ -226,6 +257,36 @@ addonTable.Designer.GroupMixin = {}
 function addonTable.Designer.GroupMixin:OnLoad()
 end
 
+function addonTable.Designer.GroupMixin:GetDefaultSize()
+  return self.width, self.height
+end
+
+function addonTable.Designer.GroupMixin:SetDefaultSize(width, height)
+  self.width, self.height = width, height
+end
+
+function addonTable.Designer.GroupMixin:ApplySize(width, height)
+  self:SetSize(self.width, self.height)
+
+  if self.details.layout == "horizontal" then
+    width = nil
+    height = height and math.max(self.height, height) or self.height
+  elseif self.details.layout == "vertical" then
+    height = nil
+    width = width and math.max(self.width, width) or self.width
+  else
+    width = width and math.max(self.width, width) or self.width
+    height = height and math.max(self.height, height) or self.height
+  end
+
+  for _, w in ipairs(self.children) do
+    if w.ApplySize then
+      w:ApplySize(width, height)
+    end
+  end
+end
+
 function addonTable.Designer.GroupMixin:Setup(details)
   self.details = details
+  self.width, self.height = 0, 0
 end

@@ -55,6 +55,7 @@ L["SHOW_FRACTIONS"] = "Show fractions"
 L["TEXTS"] = "Texts"
 L["SHOW_ICON"] = "Show icon"
 L["SHOW_GCD_SWIPE"] = "Show GCD swipe"
+L["AUTO_SIZE"] = "Auto-size"
 
 L["ENTER_PROFILE_NAME"] = "Enter Profile Name:"
 L["PROFILES"] = "Profiles"

@@ -137,18 +137,22 @@ function addonTable.Display.BaseLayoutManagerMixin:ArrangeGroup(wrapper, details
     for _, child in ipairs(wrapper.children) do
       child:ClearAllPoints()
       PixelUtil.SetPoint(child, point, wrapper, point, width / child:GetScale(), 0)
-      if child.ApplySize then
-        child:ApplySize()
+      local childWidth, childHeight
+      if child.GetDefaultSize then
+        childWidth, childHeight = child:GetDefaultSize()
+      else
+        childWidth, childHeight = child:GetWidth(), child:GetHeight()
       end
-      if not self.autoSize or child:IsShown() and child:GetWidth() > 0 then
-        maxHeight = math.max(child:GetHeight() * child:GetScale(), maxHeight)
-        width = width + child:GetWidth() * child:GetScale() + details.padding * offsetSize
+      if not self.autoSize or child:IsShown() and childWidth > 0 then
+        maxHeight = math.max(childHeight * child:GetScale(), maxHeight)
+        width = width + childWidth * child:GetScale() + details.padding * offsetSize
       end
     end
     if #wrapper.children > 0 then
       width = width - details.padding * offsetSize
     end
     PixelUtil.SetSize(wrapper, width, maxHeight)
+    wrapper:SetDefaultSize(width, maxHeight)
 
     self:AddHooksForChanges(wrapper.children)
   elseif details.layout == "vertical" then
@@ -161,25 +165,25 @@ function addonTable.Display.BaseLayoutManagerMixin:ArrangeGroup(wrapper, details
     for _, child in ipairs(wrapper.children) do
       child:ClearAllPoints()
       PixelUtil.SetPoint(child, point, wrapper, point, 0, height / child:GetScale())
-      if child.ApplySize then
-        child:ApplySize()
+      local childWidth, childHeight = child:GetWidth(), child:GetHeight()
+      if child.GetDefaultSize then
+        childWidth, childHeight = child:GetDefaultSize()
+      else
+        childWidth, childHeight = child:GetWidth(), child:GetHeight()
       end
-      if not self.autoSize or child:IsShown() and child:GetHeight() > 0 then
-        maxWidth = math.max(child:GetWidth() * child:GetScale(), maxWidth)
-        height = height + child:GetHeight() * child:GetScale() + details.padding * offsetSize
+      if not self.autoSize or child:IsShown() and childHeight > 0 then
+        maxWidth = math.max(childWidth * child:GetScale(), maxWidth)
+        height = height + childHeight * child:GetScale() + details.padding * offsetSize
       end
     end
     if #wrapper.children > 0 then
       height = height - details.padding * offsetSize
     end
     PixelUtil.SetSize(wrapper, maxWidth, height)
+    wrapper:SetDefaultSize(maxWidth, height)
 
     self:AddHooksForChanges(wrapper.children)
   else -- standalone
-    for _, child in ipairs(wrapper.children) do
-      if child.ApplySize then
-        child:ApplySize()
-      end
-    end
+    wrapper:ApplySize(0, 0)
   end
 end

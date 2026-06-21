@@ -3,6 +3,10 @@ local addonTable = select(2, ...)
 
 local LSM = LibStub("LibSharedMedia-3.0")
 
+local function GetDefaultSize(self)
+  return PixelUtil.ConvertPixelsToUIForRegion(self.rawWidth * self.details.scale, self), PixelUtil.ConvertPixelsToUIForRegion(self.rawHeight * self.details.scale, self)
+end
+
 addonTable.Display.ClassResourceStatusBar = {}
 
 function addonTable.Display.GenerateStatusBar(self)
@@ -21,6 +25,8 @@ function addonTable.Display.GenerateStatusBar(self)
   self.border:SetPoint("CENTER")
   self.borderMask = self.statusBar:CreateMaskTexture()
   self.borderMask:SetAllPoints()
+
+  self.GetDefaultSize = GetDefaultSize
 end
 
 local function SizeStatusBar(self)
@@ -46,6 +52,8 @@ function addonTable.Display.ClassResourceStatusBar.stagger:OnLoad()
   self.border:SetPoint("CENTER")
   self.borderMask = self.statusBar:CreateMaskTexture()
   self.borderMask:SetAllPoints()
+
+  self.GetDefaultSize = GetDefaultSize
 
   self.text = self.statusBar:CreateFontString()
 
