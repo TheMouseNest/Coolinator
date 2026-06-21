@@ -108,9 +108,9 @@ addonTable.Constants.ClassResources = {
   [261] = {"energy", "combo-points"}, -- Subtlety
   [1453] = {"energy", "combo-points"},
   -- Shaman
-  ["SHAMAN"] = {"maelstrom", "mana"},
-  [262] = {"maelstrom"}, -- Elemental
-  [263] = {"mana"}, -- Enhancement
+  ["SHAMAN"] = {"maelstrom-weapon", "mana"},
+  [262] = {"maelstrom", "mana"}, -- Elemental
+  [263] = {"maelstrom-weapon", "mana"}, -- Enhancement
   [264] = {"mana"}, -- Restoration
   [1444] = {"mana"},
   -- Warlock
@@ -156,6 +156,7 @@ addonTable.Constants.BarClassResourceLabelMap = {
   ["holy-power"] = HOLY_POWER,
   ["insanity"] = INSANITY,
   ["maelstrom"] = MAELSTROM,
+  ["maelstrom-weapon"] = addonTable.Locales.MAELSTROM_WEAPON,
   ["soul-shards"] = SOUL_SHARDS,
   ["stagger"] = STAGGER,
   ["tip-of-the-spear"] = addonTable.Locales.TIP_OF_THE_SPEAR,

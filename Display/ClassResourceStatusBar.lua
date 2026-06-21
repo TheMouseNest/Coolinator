@@ -374,6 +374,62 @@ local function GenerateRunesResource(label)
   mixin.ApplySize = SizeStatusBar
 end
 
+local function GeneratePipAuraResource(spellID, max, label, divisor)
+  divisor = divisor or 1
+
+  addonTable.Display.ClassResourceStatusBar[label] = {}
+  local mixin = addonTable.Display.ClassResourceStatusBar[label]
+
+  mixin.OnLoad = addonTable.Display.GenerateStatusBar
+
+  function mixin:OnEvent(eventName, ...)
+    self:Import()
+  end
+
+  function mixin:Setup(details)
+    self:RegisterUnitEvent("UNIT_AURA", "player")
+
+    self.rawWidth, self.rawHeight, self.borderWidth, self.borderHeight, self.lowerScale = addonTable.Display.ApplyStatusBar(details, self.statusBar, self.border, self.borderMask, self.background)
+    self.details = details
+    self.index = details.index
+    self.statusBar:SetMinMaxValues(0, divisor)
+
+    self.borderWrapper:SetFrameLevel(self.statusBar:GetFrameLevel() + 2)
+
+    self:Import()
+  end
+
+  function mixin:Disable()
+    self:UnregisterAllEvents()
+  end
+
+  function mixin:Import()
+    local auraData = C_UnitAuras.GetUnitAuraBySpellID("player", spellID)
+    local current = auraData and auraData.applications or 0
+
+    if max < self.index then
+      self:Hide()
+      return
+    else
+      self:Show()
+    end
+
+    local value = current/divisor
+    self.border:SetVertexColor(self.details.border.color.r, self.details.border.color.g, self.details.border.color.b)
+    if value >= self.index then
+      self.border:SetVertexColor(self.details.border.readyColor.r, self.details.border.readyColor.g, self.details.border.readyColor.b)
+      self.statusBar:SetValue(divisor)
+    elseif math.ceil(value) < self.index then
+      self:SetShown(self.details.showEmpty)
+      self.statusBar:SetValue(0)
+    else
+      self.statusBar:SetValue(current%divisor)
+    end
+  end
+
+  mixin.ApplySize = SizeStatusBar
+end
+
 GenerateBarForResource(Enum.PowerType.Energy, "energy")
 GenerateBarForResource(Enum.PowerType.Mana, "mana")
 GenerateBarForResource(Enum.PowerType.Rage, "rage")
@@ -383,6 +439,7 @@ GenerateBarForResource(Enum.PowerType.Focus, "focus")
 GenerateBarForResource(Enum.PowerType.Insanity, "insanity")
 GenerateBarForResource(Enum.PowerType.Pain, "pain")
 GenerateBarForResource(Enum.PowerType.LunarPower, "lunar-power")
+GenerateBarForResource(Enum.PowerType.Maelstrom, "maelstrom")
 GeneratePipResource(Enum.PowerType.SoulShards, "soul-shards", 10)
 GeneratePipResource(Enum.PowerType.HolyPower, "holy-power")
 GeneratePipResource(Enum.PowerType.ComboPoints, "combo-points")
@@ -392,3 +449,4 @@ GenerateRunesResource("runes")
 
 GenerateBarForAuraResource(205473, 5, "icicles")
 GenerateBarForAuraResource(260286, 3, "tip-of-the-spear")
+GeneratePipAuraResource(344179, 10, "maelstrom-weapon")

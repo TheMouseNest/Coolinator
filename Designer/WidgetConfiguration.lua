@@ -667,6 +667,10 @@ addonTable.Designer.WidgetConfiguration = {
         barTextureNoForegroundColor,
         classBarThresholds,
       },
+      ["maelstrom"] = {
+        barTextureNoForegroundColor,
+        classBarThresholds,
+      },
       ["runic-power"] = {
         barTextureNoForegroundColor,
         classBarThresholds,
@@ -699,6 +703,9 @@ addonTable.Designer.WidgetConfiguration = {
         pipBarTextures
       },
       ["chi"] = {
+        pipBarTextures
+      },
+      ["maelstrom-weapon"] = {
         pipBarTextures
       },
     }

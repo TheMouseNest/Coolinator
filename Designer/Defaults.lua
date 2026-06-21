@@ -94,6 +94,10 @@ local function GetPipGroup(resource, limit, ready, fill, empty)
     },
   }
   local group = CopyTable(Group)
+  if limit > 9 then
+    pip.width = 0.19
+    group.padding = 0
+  end
   group.locked = true
   for i = 1, limit do
     table.insert(group.entries, CopyTable(pip))
@@ -222,6 +226,7 @@ addonTable.Designer.Defaults = {
     ["focus"] = GetPrimaryClassResource("focus", GetColor("d37400"), GetColor("d3a954", 0.3)),
     ["insanity"] = GetPrimaryClassResource("insanity", GetColor("a10099"), GetColor("d38dcd", 0.3)),
     ["tip-of-the-spear"] = GetPrimaryClassResource("tip-of-the-spear", GetColor("2ed31c"), GetColor("89d38c", 0.3)),
+    ["maelstrom"] = GetPrimaryClassResource("maelstrom", GetColor("7230ff"), GetColor("3e1a8c", 0.3)),
     ["stagger"] = {
       kind = "bar",
       resource = {kind = "class", resource = "stagger", options = {multiplier = 1.5}},
@@ -255,5 +260,6 @@ addonTable.Designer.Defaults = {
     ["runes"] = GetPipGroup("runes", 6, GetColor("00479d"), GetColor("58a9ff"), GetColor("a7ddff", .3)),
     ["essence"] = GetPipGroup("essence", 5, GetColor("00479d"), GetColor("58a9ff"), GetColor("a7ddff", .3)),
     ["chi"] = GetPipGroup("chi", 6, GetColor("3b9035"), GetColor("68ff5d"), GetColor("ceffc5", .3)),
+    ["maelstrom-weapon"] = GetPipGroup("maelstrom-weapon", 10, GetColor("3e1a8c"), GetColor("7230ff"), GetColor("6d6e8c", 0.3)),
   }
 }
