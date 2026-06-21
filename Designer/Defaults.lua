@@ -199,7 +199,6 @@ addonTable.Designer.Defaults = {
       alpha = 1,
       layout = "horizontal",
       direction = "left",
-      icon = {show = true, position = "right"},
       foreground = {
         asset = "Cooli: Fade Right",
         color = {r = 0, g = 0, b = 1},
@@ -232,7 +231,6 @@ addonTable.Designer.Defaults = {
       alpha = 1,
       layout = "horizontal",
       direction = "left",
-      icon = {show = true, position = "right"},
       foreground = {
         asset = "Cooli: Fade Bottom",
         color = {r = 0, g = 1, b = 0},
