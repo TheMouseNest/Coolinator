@@ -3,25 +3,6 @@ local addonTable = select(2, ...)
 
 local LSM = LibStub("LibSharedMedia-3.0")
 
-local auraFormatter = C_StringUtil.CreateNumericRuleFormatter()
-auraFormatter:SetBreakpoints({
-  {
-    threshold = 0,
-    step = 1,
-    format = "%d",
-  },
-  {
-    threshold = 60,
-    format = COOLDOWN_DURATION_MIN,
-    components = {
-      {
-        div = 60,
-        step = 1,
-      }
-    }
-  }
-})
-
 addonTable.Display.AuraIconMixin = {}
 function addonTable.Display.AuraIconMixin:OnLoad()
   self:SetSize(addonTable.Constants.nativeSize - 4, addonTable.Constants.nativeSize - 4)
@@ -68,11 +49,7 @@ function addonTable.Display.AuraIconMixin:Setup(sourceWidget, details)
   widgets.debuffBorder:SetFrameLevel(self:GetFrameLevel() + 4)
 
   widgets.cooldown:SetDrawSwipe(details.showSwipe)
-  if details.texts.cooldown.showFractions then
-    widgets.cooldown:SetCountdownFormatter(addonTable.Display.GetDurationFormatter())
-  else
-    widgets.cooldown:SetCountdownFormatter(auraFormatter)
-  end
+  widgets.cooldown:SetCountdownFormatter(addonTable.Display.GetDurationFormatter(details.texts.cooldown.showFractions))
 
   self:SetShown(widgets.source:IsShown())
 end

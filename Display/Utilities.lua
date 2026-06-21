@@ -85,32 +85,53 @@ function addonTable.Display.ApplyAnchor(frame, anchor, scale)
   end
 end
 
-local auraFormatter = C_StringUtil.CreateNumericRuleFormatter()
-auraFormatter:SetBreakpoints({
-  {
-    threshold = 0,
-    step = 0.1,
-    format = "%.1f",
-  },
-  {
-    threshold = 3,
-    step = 1,
-    format = "%d",
-  },
-  {
-    threshold = 60,
-    format = COOLDOWN_DURATION_MIN,
-    components = {
-      {
-        div = 60,
-        step = 1,
+do
+  local fractional = C_StringUtil.CreateNumericRuleFormatter()
+  fractional:SetBreakpoints({
+    {
+      threshold = 0,
+      step = 0.1,
+      format = "%.1f",
+    },
+    {
+      threshold = 3,
+      step = 1,
+      format = "%d",
+    },
+    {
+      threshold = 60,
+      format = COOLDOWN_DURATION_MIN,
+      components = {
+        {
+          div = 60,
+          step = 1,
+        }
       }
     }
-  }
-})
+  })
 
-function addonTable.Display.GetDurationFormatter()
-  return auraFormatter
+  local basic = C_StringUtil.CreateNumericRuleFormatter()
+  basic:SetBreakpoints({
+    {
+      threshold = 0,
+      step = 1,
+      format = "%d",
+    },
+    {
+      threshold = 60,
+      format = COOLDOWN_DURATION_MIN,
+      components = {
+        {
+          div = 60,
+          step = 1,
+        }
+      }
+    }
+  })
+
+  function addonTable.Display.GetDurationFormatter(isFractional)
+    return isFractional and fractional or basic
+  end
 end
 
 function addonTable.Display.GetSizingForStatusBar(frame, width, height)

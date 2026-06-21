@@ -77,6 +77,15 @@ function addonTable.Display.AuraStatusBarMixin:Setup(sourceWidget, details)
   widgets.borderWrapper:SetFrameLevel(widgets.statusBar:GetFrameLevel() + 2)
 
   widgets.duration:SetScale(self.lowerScale)
+  widgets.duration:SetFontObject(addonTable.CurrentNumberFont)
+  local font = addonTable.Config.Get(addonTable.Config.Options.NUMBER_FONT)
+  if font.flags.slug then
+    widgets.duration:SetScale(14/12)
+    widgets.duration:SetTextScale(1)
+  else
+    widgets.duration:SetScale(1)
+    widgets.duration:SetTextScale(14/12)
+  end
 
   widgets.icon:SetShown(details.icon.show)
 

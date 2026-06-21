@@ -27,7 +27,11 @@ function addonTable.Display.AbilityStatusBarMixin:OnLoad()
   self.TextsContainer = CreateFrame("Frame", nil, self.wrapper)
   self.TextsContainer:SetAllPoints()
   self.TextsContainer.Charges = self.TextsContainer:CreateFontString(nil, nil, "NumberFontNormal")
-  --self.TextsContainer.Duration = self.TextsContainer:CreateFontString(nil, nil, "NumberFontNormal")
+  self.TextsContainer.Duration = self.TextsContainer:CreateFontString(nil, nil, "NumberFontNormal")
+  self.DurationBinding = C_DurationUtil.CreateDurationTextBinding()
+  self.DurationBinding:SetFontString(self.TextsContainer.Duration)
+  self.DurationBinding:SetZeroDurationText("0")
+  self.DurationBinding:SetFormatter(addonTable.Display.GetDurationFormatter(false))
 end
 
 function addonTable.Display.AbilityStatusBarMixin:Enable(details)
@@ -72,6 +76,16 @@ function addonTable.Display.AbilityStatusBarMixin:Setup(details)
   self:UpdateSpellByID(addonTable.Utilities.IsAbilitySpellKnown(details.resource.spellID) or details.resource.spellID)
 
   self.borderWrapper:SetFrameLevel(self.statusBar:GetFrameLevel() + 2)
+  self.TextsContainer:SetFrameLevel(self.statusBar:GetFrameLevel() + 1)
+
+  local font = addonTable.Config.Get(addonTable.Config.Options.NUMBER_FONT)
+  if font.flags.slug then
+    self.TextsContainer.Duration:SetScale(14/12)
+    self.TextsContainer.Duration:SetTextScale(1)
+  else
+    self.TextsContainer.Duration:SetScale(1)
+    self.TextsContainer.Duration:SetTextScale(14/12)
+  end
 
   self.icon:SetShown(details.icon.show)
 end
@@ -96,15 +110,15 @@ function addonTable.Display.AbilityStatusBarMixin:ApplySize(width, height)
 
   self.icon:ClearAllPoints()
   self.statusBar:ClearAllPoints()
-  --self.TextsContainer.Duration:ClearAllPoints()
+  self.TextsContainer.Duration:ClearAllPoints()
   if self.details.layout == "horizontal" then
     self.icon:SetPoint(self.details.icon.position == "left" and "LEFT" or "RIGHT")
     self.statusBar:SetPoint(self.details.icon.position == "left" and "RIGHT" or "LEFT")
-    --self.TextsContainer.Duration:SetPoint("RIGHT", self.widgets.statusBar, -8, 0)
+    self.TextsContainer.Duration:SetPoint("RIGHT", self.statusBar, -8, 0)
   else
     self.icon:SetPoint(self.details.icon.position == "left" and "BOTTOM" or "TOP")
     self.statusBar:SetPoint(self.details.icon.position == "left" and "TOP" or "BOTTOM")
-    --self.TextsContainer.Duration:SetPoint("BOTTOM", self.widgets.statusBar, 0, 8)
+    self.TextsContainer.Duration:SetPoint("BOTTOM", self.statusBar, 0, 8)
   end
 end
 
@@ -119,6 +133,10 @@ function addonTable.Display.AbilityStatusBarMixin:UpdateSpellByID(spellID)
 
   local baseDuration = C_Spell.GetSpellCooldownDuration(spellID, self.ignoreGCD)
   self.statusBar:SetTimerDuration(baseDuration, nil, Enum.StatusBarTimerDirection.RemainingTime)
+
+  self.DurationBinding:SetDuration(baseDuration)
+  self.DurationBinding:Enable()
+  self.DurationBinding:UpdateFontString()
 
   self.wrapper:SetAlphaFromBoolean(baseDuration:IsZero(), 0, 1)
 

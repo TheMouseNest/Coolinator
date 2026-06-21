@@ -177,14 +177,8 @@ function addonTable.Display.CooldownMixin:Setup(details)
   self.BaseCooldown:SetScript("OnCooldownDone", nil)
   self.BaseCooldown:SetDrawSwipe(details.showSwipe)
   self.ChargesCooldown:SetDrawEdge(details.showSwipe)
-  if self.details.texts.cooldown.showFractions then
-    local formatter = addonTable.Display.GetDurationFormatter()
-    self.BaseCooldown:SetCountdownFormatter(formatter)
-    self.ChargesCooldown:SetCountdownFormatter(formatter)
-  else
-    self.BaseCooldown:SetCountdownFormatter(nil)
-    self.ChargesCooldown:SetCountdownFormatter(nil)
-  end
+  self.BaseCooldown:SetCountdownFormatter(addonTable.Display.GetDurationFormatter(details.texts.cooldown.showFractions))
+  self.BaseCooldown:SetCountdownFormatter(addonTable.Display.GetDurationFormatter(details.texts.cooldown.showFractions))
   self.desaturateCooldown = details.desaturateCooldown
 
   self:UpdateBindingText()
