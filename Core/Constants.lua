@@ -91,8 +91,8 @@ addonTable.Constants.ClassResources = {
   [1450] = 30,
   -- Paladin
   ["PALADIN"] = {"holy-power", "mana"},
-  [65] = {"mana"}, -- Holy
-  [66] = {"mana"}, -- Protection
+  [65] = {"holy-power","mana"}, -- Holy
+  [66] = {"holy-power","mana"}, -- Protection
   [70] = {"holy-power", "mana"}, -- Retribution
   [1451] = {"mana"},
   -- Priest
