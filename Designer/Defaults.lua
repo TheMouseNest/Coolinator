@@ -257,5 +257,6 @@ addonTable.Designer.Defaults = {
     ["combo-points"] = GetPipGroup("combo-points", 7, GetColor("b4006c"), GetColor("ff2f32"), GetColor("ffaaab", .3)),
     ["runes"] = GetPipGroup("runes", 6, GetColor("00479d"), GetColor("58a9ff"), GetColor("a7ddff", .3)),
     ["essence"] = GetPipGroup("essence", 5, GetColor("00479d"), GetColor("58a9ff"), GetColor("a7ddff", .3)),
+    ["chi"] = GetPipGroup("chi", 6, GetColor("3b9035"), GetColor("68ff5d"), GetColor("ceffc5", .3)),
   }
 }

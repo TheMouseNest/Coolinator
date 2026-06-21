@@ -376,6 +376,7 @@ GenerateBarForResource(Enum.PowerType.LunarPower, "lunar-power")
 GeneratePipResource(Enum.PowerType.SoulShards, "soul-shards", 10)
 GeneratePipResource(Enum.PowerType.HolyPower, "holy-power")
 GeneratePipResource(Enum.PowerType.ComboPoints, "combo-points")
+GeneratePipResource(Enum.PowerType.Chi, "chi")
 GenerateEssenceResource("essence")
 GenerateRunesResource("runes")
 

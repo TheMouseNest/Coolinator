@@ -493,7 +493,7 @@ addonTable.Designer.WidgetConfiguration = {
             {
               label = addonTable.Locales.WIDTH,
               kind = "slider",
-              min = 20, max = 300,
+              min = 10, max = 300,
               formatter = function(value) return value .. "%" end,
               setter = function(details, value)
                 details.width = value / 100
@@ -686,6 +686,9 @@ addonTable.Designer.WidgetConfiguration = {
         pipBarTextures
       },
       ["essence"] = {
+        pipBarTextures
+      },
+      ["chi"] = {
         pipBarTextures
       },
     }
