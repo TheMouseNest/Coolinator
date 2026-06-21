@@ -831,38 +831,7 @@ function addonTable.Designer.LayoutManagerMixin:UpdateSelectionJustOne()
       self.dragButton:SetScript("OnClick", function(_, button)
         if button == "RightButton" then
           MenuUtil.CreateContextMenu(UIParent, function(_, rootDescription)
-            if (details.anchor[1] == "TOP" or details.anchor[1] == "BOTTOM") and (details.anchor[4] == nil or details.anchor[4] == 0) then
-              rootDescription:CreateTitle(GRAY_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.CENTER_HORIZONTAL))
-            else
-              rootDescription:CreateButton(addonTable.Locales.CENTER_HORIZONTAL, function()
-                if details.anchor[1] == "TOPLEFT" or details.anchor[1] == "TOPRIGHT" or details.anchor[1] == "TOP" then
-                  details.anchor = {"TOP", "UIParent", "TOP", 0, details.anchor[5]}
-                elseif details.anchor[1] == "BOTTOMLEFT" or details.anchor[1] == "BOTTOMRIGHT" or details.anchor[1] == "BOTTOM" then
-                  details.anchor = {"BOTTOM", "UIParent", "BOTTOM", 0, details.anchor[5]}
-                else
-                  local halfFrameHeight = frame:GetHeight() * frame:GetEffectiveScale() / UIParent:GetScale() / 2
-                  local offsetY = UIParent:GetHeight() / 2 + details.anchor[5] - halfFrameHeight
-                  details.anchor = {"BOTTOM", "UIParent", "BOTTOM", 0, offsetY}
-                end
-                Announce()
-              end)
-            end
-            if (details.anchor[1] == "LEFT" or details.anchor[1] == "RIGHT") and (details.anchor[5] == nil or details.anchor[5] == 0) then
-              rootDescription:CreateTitle(GRAY_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.CENTER_VERTICAL))
-            else
-              rootDescription:CreateButton(addonTable.Locales.CENTER_VERTICAL, function()
-                if details.anchor[1] == "TOPRIGHT" or details.anchor[1] == "BOTTOMRIGHT" or details.anchor[1] == "RIGHT" then
-                  details.anchor = {"RIGHT", "UIParent", "RIGHT", details.anchor[4] or 0, 0}
-                elseif details.anchor[1] == "TOPLEFT" or details.anchor[1] == "BOTTOMLEFT" or details.anchor[1] == "LEFT" then
-                  details.anchor = {"LEFT", "UIParent", "LEFT", details.anchor[4], 0}
-                else
-                  local halfFrameWidth = frame:GetWidth() * frame:GetEffectiveScale() / UIParent:GetScale() / 2
-                  local offsetX = UIParent:GetWidth() / 2 + details.anchor[4] - halfFrameWidth
-                  details.anchor = {"LEFT", "UIParent", "LEFT", offsetX, 0}
-                end
-                Announce()
-              end)
-            end
+            self:GetAlignmentMenu(frame, rootDescription)
           end)
         end
       end)
@@ -894,6 +863,79 @@ function addonTable.Designer.LayoutManagerMixin:UpdateSelectionJustOne()
       GameTooltip:Hide()
     end)
   end
+end
+
+function addonTable.Designer.LayoutManagerMixin:GetAlignmentMenu(frame, rootDescription)
+  local details = frame.details
+
+  if (details.anchor[1] == "TOP" or details.anchor[1] == "BOTTOM") and (details.anchor[4] == nil or details.anchor[4] == 0) then
+    rootDescription:CreateTitle(GRAY_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.CENTER_HORIZONTAL))
+  else
+    rootDescription:CreateButton(addonTable.Locales.CENTER_HORIZONTAL, function()
+      if details.anchor[1] == "TOPLEFT" or details.anchor[1] == "TOPRIGHT" or details.anchor[1] == "TOP" then
+        details.anchor = {"TOP", "UIParent", "TOP", 0, details.anchor[5]}
+      elseif details.anchor[1] == "BOTTOMLEFT" or details.anchor[1] == "BOTTOMRIGHT" or details.anchor[1] == "BOTTOM" then
+        details.anchor = {"BOTTOM", "UIParent", "BOTTOM", 0, details.anchor[5]}
+      else
+        local halfFrameHeight = frame:GetHeight() * frame:GetEffectiveScale() / UIParent:GetScale() / 2
+        local offsetY = UIParent:GetHeight() / 2 + details.anchor[5] - halfFrameHeight
+        details.anchor = {"BOTTOM", "UIParent", "BOTTOM", 0, offsetY}
+      end
+      Announce()
+    end)
+  end
+  if (details.anchor[1] == "LEFT" or details.anchor[1] == "RIGHT") and (details.anchor[5] == nil or details.anchor[5] == 0) then
+    rootDescription:CreateTitle(GRAY_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.CENTER_VERTICAL))
+  else
+    rootDescription:CreateButton(addonTable.Locales.CENTER_VERTICAL, function()
+      if details.anchor[1] == "TOPRIGHT" or details.anchor[1] == "BOTTOMRIGHT" or details.anchor[1] == "RIGHT" then
+        details.anchor = {"RIGHT", "UIParent", "RIGHT", details.anchor[4] or 0, 0}
+      elseif details.anchor[1] == "TOPLEFT" or details.anchor[1] == "BOTTOMLEFT" or details.anchor[1] == "LEFT" then
+        details.anchor = {"LEFT", "UIParent", "LEFT", details.anchor[4], 0}
+      else
+        local halfFrameWidth = frame:GetWidth() * frame:GetEffectiveScale() / UIParent:GetScale() / 2
+        local offsetX = UIParent:GetWidth() / 2 + details.anchor[4] - halfFrameWidth
+        details.anchor = {"LEFT", "UIParent", "LEFT", offsetX, 0}
+      end
+      Announce()
+    end)
+  end
+
+  local anchors = {}
+  for key, anchor in pairs(addonTable.Config.Get(addonTable.Config.Options.SAVED_ANCHORS)) do
+    table.insert(anchors, {label = key, anchor = anchor})
+  end
+  table.sort(anchors, function(a, b)
+    return a.label < b.label
+  end)
+  table.insert(anchors, 1, {label = BLUE_FONT_COLOR:WrapTextInColorCode(DEFAULT), anchor = {"BOTTOM", "UIParent", "BOTTOM", 0, 200}})
+
+  rootDescription:CreateDivider()
+
+  for _, info in ipairs(anchors) do
+    rootDescription:CreateButton(addonTable.Locales.ALIGN_X:format(info.label), function()
+      frame.details.anchor = CopyTable(info.anchor)
+      Announce()
+    end)
+  end
+
+  rootDescription:CreateDivider()
+
+  rootDescription:CreateButton(addonTable.Locales.SAVE_ANCHOR, function()
+    local anchor = CopyTable(frame.details.anchor)
+    addonTable.Dialogs.ShowEditBox(addonTable.Locales.CHOOSE_A_NAME, OKAY, CANCEL, function(value)
+      if value:match("^%s*$") then
+        addonTable.Dialogs.ShowAcknowledge(addonTable.Locales.INVALID_ANCHOR_NAME)
+      else
+        addonTable.Config.Get(addonTable.Config.Options.SAVED_ANCHORS)[value] = anchor
+      end
+    end)
+  end)
+  rootDescription:CreateButton(addonTable.Locales.RESET_SAVED_ANCHORS, function()
+    addonTable.Dialogs.ShowConfirm(addonTable.Locales.ARE_YOU_SURE_CLEAR_ANCHORS, YES, NO, function()
+        addonTable.Config.Set(addonTable.Config.Options.SAVED_ANCHORS, {})
+    end)
+  end)
 end
 
 function addonTable.Designer.LayoutManagerMixin:HideSelectedButtons()

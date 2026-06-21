@@ -13,6 +13,8 @@ local settings = {
   SHOW_TOOLTIPS = {key = "show_tooltips", default = true, refresh = {addonTable.Constants.RefreshReason.Design}},
   SHOW_GCD_SWIPE = {key = "show_gcd_swipe", default = false, refresh = {addonTable.Constants.RefreshReason.Design}},
 
+  SAVED_ANCHORS = {key = "saved_anchors", default = {}},
+
   NUMBER_FONT = {key = "number_font", default = {asset = addonTable.Constants.DefaultFont, flags = {outline = true, shadow = true, slug = true}, size = 1.0}, refresh = {addonTable.Constants.RefreshReason.Design}},
 
   CURRENT_SKIN = {key = "current_skin", default = "blizzard"},
