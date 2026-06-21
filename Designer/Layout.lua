@@ -923,7 +923,7 @@ function addonTable.Designer.LayoutManagerMixin:GetAlignmentMenu(frame, rootDesc
 
   rootDescription:CreateButton(addonTable.Locales.SAVE_ANCHOR, function()
     local anchor = CopyTable(frame.details.anchor)
-    addonTable.Dialogs.ShowEditBox(addonTable.Locales.CHOOSE_A_NAME, OKAY, CANCEL, function(value)
+    addonTable.Dialogs.ShowEditBox(addonTable.Locales.CHOOSE_AN_ANCHOR_NAME, OKAY, CANCEL, function(value)
       if value:match("^%s*$") then
         addonTable.Dialogs.ShowAcknowledge(addonTable.Locales.INVALID_ANCHOR_NAME)
       else
