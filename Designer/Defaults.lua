@@ -16,7 +16,6 @@ local function GetPrimaryClassResource(resource, fgColor, bgColor, t1, t2, t3)
     alpha = 1,
     layout = "horizontal",
     direction = "left",
-    icon = {show = true, position = "right"},
     foreground = {
       asset = "Cooli: Fade Right",
       color = fgColor,

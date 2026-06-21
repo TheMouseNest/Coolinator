@@ -96,51 +96,16 @@ function addonTable.Display.AuraStatusBarMixin:GetDefaultSize()
 end
 
 function addonTable.Display.AuraStatusBarMixin:ApplySize(width, height)
-  local rawWidth, rawHeight = self.rawWidth * self.details.scale, self.rawHeight * self.details.scale
-  if self.details.autoSize then
-    if self.details.layout == "horizontal" then
-      rawWidth = width or rawWidth
-    end
-    if self.details.layout == "vertical" then
-      rawHeight = height or rawHeight
-    end
-  end
-  local statusWidth, statusHeight = self.rawWidth, self.rawHeight
-  local borderWidth, borderHeight = self.borderWidth, self.borderHeight
-  if self.details.icon.show then
-    local iconSize
-    if self.details.layout == "vertical" then
-      iconSize = self.rawWidth * self.details.scale
-      local offset = (self.borderHeight - self.rawHeight) / 2 + 1 + iconSize
-      local new = rawHeight - offset
-      if new >= addonTable.Assets.BarBordersSize.width * 0.1 then
-        statusHeight = new / self.details.scale
-        borderHeight = borderHeight + (rawHeight - offset - self.rawHeight * self.details.scale) / self.details.scale
-        self.widgets.icon:Show()
-      else
-        self.widgets.icon:Hide()
-      end
-    else
-      iconSize = self.rawHeight * self.details.scale
-      local offset = (self.borderWidth - self.rawWidth) / 2 + 1 + iconSize
-      local new = rawWidth - offset
-      if new >= addonTable.Assets.BarBordersSize.width * 0.1 then
-        statusWidth = new / self.details.scale
-        borderWidth = borderWidth + (rawWidth - offset - self.rawWidth * self.details.scale) / self.details.scale
-        self.widgets.icon:Show()
-      else
-        self.widgets.icon:Hide()
-      end
-    end
-    PixelUtil.SetSize(self.widgets.icon, iconSize, iconSize)
+  local sizing = addonTable.Display.GetSizingForStatusBar(self, width, height)
+  PixelUtil.SetSize(self, sizing.rawWidth, sizing.rawHeight)
+  PixelUtil.SetSize(self.widgets.statusBar, sizing.statusWidth * self.lowerScale, sizing.statusHeight * self.lowerScale)
+  PixelUtil.SetSize(self.widgets.border, sizing.borderWidth * self.lowerScale, sizing.borderHeight  * self.lowerScale)
+  if sizing.iconSize > 0 then
+    self.widgets.icon:Show()
+    PixelUtil.SetSize(self.widgets.icon, sizing.iconSize, sizing.iconSize)
   else
-    statusWidth, statusHeight = rawWidth / self.details.scale, rawHeight / self.details.scale
-    borderWidth = borderWidth + (statusWidth - self.rawWidth)
-    borderHeight = borderHeight + (statusHeight - self.rawHeight)
+    self.widgets.icon:Hide()
   end
-  PixelUtil.SetSize(self, rawWidth, rawHeight)
-  PixelUtil.SetSize(self.widgets.statusBar, statusWidth * self.lowerScale, statusHeight * self.lowerScale)
-  PixelUtil.SetSize(self.widgets.border, borderWidth * self.lowerScale, borderHeight  * self.lowerScale)
 
   PixelUtil.SetPoint(self.widgets.icon.Applications, "BOTTOMRIGHT", self.widgets.icon, "BOTTOMRIGHT", -5, 5)
 

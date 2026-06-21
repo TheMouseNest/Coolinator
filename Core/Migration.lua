@@ -139,44 +139,41 @@ local function Iconsv10(group)
   end
 end
 
+local function Iconsv11(group)
+  for i = #group.entries, 1, -1 do
+    local entry = group.entries[i]
+    if entry.kind == "group" then
+      Iconsv11(entry)
+    elseif entry.kind == "bar" and entry.resource.kind == "class" then
+      entry.icon = nil
+    end
+  end
+end
+
+local steps = {
+  AddAlignment,
+  addonTable.Core.RemoveDeadGroups,
+  AddStylev3,
+  UseBaseSpellsv4,
+  UseBaseSpellsv4,
+  Textsv6,
+  Textsv7,
+  Textsv7,
+  Iconsv9,
+  Iconsv10,
+  Iconsv11,
+}
+
 function addonTable.Core.UpgradeDesign(design)
-  if not design.version or design.version < 1 then
-    AddAlignment(design)
-    design.version = 1
+  if not design.version then
+    design.version = 0
   end
-  if design.version < 2 then
-    addonTable.Core.RemoveDeadGroups(design)
-    design.version = 2
+  for index, callback in ipairs(steps) do
+    if design.version < index then
+      callback(design)
+    end
   end
-  if design.version < 3 then
-    AddStylev3(design)
-    design.version = 3
-  end
-
-  if design.version < 5 then
-    UseBaseSpellsv4(design)
-    design.version = 5
-  end
-
-  if design.version < 6 then
-    Textsv6(design)
-    design.version = 6
-  end
-
-  if design.version < 8 then
-    Textsv7(design)
-    design.version = 8
-  end
-
-  if design.version < 9 then
-    Iconsv9(design)
-    design.version = 9
-  end
-
-  if design.version < 10 then
-    Iconsv10(design)
-    design.version = 10
-  end
+  design.version = #steps
 end
 
 function addonTable.Core.MigrateSettings()

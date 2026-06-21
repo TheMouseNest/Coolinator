@@ -29,9 +29,10 @@ function addonTable.Display.GenerateStatusBar(self)
   self.GetDefaultSize = GetDefaultSize
 end
 
-local function SizeStatusBar(self)
-  PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale)
-  PixelUtil.SetSize(self.border, self.borderWidth * self.lowerScale, self.borderHeight * self.lowerScale)
+local function SizeStatusBar(self, width, height)
+  local sizing = addonTable.Display.GetSizingForStatusBar(self, width, height)
+  PixelUtil.SetSize(self, sizing.rawWidth, sizing.rawHeight)
+  PixelUtil.SetSize(self.border, sizing.borderWidth * self.lowerScale, sizing.borderHeight * self.lowerScale)
 end
 
 addonTable.Display.ClassResourceStatusBar.stagger = {}
@@ -97,10 +98,11 @@ function addonTable.Display.ClassResourceStatusBar.stagger:Setup(details)
   self.details = details
 end
 
-function addonTable.Display.ClassResourceStatusBar.stagger:ApplySize()
-  PixelUtil.SetSize(self, self.rawWidth * self.details.scale, self.rawHeight * self.details.scale)
-  PixelUtil.SetSize(self.fadedStatusBar, self.rawWidth * self.lowerScale, self.rawHeight * self.lowerScale)
-  PixelUtil.SetSize(self.border, self.borderWidth * self.lowerScale, self.borderHeight * self.lowerScale)
+function addonTable.Display.ClassResourceStatusBar.stagger:ApplySize(width, height)
+  local sizing = addonTable.Display.GetSizingForStatusBar(self, width, height)
+  PixelUtil.SetSize(self, sizing.rawWidth, sizing.rawHeight)
+  PixelUtil.SetSize(self.border, sizing.borderWidth * self.lowerScale, sizing.borderHeight * self.lowerScale)
+  PixelUtil.SetSize(self.fadedStatusBar, sizing.statusWidth * self.lowerScale, sizing.statusHeight * self.lowerScale)
 end
 
 local function GenerateBarForAuraResource(spellID, max, label)

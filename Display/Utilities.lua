@@ -112,3 +112,51 @@ auraFormatter:SetBreakpoints({
 function addonTable.Display.GetDurationFormatter()
   return auraFormatter
 end
+
+function addonTable.Display.GetSizingForStatusBar(frame, width, height)
+  local rawWidth, rawHeight = frame.rawWidth * frame.details.scale, frame.rawHeight * frame.details.scale
+  if frame.details.autoSize then
+    if frame.details.layout == "horizontal" then
+      rawWidth = width or rawWidth
+    end
+    if frame.details.layout == "vertical" then
+      rawHeight = height or rawHeight
+    end
+  end
+  local statusWidth, statusHeight = frame.rawWidth, frame.rawHeight
+  local borderWidth, borderHeight = frame.borderWidth, frame.borderHeight
+  local iconSize = 0
+  if frame.details.icon and frame.details.icon.show then
+    if frame.details.layout == "vertical" then
+      iconSize = frame.rawWidth * frame.details.scale
+      local offset = (frame.borderHeight - frame.rawHeight) / 2 + 1 + iconSize
+      local new = rawHeight - offset
+      if new >= addonTable.Assets.BarBordersSize.width * 0.1 then
+        statusHeight = new / frame.details.scale
+        borderHeight = borderHeight + (rawHeight - offset - frame.rawHeight * frame.details.scale) / frame.details.scale
+      else
+        iconSize = 0
+      end
+    else
+      iconSize = frame.rawHeight * frame.details.scale
+      local offset = (frame.borderWidth - frame.rawWidth) / 2 + 1 + iconSize
+      local new = rawWidth - offset
+      if new >= addonTable.Assets.BarBordersSize.width * 0.1 then
+        statusWidth = new / frame.details.scale
+        borderWidth = borderWidth + (rawWidth - offset - frame.rawWidth * frame.details.scale) / frame.details.scale
+      else
+        iconSize = 0
+      end
+    end
+  else
+    statusWidth, statusHeight = rawWidth / frame.details.scale, rawHeight / frame.details.scale
+    borderWidth = borderWidth + (statusWidth - frame.rawWidth)
+    borderHeight = borderHeight + (statusHeight - frame.rawHeight)
+  end
+  return {
+    rawWidth = rawWidth, rawHeight = rawHeight,
+    statusWidth = statusWidth, statusHeight = statusHeight,
+    borderWidth = borderWidth, borderHeight = borderHeight,
+    iconSize = iconSize
+  }
+end
