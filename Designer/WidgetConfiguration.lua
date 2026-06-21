@@ -873,7 +873,7 @@ addonTable.Designer.IconTextsConfig = {
       end,
     },
     {
-      label = addonTable.Locales.SHOW_FRACTIONS_ABILITY_COOLDOWNS_ONLY,
+      label = addonTable.Locales.SHOW_FRACTIONS,
       kind = "checkbox",
       setter = function(details, value)
         if details.showFractions ~= nil then

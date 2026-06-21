@@ -1,30 +1,6 @@
 ---@class addonTableCoolinator
 local addonTable = select(2, ...)
 
-local auraFormatter = C_StringUtil.CreateNumericRuleFormatter()
-auraFormatter:SetBreakpoints({
-  {
-    threshold = 0,
-    step = 0.1,
-    format = "%.1f",
-  },
-  {
-    threshold = 3,
-    step = 1,
-    format = "%d",
-  },
-  {
-    threshold = 60,
-    format = COOLDOWN_DURATION_MIN,
-    components = {
-      {
-        div = 60,
-        step = 1,
-      }
-    }
-  }
-})
-
 addonTable.Display.CooldownMixin = {}
 function addonTable.Display.CooldownMixin:OnLoad()
   self:SetSize(addonTable.Constants.nativeSize - 4, addonTable.Constants.nativeSize - 4)
@@ -202,8 +178,9 @@ function addonTable.Display.CooldownMixin:Setup(details)
   self.BaseCooldown:SetDrawSwipe(details.showSwipe)
   self.ChargesCooldown:SetDrawEdge(details.showSwipe)
   if self.details.texts.cooldown.showFractions then
-    self.BaseCooldown:SetCountdownFormatter(auraFormatter)
-    self.ChargesCooldown:SetCountdownFormatter(auraFormatter)
+    local formatter = addonTable.Display.GetDurationFormatter()
+    self.BaseCooldown:SetCountdownFormatter(formatter)
+    self.ChargesCooldown:SetCountdownFormatter(formatter)
   else
     self.BaseCooldown:SetCountdownFormatter(nil)
     self.ChargesCooldown:SetCountdownFormatter(nil)

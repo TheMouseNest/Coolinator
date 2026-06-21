@@ -84,3 +84,31 @@ function addonTable.Display.ApplyAnchor(frame, anchor, scale)
     frame:SetPoint(anchor[1], frame:GetParent(), "CENTER")
   end
 end
+
+local auraFormatter = C_StringUtil.CreateNumericRuleFormatter()
+auraFormatter:SetBreakpoints({
+  {
+    threshold = 0,
+    step = 0.1,
+    format = "%.1f",
+  },
+  {
+    threshold = 3,
+    step = 1,
+    format = "%d",
+  },
+  {
+    threshold = 60,
+    format = COOLDOWN_DURATION_MIN,
+    components = {
+      {
+        div = 60,
+        step = 1,
+      }
+    }
+  }
+})
+
+function addonTable.Display.GetDurationFormatter()
+  return auraFormatter
+end
