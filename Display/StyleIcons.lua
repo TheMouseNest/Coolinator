@@ -68,7 +68,7 @@ function addonTable.Display.StyleIcon(styleSettings, parent, icon, count, keybin
 
   for _, t in ipairs(maskedTextures) do
     if t:GetNumMaskTextures() > 0 then
-      for i = 1, t:GetNumMaskTextures() do
+      for i = t:GetNumMaskTextures(), 1, -1 do
         local m = t:GetMaskTexture(i)
         t:RemoveMaskTexture(m)
       end
@@ -102,7 +102,7 @@ function addonTable.Display.StyleIcon(styleSettings, parent, icon, count, keybin
   end
 
   for _, t in ipairs(maskedTextures) do
-    t:AddMaskTexture(mask)
+    --t:AddMaskTexture(mask)
   end
 
   icon:SetShown(details.showIcon)

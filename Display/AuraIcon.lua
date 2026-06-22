@@ -1,8 +1,6 @@
 ---@class addonTableCoolinator
 local addonTable = select(2, ...)
 
-local LSM = LibStub("LibSharedMedia-3.0")
-
 addonTable.Display.AuraIconMixin = {}
 function addonTable.Display.AuraIconMixin:OnLoad()
   self:SetSize(addonTable.Constants.nativeSize - 4, addonTable.Constants.nativeSize - 4)
@@ -59,7 +57,9 @@ function addonTable.Display.AuraIconMixin:NotifyActive(state)
 end
 
 function addonTable.Display.AuraIconMixin:UpdateSource(sourceWidget)
-  if sourceWidget ~= self.widgets.source then
+  if sourceWidget == nil then
+    self.widgets = nil
+  elseif not self.widgets or sourceWidget ~= self.widgets.source then
     self:Setup(sourceWidget, self.details)
   else
     sourceWidget:SetParent(self)

@@ -269,12 +269,15 @@ function addonTable.Core.GetCDMOrder(layout)
   end
 
   local auraOrderMap, barOrderMap, abilityOrderMap = {}, {}, {}
+  local auraCount, barCount = 0, 0
 
   for index, cdmID in ipairs(auraOrder) do
+    auraCount = auraCount + 1
     auraOrderMap[cdmID] = index
   end
 
   for index, cdmID in ipairs(barOrder) do
+    barCount = barCount + 1
     barOrderMap[cdmID] = index
   end
 
@@ -282,5 +285,5 @@ function addonTable.Core.GetCDMOrder(layout)
     abilityOrderMap[cdmID] = index
   end
 
-  return {auraMap = auraMappingActive, abilityMap = abilityMappingActive, auraOrder = auraOrderMap, barOrder = barOrderMap, abilityOrder = abilityOrderMap}
+  return {auraMap = auraMappingActive, abilityMap = abilityMappingActive, auraOrder = auraOrderMap, auraCount = auraCount, barOrder = barOrderMap, barCount = barCount, abilityOrder = abilityOrderMap}
 end
