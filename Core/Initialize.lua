@@ -139,6 +139,13 @@ EventUtil.ContinueAfterAllEvents(function()
 
     addonTable.Display.LayoutManager = addonTable.Utilities.InitFrameWithMixin(UIParent, addonTable.Display.LayoutManagerMixin)
     addonTable.Designer.LayoutManager = addonTable.Utilities.InitFrameWithMixin(UIParent, addonTable.Designer.LayoutManagerMixin)
+
+    EventRegistry:RegisterCallback("CooldownViewerSettings.OnShow", function()
+      addonTable.State.CDM = nil
+    end)
+    EventRegistry:RegisterCallback("CooldownViewerSettings.OnHide", function()
+      TriggerUpdate()
+    end)
   end)
 end, "VARIABLES_LOADED", "PLAYER_ENTERING_WORLD", "COOLDOWN_VIEWER_DATA_LOADED")
 
