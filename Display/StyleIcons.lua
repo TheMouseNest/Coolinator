@@ -102,7 +102,7 @@ function addonTable.Display.StyleIcon(styleSettings, parent, icon, count, keybin
   end
 
   for _, t in ipairs(maskedTextures) do
-    --t:AddMaskTexture(mask)
+    t:AddMaskTexture(mask)
   end
 
   icon:SetShown(details.showIcon)
