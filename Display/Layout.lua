@@ -30,6 +30,9 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
     self.classPools[key] = addonTable.Display.GeneratePool(mixin)
   end
 
+  addonTable.CallbackRegistry:RegisterCallback("AuraBarsChanged", function()
+    self.barsAltered = true
+  end)
   addonTable.CallbackRegistry:RegisterCallback("Layout", self.Layout, self)
   addonTable.CallbackRegistry:RegisterCallback("Designer.Open", function()
     self.disabled.designer = true
@@ -93,11 +96,15 @@ function addonTable.Display.LayoutManagerMixin:CacheAuraIcons()
   local result = {}
   local count = 0
   for itemFrame in BuffIconCooldownViewer.itemFramePool:EnumerateActive() do
-    local intendedIndex = addonTable.State.CDM.auraOrder[itemFrame.cooldownID]
     self.seenAuraForIndex[itemFrame.layoutIndex] = itemFrame.cooldownID
-    self.seenAuraByCooldownID[itemFrame.cooldownID] = true
-    result[intendedIndex] = itemFrame
-    count = count + 1
+    if itemFrame.cooldownID then
+      self.seenAuraByCooldownID[itemFrame.cooldownID] = true
+      local intendedIndex = addonTable.State.CDM.auraOrder[itemFrame.cooldownID]
+      if intendedIndex then
+        result[intendedIndex] = itemFrame
+        count = count + 1
+      end
+    end
     if not self.hookedAuras[itemFrame] then
       -- Track added auras that weren't there before
       hooksecurefunc(itemFrame, "SetCooldownID", function(_, cooldownID)
@@ -160,11 +167,17 @@ function addonTable.Display.LayoutManagerMixin:CacheBars()
 
   local count = 0
   for itemFrame in BuffBarCooldownViewer.itemFramePool:EnumerateActive() do
-    local intendedIndex = addonTable.State.CDM.barOrder[itemFrame.cooldownID]
-    result[intendedIndex] = itemFrame
-    count = count + 1
-    self.seenBarForIndex[itemFrame.layoutIndex] = itemFrame.cooldownID
-    self.seenBarByCooldownID[itemFrame.cooldownID] = true
+    if itemFrame.cooldownID then
+      self.seenBarForIndex[itemFrame.layoutIndex] = itemFrame.cooldownID
+      self.seenBarByCooldownID[itemFrame.cooldownID] = true
+      local intendedIndex = addonTable.State.CDM.barOrder[itemFrame.cooldownID]
+      if intendedIndex then
+        result[intendedIndex] = itemFrame
+        count = count + 1
+      end
+    else
+      result[itemFrame.layoutIndex] = itemFrame
+    end
     if not self.hookedAuras[itemFrame] then
       -- Track added bars that weren't there before
       hooksecurefunc(itemFrame, "SetCooldownID", function(_, cooldownID)
@@ -204,6 +217,9 @@ function addonTable.Display.LayoutManagerMixin:SyncBars()
 end
 
 function addonTable.Display.LayoutManagerMixin:SyncAllCDMWidgets(noMissing)
+  if not addonTable.State.CDM or self.barsAltered then
+    return
+  end
   self:SyncAuraIcons()
   self:SyncBars()
   self:SetScript("OnUpdate", nil)
