@@ -193,6 +193,16 @@ local function Degroup(groupDetails)
       end
     end
     groupDetails.entries = final
+
+    if #final == 1 and final[1].kind == "group" then
+      local entry = final[1]
+      groupDetails.alpha = groupDetails.alpha * entry.alpha
+      groupDetails.scale = groupDetails.scale * entry.scale
+      groupDetails.layout = groupDetails.layout
+      groupDetails.padding = groupDetails.padding
+      groupDetails.alignment = groupDetails.alignment
+      groupDetails.entries = entry.entries
+    end
   end
 end
 
