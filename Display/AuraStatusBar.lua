@@ -89,6 +89,8 @@ function addonTable.Display.AuraStatusBarMixin:Setup(sourceWidget, details)
 
   widgets.icon:SetShown(details.icon.show)
 
+  self:SetShown(widgets.source:IsShown())
+
   self.details = details
 end
 
@@ -132,4 +134,8 @@ function addonTable.Display.AuraStatusBarMixin:ApplySize(width, height)
   end
 
   self.widgets.source:SetAllPoints(self)
+end
+
+function addonTable.Display.AuraStatusBarMixin:NotifyActive(state)
+  self:SetShown(state)
 end

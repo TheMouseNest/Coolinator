@@ -188,6 +188,24 @@ function addonTable.Display.LayoutManagerMixin:CacheBars()
           self:SetScript("OnUpdate", self.SyncAllCDMWidgets)
         end
       end)
+      hooksecurefunc(itemFrame, "Show", function()
+        local parent = itemFrame:GetParent()
+        if self.auraStatusBarPool:IsActive(parent) then
+          parent:NotifyActive(true)
+        end
+      end)
+      hooksecurefunc(itemFrame, "Hide", function()
+        local parent = itemFrame:GetParent()
+        if self.auraStatusBarPool:IsActive(parent) then
+          parent:NotifyActive(false)
+        end
+      end)
+      hooksecurefunc(itemFrame, "SetShown", function(_, value)
+        local parent = itemFrame:GetParent()
+        if self.auraStatusBarPool:IsActive(parent) then
+          parent:NotifyActive(value)
+        end
+      end)
       self.hookedAuras[itemFrame] = true
     end
   end
