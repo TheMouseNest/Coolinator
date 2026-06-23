@@ -318,11 +318,13 @@ function addonTable.Display.LayoutManagerMixin:Layout()
   if addonTable.Config.Get(addonTable.Config.Options.FADE_WHEN_MOUNTED) then
     self.inCombat = InCombatLockdown()
     self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
+    self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
     self:RegisterEvent("PLAYER_REGEN_DISABLED")
     self:RegisterEvent("PLAYER_REGEN_ENABLED")
     self:ApplySituation()
   else
     self:UnregisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
+    self:UnregisterEvent("UPDATE_SHAPESHIFT_FORM")
     self:UnregisterEvent("PLAYER_REGEN_DISABLED")
     self:UnregisterEvent("PLAYER_REGEN_ENABLED")
   end
@@ -472,12 +474,14 @@ function addonTable.Display.LayoutManagerMixin:OnEvent(eventName, data)
   elseif eventName == "PLAYER_REGEN_ENABLED" then
     self.inCombat = false
     self:ApplySituation()
-  elseif eventName == "PLAYER_MOUNT_DISPLAY_CHANGED" then
+  elseif eventName == "PLAYER_MOUNT_DISPLAY_CHANGED" or eventName == "UPDATE_SHAPESHIFT_FORM" then
     C_Timer.After(0, function()
       self:ApplySituation()
     end)
   end
 end
+
+local isDruid = UnitClassBase("player") == "DRUID"
 
 function addonTable.Display.LayoutManagerMixin:ApplySituation()
   self.root:SetAlpha(1)
@@ -486,7 +490,7 @@ function addonTable.Display.LayoutManagerMixin:ApplySituation()
     return
   end
 
-  if IsMounted() then
+  if IsMounted() or isDruid and GetShapeshiftForm() == 3 then
     self.root:SetAlpha(0.5)
   end
 end
