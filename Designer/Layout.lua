@@ -444,8 +444,12 @@ function addonTable.Designer.LayoutManagerMixin:InsertRootAt(root)
   local group = self:GetDeepestGroupOverlapping(root, self.root)
   if not group then
     local details = root.details
-    details.anchor = nil
     local point, _, relativePoint, x, y = root:GetPoint(1)
+    if details.anchor then
+      point, x, y = addonTable.Designer.ConvertAnchorToCorner(details.anchor[1], root, UIParent)
+      relativePoint = point
+    end
+    details.anchor = nil
     local new = CopyTable(addonTable.Designer.Defaults.Group)
     table.insert(new.entries, details)
     new.anchor = {point, "UIParent", relativePoint, x * root:GetEffectiveScale() / self.root:GetEffectiveScale(), y * root:GetEffectiveScale() / self.root:GetEffectiveScale()}
@@ -650,6 +654,7 @@ function addonTable.Designer.LayoutManagerMixin:StopMovingRoot(root)
     local parent = self:GetForDetails(details, self.root)
     self.selection = {parent and parent:GetParent().details or details}
     self:UpdateSelection()
+    addonTable.CallbackRegistry:TriggerEvent("Designer.Options", self.selection)
   else
     self:InsertRootAt(root)
   end
