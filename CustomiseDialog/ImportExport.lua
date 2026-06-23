@@ -12,7 +12,12 @@ function addonTable.CustomiseDialog.ImportData(import, name, overwrite)
 
   import.addon = nil
   if import.kind == "design" then
-    local designs = addonTable.Config.Get(addonTable.Config.Options.DESIGNS)[import.specID or addonTable.Utilities.GetSpecID()]
+    local designsRoot = addonTable.Config.Get(addonTable.Config.Options.DESIGNS)
+    local specID = import.specID or addonTable.Utilities.GetSpecID()
+    if not designsRoot[specID] then
+      designsRoot[specID] = {}
+    end
+    local designs = designsRoot[specID]
     if designs[name] and not overwrite then
       return false, 3
     end
