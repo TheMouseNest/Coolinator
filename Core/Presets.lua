@@ -1,9 +1,20 @@
 ---@class addonTableCoolinator
 local addonTable = select(2, ...)
 
+-- Needed to prevent multi-selected widgets breaking
+local function RecursiveApply(tbl, to)
+  for key, val in pairs(tbl) do
+    if type(val) == "table" then
+      RecursiveApply(val, to[key])
+    else
+      to[key] = val
+    end
+  end
+end
+
 function addonTable.Core.ApplyPresetToDetails(details)
   local hasAnchor = details.anchor
-  Mixin(details, CopyTable(addonTable.Core.GetPreset(details)))
+  RecursiveApply(addonTable.Core.GetPreset(details), details)
   if not hasAnchor and details.kind == "group" then
     details.anchor = nil
   end
