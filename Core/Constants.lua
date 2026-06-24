@@ -37,6 +37,7 @@ addonTable.Constants.Events = {
   "Designer.Open",
   "Designer.Close",
   "Designer.Options",
+  "Designer.Options.SavePreset",
   "Designer.Layout",
   "Designer.Reanchor",
 }

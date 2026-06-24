@@ -193,6 +193,18 @@ L["MAKE_NEW"] = "Make new"
 L["INVALID_IMPORT"] = "Invalid import"
 L["NEW_DESIGN"] = "New Design"
 
+L["ESSENTIAL"] = "Essential"
+L["DEFAULT"] = "Default"
+L["UTILITY"] = "Utility"
+L["AURAS"] = "Auras"
+L["PRESET"] = "Preset"
+L["AURA_BARS"] = "Auras Bars"
+L["CREATE_PRESET"] = "Create Preset"
+L["CONFIRM_DELETE_PRESET_X"] = "Are you sure you want to delete preset \"%s\"?"
+L["ENTER_PRESET_NAME"] = "Enter preset name:"
+L["DETACH_PRESET"] = "Detach Preset"
+L["NONE_SET"] = "None set"
+
 L["THANKS_FOR_USING_COOLINATOR_DONATE"] = "Thanks for using Coolinator. Consider donating to support development"
 
 local L = Locales.frFR

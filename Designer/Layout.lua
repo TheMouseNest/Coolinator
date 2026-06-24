@@ -5,6 +5,12 @@ local function Announce()
   addonTable.CallbackRegistry:TriggerEvent("Designer.Layout")
 end
 
+local function SavePresetAnchor(details)
+  if details.kind == "group" and details.anchor and details.preset then
+    addonTable.Core.SavePreset(details.preset, details, true)
+  end
+end
+
 addonTable.Designer.LayoutManagerMixin = CreateFromMixins(addonTable.Display.BaseLayoutManagerMixin)
 
 local function GetSelectorMarker(frame, isHover)
@@ -202,6 +208,10 @@ local function Degroup(groupDetails)
       groupDetails.padding = entry.padding
       groupDetails.alignment = entry.alignment
       groupDetails.entries = entry.entries
+      groupDetails.preset = entry.preset
+      if groupDetails.anchor then
+        SavePresetAnchor(groupDetails)
+      end
     end
   end
 end
@@ -473,6 +483,7 @@ function addonTable.Designer.LayoutManagerMixin:InsertRootAt(root)
     if group.details.anchor then
       local point, _, relativePoint, x, y = root:GetPoint(1)
       group.details.anchor = {point, "UIParent", relativePoint, x * root:GetEffectiveScale() / self.root:GetEffectiveScale(), y * root:GetEffectiveScale() / self.root:GetEffectiveScale()}
+      SavePresetAnchor(group.details)
     end
     Announce()
     return
@@ -896,6 +907,7 @@ function addonTable.Designer.LayoutManagerMixin:GetAlignmentMenu(frame, rootDesc
         local offsetY = UIParent:GetHeight() / 2 + details.anchor[5] - halfFrameHeight
         details.anchor = {"BOTTOM", "UIParent", "BOTTOM", 0, offsetY}
       end
+      SavePresetAnchor(details)
       Announce()
     end)
   end
@@ -912,6 +924,7 @@ function addonTable.Designer.LayoutManagerMixin:GetAlignmentMenu(frame, rootDesc
         local offsetX = UIParent:GetWidth() / 2 + details.anchor[4] - halfFrameWidth
         details.anchor = {"LEFT", "UIParent", "LEFT", offsetX, 0}
       end
+      SavePresetAnchor(details)
       Announce()
     end)
   end
@@ -1014,6 +1027,8 @@ function addonTable.Designer.LayoutManagerMixin:Layout()
   self:Delayout()
 
   self:RegisterEvent("MODIFIER_STATE_CHANGED")
+
+  addonTable.Core.ApplyPresets(self.currentLayout)
 
   local wrapper = self:GetGroup(self.currentLayout)
 

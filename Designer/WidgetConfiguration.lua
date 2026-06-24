@@ -72,6 +72,15 @@ local function GetLabelsValuesBorders()
   return labels, values
 end
 
+local presets = {
+  label = "",
+  kind = "presets",
+  getter = function(details)
+    return details
+  end,
+  setter = function() end,
+}
+
 local fullBarTextures = {
   label = addonTable.Locales.TEXTURES,
   entries = {
@@ -345,6 +354,8 @@ addonTable.Designer.WidgetConfiguration = {
         {
           label = addonTable.Locales.GENERAL,
           entries = {
+            presets,
+            { kind = "spacer" },
             {
               label = addonTable.Locales.SCALE,
               kind = "slider",
@@ -424,7 +435,7 @@ addonTable.Designer.WidgetConfiguration = {
               getter = function(details) return details end,
             },
           }
-        }
+        },
       }
     },
     ["ability"] = {
@@ -453,6 +464,8 @@ addonTable.Designer.WidgetConfiguration = {
         {
           label = addonTable.Locales.GENERAL,
           entries = {
+            presets,
+            { kind = "spacer" },
             {
               label = addonTable.Locales.SCALE,
               kind = "slider",
@@ -716,6 +729,8 @@ addonTable.Designer.WidgetConfiguration = {
         {
           label = addonTable.Locales.GENERAL,
           entries = {
+            presets,
+            { kind = "spacer" },
             {
               label = addonTable.Locales.SCALE,
               kind = "slider",
@@ -849,7 +864,7 @@ addonTable.Designer.WidgetConfiguration = {
               end,
             },
           }
-        }
+        },
       }
     }
   }

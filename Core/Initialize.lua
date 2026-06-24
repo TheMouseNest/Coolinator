@@ -76,6 +76,7 @@ local function TriggerUpdate()
     ImportExisting()
     local layout = addonTable.Core.GetCurrentDesign()
     if layout then
+      addonTable.Core.ApplyPresets(layout)
       addonTable.State.CDM = addonTable.Core.GetCDMOrder(layout)
       if not addonTable.State.CDM then
         addonTable.Core.ApplyLayoutToCDM(layout)
@@ -145,6 +146,7 @@ EventUtil.ContinueAfterAllEvents(function()
   C_Timer.After(0.1, function()
     ImportExisting()
     local layout = addonTable.Core.GetCurrentDesign()
+    addonTable.Core.ApplyPresets(layout)
     addonTable.State.CDM = addonTable.Core.GetCDMOrder(layout)
 
     if not addonTable.State.CDM then
