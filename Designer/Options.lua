@@ -48,7 +48,7 @@ local function GetPresets(parent)
       rootDescription:CreateButton(NORMAL_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.CREATE_PRESET), function()
         addonTable.Dialogs.ShowEditBox(addonTable.Locales.ENTER_PRESET_NAME, OKAY, CANCEL, function(value)
           details.preset = value
-          addonTable.Core.SavePreset(value, details, true)
+          addonTable.Core.SavePreset(value, details.___origin or details, true)
           dropdown.DropDown:GenerateMenu()
         end)
       end)
@@ -658,6 +658,9 @@ local function GetMetaDetails(detailsList)
       end
     end,
     __index = function(tbl, index)
+      if index == "___origin" then
+        return detailsList[1]
+      end
       if type(detailsList[1][index]) == "table" and not index:match("[Cc]olor") then
         if mapping[index] and lastTbl[index] == detailsList[1][index] then
           return mapping[index]
@@ -756,7 +759,7 @@ function addonTable.Designer.GenerateOptionsFromDetails(detailsList)
 
   addonTable.CallbackRegistry:RegisterCallback("Designer.Options.SavePreset", function()
     if frame.details and frame.details.preset then
-      addonTable.Core.SavePreset(frame.details.preset, frame.details, true)
+      addonTable.Core.SavePreset(frame.details.preset, frame.details.___origin or frame.details, true)
     end
     addonTable.CallbackRegistry:TriggerEvent("Designer.Layout")
   end)
