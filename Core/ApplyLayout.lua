@@ -19,6 +19,11 @@ local function GetVisibleAurasOrdered(layout, mapping)
   return activeBars
 end
 
+local function GetColor(rgb, a)
+  local color = CreateColorFromRGBHexString(rgb)
+  return {r = color.r, g = color.g, b = color.b, a = a}
+end
+
 local cooldownCategories = {
 	Enum.CooldownViewerCategory.Essential,
 	Enum.CooldownViewerCategory.Utility,
