@@ -115,7 +115,7 @@ function addonTable.Core.GeneratePresetsFromDesign(design, overwrite)
   end
 end
 
-function addonTable.Core.RemovePresetFromDesign(label, details, design)
+local function RemovePresetFromDesign(label, details, design)
   for _, entry in ipairs(design.entries) do
     if entry.preset and entry.preset == label then
       if entry.kind == details.kind then
@@ -133,7 +133,7 @@ function addonTable.Core.RemovePresetFromDesign(label, details, design)
       end
     end
     if entry.kind == "group" then
-      addonTable.Core.RemovePresetFromDesign(label, details, entry)
+      RemovePresetFromDesign(label, details, entry)
     end
   end
 
@@ -148,5 +148,13 @@ function addonTable.Core.RemovePresetFromDesign(label, details, design)
     end
   elseif details.kind == "icon" then
     presets[details.kind][details.resource.kind][label] = nil
+  end
+end
+
+function addonTable.Core.DeletePreset(label, details)
+  for specID, designs in pairs(addonTable.Config.Get(addonTable.Config.Options.DESIGNS)) do
+    for _, d in pairs(designs) do
+      RemovePresetFromDesign(label, details, d)
+    end
   end
 end
