@@ -10,8 +10,11 @@ local Kind = {
   Item = 2,
   Equipment = 3,
 }
+local index = 1
 local function GetSpellIconDialog(allGetter, activeGetter, kind)
-  local frame = addonTable.CustomiseDialog.Components.GetContentFrame("CoolinatorDesignerAuraInsertDialog", 300, 350)
+  local frame = addonTable.CustomiseDialog.Components.GetContentFrame("CoolinatorDesignerInsertDialog" .. index, 300, 350)
+  index = index + 1
+  table.insert(UISpecialFrames, frame:GetName())
   local container = CreateFrame("Frame", nil, frame)
   container:SetPoint("TOPLEFT", addonTable.Constants.ButtonFrameOffset, -25)
   container:SetPoint("BOTTOMRIGHT")
