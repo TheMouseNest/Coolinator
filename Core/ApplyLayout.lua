@@ -33,6 +33,8 @@ local SAVE_FIELD_ID_LAYOUT_ID_DATA = 4;
 local SAVE_FIELD_ID_COOLDOWN_ORDER = 1;
 local SAVE_FIELD_ID_CATEGORY_OVERRIDES = 2;
 local SAVE_FIELD_ID_ALERT_OVERRIDES = 3;
+local SAVE_FIELD_ID_HIDDEN_GROUP_BUFFS = 4;
+local SAVE_FIELD_ID_GROUP_BUFF_VISUAL_ALERTS = 5;
 
 function addonTable.Core.GetCDMData(doNotTryAgain)
   local tag = CooldownViewerUtil.GetCurrentClassAndSpecTag()
@@ -46,7 +48,7 @@ function addonTable.Core.GetCDMData(doNotTryAgain)
         return addonTable.Core.GetCDMData(true)
       end
     end
-    assert(cdmData[1] == 4, "Layout has changed, contact developer - " .. tostring(cdmData[1]))
+    assert(cdmData[1] == 4 or cdmData[1] == 5, "Layout has changed, contact developer - " .. tostring(cdmData[1]))
 
     return cdmData, tag
   end
@@ -104,7 +106,7 @@ function addonTable.Core.ApplyLayoutToCDM(layout)
   local saved, wantedTag = addonTable.Core.GetCDMData()
   local cdmData = saved or emptyData
 
-  assert(cdmData[1] == 4, "Layout format changed, contact developer")
+  assert(cdmData[1] == 4 or cdmData[1] == 5, "Layout format changed, contact developer")
 
   for key, value in pairs(emptyData) do
     if cdmData[key] == nil then
@@ -121,7 +123,14 @@ function addonTable.Core.ApplyLayoutToCDM(layout)
     end
   end
   if foundID then
+    local compiledOverrides = compiledLayout[SAVE_FIELD_ID_CATEGORY_OVERRIDES]
+    local foundOverrides = cdmData[SAVE_FIELD_ID_LAYOUTS][wantedTag][foundID][SAVE_FIELD_ID_CATEGORY_OVERRIDES] or {}
+    if Enum.CooldownViewerCategory.GroupBuff then
+      compiledOverrides[Enum.CooldownViewerCategory.GroupBuff] = foundOverrides[Enum.CooldownViewerCategory.GroupBuff]
+    end
     compiledLayout[SAVE_FIELD_ID_ALERT_OVERRIDES] = cdmData[SAVE_FIELD_ID_LAYOUTS][wantedTag][foundID][SAVE_FIELD_ID_ALERT_OVERRIDES]
+    compiledLayout[SAVE_FIELD_ID_HIDDEN_GROUP_BUFFS] = cdmData[SAVE_FIELD_ID_LAYOUTS][wantedTag][foundID][SAVE_FIELD_ID_HIDDEN_GROUP_BUFFS]
+    compiledLayout[SAVE_FIELD_ID_GROUP_BUFF_VISUAL_ALERTS] = cdmData[SAVE_FIELD_ID_LAYOUTS][wantedTag][foundID][SAVE_FIELD_ID_GROUP_BUFF_VISUAL_ALERTS]
   end
   if not foundID then
     foundID = 1
@@ -316,12 +325,13 @@ function addonTable.Core.GenerateCoolinatorLayoutFromExisting(layoutName)
     end
   end
 
-  local barsSaved = cdmData[SAVE_FIELD_ID_LAYOUTS][tag][layoutID][SAVE_FIELD_ID_CATEGORY_OVERRIDES][Enum.CooldownViewerCategory.TrackedBar] or {}
-  local aurasSaved = cdmData[SAVE_FIELD_ID_LAYOUTS][tag][layoutID][SAVE_FIELD_ID_CATEGORY_OVERRIDES][Enum.CooldownViewerCategory.TrackedBuff] or {}
-  local essentialSaved = cdmData[SAVE_FIELD_ID_LAYOUTS][tag][layoutID][SAVE_FIELD_ID_CATEGORY_OVERRIDES][Enum.CooldownViewerCategory.Essential] or {}
-  local utilitySaved = cdmData[SAVE_FIELD_ID_LAYOUTS][tag][layoutID][SAVE_FIELD_ID_CATEGORY_OVERRIDES][Enum.CooldownViewerCategory.Utility] or {}
-  local hiddenAuras = cdmData[SAVE_FIELD_ID_LAYOUTS][tag][layoutID][SAVE_FIELD_ID_CATEGORY_OVERRIDES][Enum.CooldownViewerCategory.HiddenAura] or {}
-  local hiddenAbilities = cdmData[SAVE_FIELD_ID_LAYOUTS][tag][layoutID][SAVE_FIELD_ID_CATEGORY_OVERRIDES][Enum.CooldownViewerCategory.HiddenSpell] or {}
+  local overrides = cdmData[SAVE_FIELD_ID_LAYOUTS][tag][layoutID][SAVE_FIELD_ID_CATEGORY_OVERRIDES] or {}
+  local barsSaved = overrides[Enum.CooldownViewerCategory.TrackedBar] or {}
+  local aurasSaved = overrides[Enum.CooldownViewerCategory.TrackedBuff] or {}
+  local essentialSaved = overrides[Enum.CooldownViewerCategory.Essential] or {}
+  local utilitySaved = overrides[Enum.CooldownViewerCategory.Utility] or {}
+  local hiddenAuras = overrides[Enum.CooldownViewerCategory.HiddenAura] or {}
+  local hiddenAbilities = overrides[Enum.CooldownViewerCategory.HiddenSpell] or {}
 
   local essentialOrder = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.Essential, false)
   local utilityOrder = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.Utility, false)
