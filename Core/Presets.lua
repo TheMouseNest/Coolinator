@@ -5,7 +5,11 @@ local addonTable = select(2, ...)
 local function RecursiveApply(tbl, to)
   for key, val in pairs(tbl) do
     if type(val) == "table" then
-      RecursiveApply(val, to[key])
+      if to[key] then
+        RecursiveApply(val, to[key])
+      else
+        to[key] = CopyTable(val)
+      end
     else
       to[key] = val
     end
