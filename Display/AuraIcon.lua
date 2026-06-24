@@ -65,5 +65,6 @@ function addonTable.Display.AuraIconMixin:UpdateSource(sourceWidget)
     sourceWidget:SetParent(self)
     sourceWidget:ClearAllPoints()
     sourceWidget:SetPoint("CENTER", self)
+    self:NotifyActive(sourceWidget:IsShown())
   end
 end

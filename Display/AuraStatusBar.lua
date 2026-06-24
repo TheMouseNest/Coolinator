@@ -99,6 +99,8 @@ function addonTable.Display.AuraStatusBarMixin:UpdateSource(sourceWidget)
     self:Setup(sourceWidget, self.details)
   else
     sourceWidget:SetParent(self)
+    sourceWidget:SetAllPoints(self)
+    self:NotifyActive(sourceWidget:IsShown())
   end
 end
 
