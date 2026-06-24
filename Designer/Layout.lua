@@ -198,9 +198,9 @@ local function Degroup(groupDetails)
       local entry = final[1]
       groupDetails.alpha = groupDetails.alpha * entry.alpha
       groupDetails.scale = groupDetails.scale * entry.scale
-      groupDetails.layout = groupDetails.layout
-      groupDetails.padding = groupDetails.padding
-      groupDetails.alignment = groupDetails.alignment
+      groupDetails.layout = entry.layout
+      groupDetails.padding = entry.padding
+      groupDetails.alignment = entry.alignment
       groupDetails.entries = entry.entries
     end
   end
