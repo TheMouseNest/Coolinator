@@ -287,3 +287,263 @@ function addonTable.Core.GetCDMOrder(layout)
 
   return {auraMap = auraMappingActive, abilityMap = abilityMappingActive, auraOrder = auraOrderMap, auraCount = auraCount, barOrder = barOrderMap, barCount = barCount, abilityOrder = abilityOrderMap}
 end
+
+function addonTable.Core.GetExistingLayoutName()
+  local cdmData , tag = addonTable.Core.GetCDMData()
+  if not cdmData then
+    return nil
+  end
+
+  for id, label in pairs(cdmData[SAVE_FIELD_ID_LAYOUT_ID_DATA]) do
+    if cdmData[SAVE_FIELD_ID_LAYOUTS][tag] ~= nil and cdmData[SAVE_FIELD_ID_LAYOUTS][tag][id] ~= nil and cdmData[SAVE_FIELD_ID_ACTIVE_LAYOUT_NAMES][tag] == id and label ~= addonTable.Core.GetCDMLayoutName() then
+      return label
+    end
+  end
+end
+
+function addonTable.Core.GenerateCoolinatorLayoutFromExisting(layoutName)
+  local cdmData , tag = addonTable.Core.GetCDMData(true)
+  if not cdmData then
+    return
+  end
+
+  local layoutID
+  local correctName = layoutName
+  for i, name in pairs(cdmData[SAVE_FIELD_ID_LAYOUT_ID_DATA] or {}) do
+    if name == correctName then
+      layoutID = i
+      break
+    end
+  end
+
+  local barsSaved = cdmData[SAVE_FIELD_ID_LAYOUTS][tag][layoutID][SAVE_FIELD_ID_CATEGORY_OVERRIDES][Enum.CooldownViewerCategory.TrackedBar] or {}
+  local aurasSaved = cdmData[SAVE_FIELD_ID_LAYOUTS][tag][layoutID][SAVE_FIELD_ID_CATEGORY_OVERRIDES][Enum.CooldownViewerCategory.TrackedBuff] or {}
+  local essentialSaved = cdmData[SAVE_FIELD_ID_LAYOUTS][tag][layoutID][SAVE_FIELD_ID_CATEGORY_OVERRIDES][Enum.CooldownViewerCategory.Essential] or {}
+  local utilitySaved = cdmData[SAVE_FIELD_ID_LAYOUTS][tag][layoutID][SAVE_FIELD_ID_CATEGORY_OVERRIDES][Enum.CooldownViewerCategory.Utility] or {}
+  local hiddenAuras = cdmData[SAVE_FIELD_ID_LAYOUTS][tag][layoutID][SAVE_FIELD_ID_CATEGORY_OVERRIDES][Enum.CooldownViewerCategory.HiddenAura] or {}
+  local hiddenAbilities = cdmData[SAVE_FIELD_ID_LAYOUTS][tag][layoutID][SAVE_FIELD_ID_CATEGORY_OVERRIDES][Enum.CooldownViewerCategory.HiddenSpell] or {}
+
+  local essentialOrder = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.Essential, false)
+  local utilityOrder = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.Utility, false)
+
+  local auraOrder = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.TrackedBuff, false)
+  local barOrder = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.TrackedBar, false)
+
+  local order = cdmData[SAVE_FIELD_ID_LAYOUTS][tag][layoutID][SAVE_FIELD_ID_COOLDOWN_ORDER]
+  local orderMap = {}
+  if order and #order > 0 then
+    for index, cooldownID in ipairs(order) do
+      orderMap[cooldownID] = index
+    end
+  else
+    local complete = {}
+    tAppendAll(complete, auraOrder)
+    tAppendAll(complete, barOrder)
+    tAppendAll(complete, essentialOrder)
+    tAppendAll(complete, utilityOrder)
+
+    for index, cooldownID in ipairs(complete) do
+      orderMap[cooldownID] = index
+    end
+  end
+
+  auraOrder = tFilter(auraOrder, function(cooldownID)
+    return tIndexOf(hiddenAuras, cooldownID) == nil
+  end, true)
+  barOrder = tFilter(barOrder, function(cooldownID)
+    return tIndexOf(hiddenAuras, cooldownID) == nil
+  end, true)
+
+  essentialOrder = tFilter(essentialOrder, function(cooldownID)
+    return tIndexOf(hiddenAbilities, cooldownID) == nil
+  end, true)
+  utilityOrder = tFilter(utilityOrder, function(cooldownID)
+    return tIndexOf(hiddenAbilities, cooldownID) == nil
+  end, true)
+
+  for index = #essentialOrder, 1, -1 do
+    local cooldownID = essentialOrder[index]
+    if tIndexOf(utilitySaved, cooldownID) ~= nil then
+      table.remove(essentialOrder, index)
+    elseif C_CooldownViewer.GetCooldownViewerCooldownInfo(cooldownID).flags ~= Enum.CooldownSetSpellFlags.HideByDefault and tIndexOf(essentialSaved, cooldownID) == nil then
+      table.insert(essentialSaved, cooldownID)
+    end
+  end
+
+  for index = #utilityOrder, 1, -1 do
+    local cooldownID = utilityOrder[index]
+    if tIndexOf(essentialSaved, cooldownID) ~= nil then
+      table.remove(utilityOrder, index)
+    elseif C_CooldownViewer.GetCooldownViewerCooldownInfo(cooldownID).flags ~= Enum.CooldownSetSpellFlags.HideByDefault and tIndexOf(utilitySaved, cooldownID) == nil then
+      table.insert(utilitySaved, cooldownID)
+    end
+  end
+
+  for index = #auraOrder, 1, -1 do
+    local cooldownID = auraOrder[index]
+    local flags = C_CooldownViewer.GetCooldownViewerCooldownInfo(cooldownID).flags
+    if tIndexOf(barsSaved, cooldownID) ~= nil then
+      table.remove(auraOrder, index)
+    elseif bit.band(flags, Enum.CooldownSetSpellFlags.HideByDefault) == 0 and bit.band(flags, Enum.CooldownSetSpellFlags.HideAura) == 0 and tIndexOf(barsSaved, cooldownID) == nil then
+      table.insert(aurasSaved, cooldownID)
+    end
+  end
+
+  for index = #barOrder, 1, -1 do
+    local cooldownID = barOrder[index]
+    local flags = C_CooldownViewer.GetCooldownViewerCooldownInfo(cooldownID).flags
+    if tIndexOf(aurasSaved, cooldownID) ~= nil then
+      table.remove(barOrder, index)
+    elseif bit.band(flags, Enum.CooldownSetSpellFlags.HideByDefault) ~= 0 and bit.band(flags, Enum.CooldownSetSpellFlags.HideAura) == 0 and tIndexOf(barsSaved, cooldownID) == nil then
+      table.insert(barsSaved, cooldownID)
+    end
+  end
+
+  table.sort(essentialSaved, function(a, b) return (orderMap[a] or 100000) < (orderMap[b] or 100000) end)
+  table.sort(utilitySaved, function(a, b) return (orderMap[a] or 100000) < (orderMap[b] or 100000) end)
+  table.sort(aurasSaved, function(a, b) return (orderMap[a] or 100000) < (orderMap[b] or 100000) end)
+  table.sort(barsSaved, function(a, b) return (orderMap[a] or 100000) < (orderMap[b] or 100000) end)
+
+  local result = {
+    kind = "group",
+    layout = "vertical",
+    anchor = {"BOTTOM", "UIParent", "BOTTOM", 0, 200},
+    padding = 0.2,
+    alpha = 1,
+    scale = 1,
+    alignment = "CENTER",
+    entries = {
+      {
+        kind = "group",
+        layout = "horizontal",
+        direction = "right",
+        padding = 0.1,
+        alpha = 1,
+        scale = 0.8,
+        alignment = "CENTER",
+        entries = {},
+      },
+      {
+        kind = "group",
+        layout = "horizontal",
+        direction = "right",
+        padding = 0.1,
+        alpha = 1,
+        scale = 1.25,
+        alignment = "CENTER",
+        entries = {},
+      },
+      {
+        kind = "group",
+        layout = "horizontal",
+        direction = "right",
+        padding = 0.1,
+        alpha = 1,
+        scale = 1,
+        alignment = "CENTER",
+        entries = {},
+      },
+    }
+  }
+
+  local seen = {}
+  for _, id in ipairs(utilitySaved) do
+    local spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))
+    if not seen[spellID] then
+      local entry = CopyTable(addonTable.Designer.Defaults.AbilityIcon)
+      entry.resource.spellID = spellID
+      table.insert(result.entries[1].entries, entry)
+    end
+    seen[spellID] = true
+  end
+
+  for _, id in ipairs(essentialSaved) do
+    local spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))
+    if not seen[spellID] then
+      local entry = CopyTable(addonTable.Designer.Defaults.AbilityIcon)
+      entry.resource.spellID = spellID
+      table.insert(result.entries[2].entries, entry)
+    end
+    seen[spellID] = true
+  end
+
+  for _, id in ipairs(aurasSaved) do
+    local entry = CopyTable(addonTable.Designer.Defaults.AuraIcon)
+    entry.resource.spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))
+    table.insert(result.entries[3].entries, entry)
+  end
+
+  local barGroups = {
+    kind = "group",
+    layout = "vertical",
+    padding = 0.2,
+    alpha = 1,
+    alignment = "CENTER",
+    scale = 1,
+    entries = {
+    }
+  }
+  for _, id in ipairs(barsSaved) do
+    local spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))
+    table.insert(barGroups.entries, {
+      kind = "bar",
+      resource = {kind = "aura", spellID = spellID},
+      width = 1, --0 -- widest of the entries just above or just below in the layout
+      height = 1,
+      scale = 1.5,
+      layout = "horizontal",
+      direction = "right",
+      icon = {show = true, position = "left"},
+      alpha = 1,
+      foreground = {
+        asset = "Cooli: Fade Bottom",
+        color = {r = 0, g = 1, b = 0},
+      },
+      background = {
+        asset = "Cooli: Solid White",
+        color = GetColor("94ff21", 0.3),
+      },
+      border = {
+        asset = "Cooli: Blizzard Midnight",
+        color = {r = 1, g = 1, b = 1},
+      },
+    })
+  end
+
+  table.insert(result.entries, barGroups)
+
+  --[[table.insert(result.entries, {
+    kind = "bar",
+    resource = {kind = "class", resource = "icicles"},
+    width = 2, --0, -- widest of the entries just above or just below in the layout
+    height = 0.65,
+    scale = 1.5,
+    alpha = 1,
+    layout = "horizontal",
+    direction = "left",
+    icon = {show = true, position = "right"},
+    foreground = {
+      asset = "Cooli: Fade Right",
+      color = {r = 0, g = 0, b = 1},
+    },
+    background = {
+      asset = "Cooli: Solid White",
+      color = GetColor("6bcbff", 0.3),
+    },
+    border = {
+      asset = "Platy: Round Thin",
+      color = {r = 0, g = 0, b = 0},
+    },
+  })]]
+
+  local final = {
+    kind = "group",
+    version = 2,
+    layout = "standalone",
+    entries = {
+      result
+    },
+  }
+  addonTable.Core.RemoveDeadGroups(final)
+  return final
+end

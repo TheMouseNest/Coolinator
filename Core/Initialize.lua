@@ -9,6 +9,19 @@ local hidden = CreateFrame("Frame")
 hidden:Hide()
 addonTable.hiddenFrame = hidden
 
+local function ImportExisting()
+  local existing = addonTable.Core.GetExistingLayoutName()
+  -- Import existing layout (if set)
+  if existing then
+    local spec = addonTable.Utilities.GetSpecID()
+    local designs = addonTable.Config.Get(addonTable.Config.Options.DESIGNS)[spec]
+    local newName = addonTable.Locales.IMPORTED_X:format(existing)
+    designs[newName] = addonTable.Core.GenerateCoolinatorLayoutFromExisting(existing)
+    local assignments = addonTable.Config.Get(addonTable.Config.Options.DESIGN_ASSIGNMENTS)
+    assignments[spec] = newName
+  end
+end
+
 function addonTable.Core.AutoGenerateLayout(name)
   local spec = addonTable.Utilities.GetSpecID()
   local designs = addonTable.Config.Get(addonTable.Config.Options.DESIGNS)
@@ -60,6 +73,7 @@ local function TriggerUpdate()
     end
     addonTable.Core.AutoGenerateLayout()
     addonTable.SpellEquivalence = addonTable.Core.GenerateSpellOverrides()
+    ImportExisting()
     local layout = addonTable.Core.GetCurrentDesign()
     if layout then
       addonTable.State.CDM = addonTable.Core.GetCDMOrder(layout)
@@ -129,6 +143,7 @@ EventUtil.ContinueAfterAllEvents(function()
   addonTable.Core.AutoGenerateLayout()
   addonTable.SpellEquivalence = addonTable.Core.GenerateSpellOverrides()
   C_Timer.After(0.1, function()
+    ImportExisting()
     local layout = addonTable.Core.GetCurrentDesign()
     addonTable.State.CDM = addonTable.Core.GetCDMOrder(layout)
 
@@ -146,6 +161,7 @@ EventUtil.ContinueAfterAllEvents(function()
     EventRegistry:RegisterCallback("CooldownViewerSettings.OnHide", function()
       TriggerUpdate()
     end)
+
   end)
 end, "VARIABLES_LOADED", "PLAYER_ENTERING_WORLD", "COOLDOWN_VIEWER_DATA_LOADED")
 

@@ -20,6 +20,7 @@ local L = Locales.enUS
 
 L["COOLINATOR"] = "Coolinator"
 L["SLASH_DESIGN"] = "design"
+L["IMPORTED_X"] = "Imported %s"
 
 L["CUSTOMISE_COOLINATOR"] = "Customise Coolinator"
 L["CUSTOMISE_COOLINATOR_X"] = "Customise Coolinator: %s"
