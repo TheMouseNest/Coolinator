@@ -31,7 +31,6 @@ function addonTable.Designer.IconMixin:OnLoad()
   self.KeyBindingFrame.text:SetTextColor(0.7, 0.7, 0.7)
   self.KeyBindingFrame.text:SetWidth(addonTable.Constants.nativeSize - 6)
   self.KeyBindingFrame.text:SetWordWrap(false)
-  self.KeyBindingFrame.text:SetJustifyH("RIGHT")
 
   self.DebuffBorder = addonTable.Utilities.InitFrameWithMixin(self, addonTable.Display.AuraDebuffBorderMixin)
   self.DebuffBorder:SetAllPoints(self.Icon)
