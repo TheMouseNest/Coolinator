@@ -47,7 +47,9 @@ local function GetPresets(parent)
       end
       rootDescription:CreateButton(NORMAL_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.CREATE_PRESET), function()
         addonTable.Dialogs.ShowEditBox(addonTable.Locales.ENTER_PRESET_NAME, OKAY, CANCEL, function(value)
+          details.preset = value
           addonTable.Core.SavePreset(value, details, true)
+          dropdown.DropDown:GenerateMenu()
         end)
       end)
       rootDescription:CreateButton(addonTable.Locales.DETACH_PRESET, function()
