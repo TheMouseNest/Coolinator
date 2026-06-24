@@ -56,11 +56,15 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
   CacheAbilities()
 
   hooksecurefunc(BuffIconCooldownViewer, "RefreshLayout", function()
-    self:SetScript("OnUpdate", self.SyncAllCDMWidgets)
+    C_Timer.After(0, function()
+      self:SyncAllCDMWidgets()
+    end)
   end)
 
   hooksecurefunc(BuffBarCooldownViewer, "RefreshLayout", function()
-    self:SetScript("OnUpdate", self.SyncAllCDMWidgets)
+    C_Timer.After(0, function()
+      self:SyncAllCDMWidgets()
+    end)
   end)
 
   hooksecurefunc(EssentialCooldownViewer, "RefreshLayout", function()
