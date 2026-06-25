@@ -55,7 +55,7 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
   self:CacheBars()
   CacheAbilities()
 
-  hooksecurefunc(BuffIconCooldownViewer, "RefreshData", function()
+  local function IconCallback()
     if self.queueTimeAuraIcon == GetTime() then
       return
     end
@@ -63,19 +63,12 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
     C_Timer.After(0, function()
       self:SyncAuraIcons()
     end)
-  end)
+  end
+  hooksecurefunc(BuffIconCooldownViewer, "RefreshData", IconCallback)
+  hooksecurefunc(BuffIconCooldownViewer, "OnUnitAura", IconCallback)
+  hooksecurefunc(BuffIconCooldownViewer, "OnUnitTarget", IconCallback)
 
-  hooksecurefunc(BuffIconCooldownViewer, "OnUnitAura", function()
-    if self.queueTimeAuraIcon == GetTime() then
-      return
-    end
-    self.queueTimeAuraIcon = GetTime()
-    C_Timer.After(0, function()
-      self:SyncAuraIcons()
-    end)
-  end)
-
-  hooksecurefunc(BuffBarCooldownViewer, "RefreshData", function()
+  local function BarCallback()
     if self.queueTimeAuraBar == GetTime() then
       return
     end
@@ -83,17 +76,9 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
     C_Timer.After(0, function()
       self:SyncBars()
     end)
-  end)
-
-  hooksecurefunc(BuffBarCooldownViewer, "OnUnitAura", function()
-    if self.queueTimeAuraBar == GetTime() then
-      return
-    end
-    self.queueTimeAuraBar = GetTime()
-    C_Timer.After(0, function()
-      self:SyncBars()
-    end)
-  end)
+  end
+  hooksecurefunc(BuffBarCooldownViewer, "RefreshData", BarCallback)
+  hooksecurefunc(BuffBarCooldownViewer, "OnUnitAura", BarCallback)
 
   hooksecurefunc(EssentialCooldownViewer, "RefreshData", function()
     C_Timer.After(0, function()
