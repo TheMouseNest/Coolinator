@@ -56,12 +56,40 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
   CacheAbilities()
 
   hooksecurefunc(BuffIconCooldownViewer, "RefreshData", function()
+    if self.queueTimeAuraIcon == GetTime() then
+      return
+    end
+    self.queueTimeAuraIcon = GetTime()
+    C_Timer.After(0, function()
+      self:SyncAuraIcons()
+    end)
+  end)
+
+  hooksecurefunc(BuffIconCooldownViewer, "OnUnitAura", function()
+    if self.queueTimeAuraIcon == GetTime() then
+      return
+    end
+    self.queueTimeAuraIcon = GetTime()
     C_Timer.After(0, function()
       self:SyncAuraIcons()
     end)
   end)
 
   hooksecurefunc(BuffBarCooldownViewer, "RefreshData", function()
+    if self.queueTimeAuraBar == GetTime() then
+      return
+    end
+    self.queueTimeAuraBar = GetTime()
+    C_Timer.After(0, function()
+      self:SyncBars()
+    end)
+  end)
+
+  hooksecurefunc(BuffBarCooldownViewer, "OnUnitAura", function()
+    if self.queueTimeAuraBar == GetTime() then
+      return
+    end
+    self.queueTimeAuraBar = GetTime()
     C_Timer.After(0, function()
       self:SyncBars()
     end)
@@ -109,27 +137,6 @@ function addonTable.Display.LayoutManagerMixin:CacheAuraIcons()
         count = count + 1
       end
     end
-    if not self.hookedAuras[itemFrame] then
-      hooksecurefunc(itemFrame, "Show", function()
-        local parent = itemFrame:GetParent()
-        if self.auraIconPool:IsActive(parent) then
-          parent:NotifyActive(true)
-        end
-      end)
-      hooksecurefunc(itemFrame, "Hide", function()
-        local parent = itemFrame:GetParent()
-        if self.auraIconPool:IsActive(parent) then
-          parent:NotifyActive(false)
-        end
-      end)
-      hooksecurefunc(itemFrame, "SetShown", function(_, value)
-        local parent = itemFrame:GetParent()
-        if self.auraIconPool:IsActive(parent) then
-          parent:NotifyActive(value)
-        end
-      end)
-      self.hookedAuras[itemFrame] = true
-    end
   end
   self.auraIcons = result
   -- Detect missing auras
@@ -172,28 +179,6 @@ function addonTable.Display.LayoutManagerMixin:CacheBars()
       end
     else
       result[itemFrame.layoutIndex] = itemFrame
-    end
-    if not self.hookedAuras[itemFrame] then
-      -- Track added bars that weren't there before
-      hooksecurefunc(itemFrame, "Show", function()
-        local parent = itemFrame:GetParent()
-        if self.auraStatusBarPool:IsActive(parent) then
-          parent:NotifyActive(true)
-        end
-      end)
-      hooksecurefunc(itemFrame, "Hide", function()
-        local parent = itemFrame:GetParent()
-        if self.auraStatusBarPool:IsActive(parent) then
-          parent:NotifyActive(false)
-        end
-      end)
-      hooksecurefunc(itemFrame, "SetShown", function(_, value)
-        local parent = itemFrame:GetParent()
-        if self.auraStatusBarPool:IsActive(parent) then
-          parent:NotifyActive(value)
-        end
-      end)
-      self.hookedAuras[itemFrame] = true
     end
   end
   -- Detect missing bars
