@@ -140,6 +140,14 @@ local function RemovePresetFromDesign(label, details, design)
       RemovePresetFromDesign(label, details, entry)
     end
   end
+end
+
+function addonTable.Core.DeletePreset(label, details)
+  for specID, designs in pairs(addonTable.Config.Get(addonTable.Config.Options.DESIGNS)) do
+    for _, d in pairs(designs) do
+      RemovePresetFromDesign(label, details, d)
+    end
+  end
 
   local presets = addonTable.Config.Get(addonTable.Config.Options.PRESETS)
   if details.kind == "group" then
@@ -155,10 +163,34 @@ local function RemovePresetFromDesign(label, details, design)
   end
 end
 
-function addonTable.Core.DeletePreset(label, details)
-  for specID, designs in pairs(addonTable.Config.Get(addonTable.Config.Options.DESIGNS)) do
-    for _, d in pairs(designs) do
-      RemovePresetFromDesign(label, details, d)
+function addonTable.Core.GetPresetsGrouped(presets)
+  local group = CopyTable(addonTable.Designer.Defaults.Group)
+  group.version = presets.version or 11
+  group.layout = "standalone"
+
+  for _, details in pairs(presets["group"] or {}) do
+    table.insert(group.entries, details)
+  end
+
+  for key, p in pairs(presets["icon"] or {}) do
+    for _, details in pairs(p) do
+      table.insert(group.entries, details)
     end
   end
+
+  for key, p in pairs(presets["bar"] or {}) do
+    if key == "aura" or key == "ability" then
+      for _, details in pairs(p) do
+        table.insert(group.entries, details)
+      end
+    elseif key == "class" then
+      for _, p2 in pairs(p) do
+        for _, details in pairs(p2) do
+          table.insert(group.entries, details)
+        end
+      end
+    end
+  end
+
+  return group
 end
