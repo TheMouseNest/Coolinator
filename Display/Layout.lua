@@ -55,19 +55,19 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
   self:CacheBars()
   CacheAbilities()
 
-  hooksecurefunc(BuffIconCooldownViewer, "RefreshLayout", function()
+  hooksecurefunc(BuffIconCooldownViewer, "RefreshData", function()
     C_Timer.After(0, function()
       self:SyncAllCDMWidgets()
     end)
   end)
 
-  hooksecurefunc(BuffBarCooldownViewer, "RefreshLayout", function()
+  hooksecurefunc(BuffBarCooldownViewer, "RefreshData", function()
     C_Timer.After(0, function()
       self:SyncAllCDMWidgets()
     end)
   end)
 
-  hooksecurefunc(EssentialCooldownViewer, "RefreshLayout", function()
+  hooksecurefunc(EssentialCooldownViewer, "RefreshData", function()
     C_Timer.After(0, function()
       if not addonTable.State.CDM then
         return
@@ -116,7 +116,6 @@ function addonTable.Display.LayoutManagerMixin:CacheAuraIcons()
           if not self.seenAuraByCooldownID[cooldownID] then
             self.missingAcquired = true
           end
-          self:SetScript("OnUpdate", self.SyncAllCDMWidgets)
         end
       end)
       hooksecurefunc(itemFrame, "Show", function()
@@ -189,7 +188,6 @@ function addonTable.Display.LayoutManagerMixin:CacheBars()
           if not self.seenBarByCooldownID[cooldownID] then
             self.missingAcquired = true
           end
-          self:SetScript("OnUpdate", self.SyncAllCDMWidgets)
         end
       end)
       hooksecurefunc(itemFrame, "Show", function()
@@ -244,7 +242,6 @@ function addonTable.Display.LayoutManagerMixin:SyncAllCDMWidgets(noMissing)
   end
   self:SyncAuraIcons()
   self:SyncBars()
-  self:SetScript("OnUpdate", nil)
   if self.missingAcquired or self.missingWidget then
     self:Layout()
   end
@@ -276,7 +273,6 @@ function addonTable.Display.LayoutManagerMixin:Delayout()
   end
   self.groupPool:ReleaseAll()
 
-  self:SetScript("OnUpdate", nil)
   self.toArrange = {}
   self.missingAcquired = false
 
