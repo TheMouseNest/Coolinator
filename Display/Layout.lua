@@ -56,27 +56,18 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
   CacheAbilities()
 
   hooksecurefunc(BuffIconCooldownViewer, "RefreshData", function()
-    if self.syncing then
-      return
-    end
     C_Timer.After(0, function()
-      self:SyncAllCDMWidgets()
+      self:SyncAuraIcons()
     end)
   end)
 
   hooksecurefunc(BuffBarCooldownViewer, "RefreshData", function()
-    if self.syncing then
-      return
-    end
     C_Timer.After(0, function()
-      self:SyncAllCDMWidgets()
+      self:SyncBars()
     end)
   end)
 
   hooksecurefunc(EssentialCooldownViewer, "RefreshData", function()
-    if self.syncing then
-      return
-    end
     C_Timer.After(0, function()
       if not addonTable.State.CDM then
         return
@@ -151,7 +142,7 @@ function addonTable.Display.LayoutManagerMixin:CacheAuraIcons()
   self.auraIcons = result
   -- Detect missing auras
   if count ~= addonTable.State.CDM.auraCount then
-    self.missingWidget = true
+    addonTable.CallbackRegistry:TriggerEvent("MissingCDMWidgets")
   end
 end
 
@@ -222,7 +213,7 @@ function addonTable.Display.LayoutManagerMixin:CacheBars()
   end
   -- Detect missing bars
   if count ~= addonTable.State.CDM.barCount then
-    self.missingWidget = true
+    addonTable.CallbackRegistry:TriggerEvent("MissingCDMWidgets")
   end
   self.auraBars = result
 end
@@ -242,32 +233,6 @@ function addonTable.Display.LayoutManagerMixin:SyncBars()
       frame:UpdateSource(aura)
       frame:ApplySize()
     end
-  end
-end
-
-function addonTable.Display.LayoutManagerMixin:SyncAllCDMWidgets(noMissing)
-  if not addonTable.State.CDM or self.barsAltered then
-    return
-  end
-  self.syncing = true
-  self:SyncAuraIcons()
-  self:SyncBars()
-  if self.missingAcquired or self.missingWidget then
-    self:Layout()
-  end
-  -- Fallback to recover a missing aura
-  if self.missingWidget then
-    self.missingWidget = false
-    C_CVar.SetCVar("cooldownViewerEnabled", "0")
-    C_Timer.After(0.1, function()
-      addonTable.Utilities.PurgeKey(CooldownViewerSettings.dataProvider, "displayData")
-      C_CVar.SetCVar("cooldownViewerEnabled", "1")
-      C_Timer.After(0.1, function()
-        self:SyncAllCDMWidgets()
-      end)
-    end)
-  else
-    self.syncing = false
   end
 end
 

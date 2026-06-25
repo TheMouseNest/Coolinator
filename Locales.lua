@@ -160,6 +160,7 @@ L["DESATURATE_ON_COOLDOWN"] = "Desaturate on cooldown"
 
 L["PLEASE_RELOAD_TO_GET_COOLINATOR_WORKING_REASON_X"] = "Please reload to get Coolinator working. Reason (%s)"
 L["DUE_TO_AURA_BARS_CHANGING_RELOAD_REQUIRED"] = "Due to aura bars changing a reload is required for Coolinator function"
+L["BLIZZARD_CDM_IS_MISSING_ICONS_SO_RELOAD_REQUIRED"] = "Blizzard CDM aura icons/bars are missing, so Coolinator will malfunction. A reload is required"
 
 L["OPTIONS"] = "Options"
 L["DELETE"] = "Delete"

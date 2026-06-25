@@ -103,6 +103,9 @@ addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, r
     TriggerUpdate()
   end
 end)
+addonTable.CallbackRegistry:RegisterCallback("MissingCDMWidgets", function()
+  addonTable.Dialogs.ShowConfirm(addonTable.Locales.BLIZZARD_CDM_IS_MISSING_ICONS_SO_RELOAD_REQUIRED, RELOADUI, CANCEL, ReloadUI)
+end)
 
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
