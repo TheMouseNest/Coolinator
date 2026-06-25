@@ -110,14 +110,6 @@ function addonTable.Display.LayoutManagerMixin:CacheAuraIcons()
       end
     end
     if not self.hookedAuras[itemFrame] then
-      -- Track added auras that weren't there before
-      hooksecurefunc(itemFrame, "SetCooldownID", function(_, cooldownID)
-        if cooldownID ~= self.seenAuraForIndex[itemFrame.layoutIndex] then
-          if not self.seenAuraByCooldownID[cooldownID] then
-            self.missingAcquired = true
-          end
-        end
-      end)
       hooksecurefunc(itemFrame, "Show", function()
         local parent = itemFrame:GetParent()
         if self.auraIconPool:IsActive(parent) then
@@ -183,13 +175,6 @@ function addonTable.Display.LayoutManagerMixin:CacheBars()
     end
     if not self.hookedAuras[itemFrame] then
       -- Track added bars that weren't there before
-      hooksecurefunc(itemFrame, "SetCooldownID", function(_, cooldownID)
-        if cooldownID ~= self.seenBarForIndex[itemFrame.layoutIndex] then
-          if not self.seenBarByCooldownID[cooldownID] then
-            self.missingAcquired = true
-          end
-        end
-      end)
       hooksecurefunc(itemFrame, "Show", function()
         local parent = itemFrame:GetParent()
         if self.auraStatusBarPool:IsActive(parent) then
@@ -251,7 +236,6 @@ function addonTable.Display.LayoutManagerMixin:Delayout()
   self.groupPool:ReleaseAll()
 
   self.toArrange = {}
-  self.missingAcquired = false
 
   self.pending = oldPending
 end
