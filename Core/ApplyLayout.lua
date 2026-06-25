@@ -463,30 +463,36 @@ function addonTable.Core.GenerateCoolinatorLayoutFromExisting(layoutName)
 
   local seen = {}
   for _, id in ipairs(utilitySaved) do
-    local spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))
-    if not seen[spellID] then
-      local entry = CopyTable(addonTable.Designer.Defaults.AbilityIcon)
-      entry.resource.spellID = spellID
-      table.insert(result.entries[1].entries, entry)
+    local info = C_CooldownViewer.GetCooldownViewerCooldownInfo(id)
+    if info then
+      local spellID = addonTable.Core.GetSpellFromCDMInfo(info)
+      if not seen[spellID] then
+        local entry = CopyTable(addonTable.Designer.Defaults.AbilityIcon)
+        entry.resource.spellID = spellID
+        table.insert(result.entries[1].entries, entry)
+      end
+      seen[spellID] = true
     end
-    seen[spellID] = true
   end
 
   for _, id in ipairs(essentialSaved) do
-    local spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))
-    if not seen[spellID] then
-      local entry = CopyTable(addonTable.Designer.Defaults.AbilityIcon)
-      entry.resource.spellID = spellID
-      table.insert(result.entries[2].entries, entry)
+    local info = C_CooldownViewer.GetCooldownViewerCooldownInfo(id)
+    if info then
+      local spellID = addonTable.Core.GetSpellFromCDMInfo(info)
+      if not seen[spellID] then
+        local entry = CopyTable(addonTable.Designer.Defaults.AbilityIcon)
+        entry.resource.spellID = spellID
+        table.insert(result.entries[2].entries, entry)
+      end
+      seen[spellID] = true
     end
-    seen[spellID] = true
   end
 
   for _, id in ipairs(aurasSaved) do
     local entry = CopyTable(addonTable.Designer.Defaults.AuraIcon)
     local info = C_CooldownViewer.GetCooldownViewerCooldownInfo(id)
     if info then
-      entry.resource.spellID = addonTable.Core.GetSpellFromCDMInfo()
+      entry.resource.spellID = addonTable.Core.GetSpellFromCDMInfo(info)
       table.insert(result.entries[3].entries, entry)
     end
   end
