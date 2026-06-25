@@ -56,18 +56,27 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
   CacheAbilities()
 
   hooksecurefunc(BuffIconCooldownViewer, "RefreshData", function()
+    if self.syncing then
+      return
+    end
     C_Timer.After(0, function()
       self:SyncAllCDMWidgets()
     end)
   end)
 
   hooksecurefunc(BuffBarCooldownViewer, "RefreshData", function()
+    if self.syncing then
+      return
+    end
     C_Timer.After(0, function()
       self:SyncAllCDMWidgets()
     end)
   end)
 
   hooksecurefunc(EssentialCooldownViewer, "RefreshData", function()
+    if self.syncing then
+      return
+    end
     C_Timer.After(0, function()
       if not addonTable.State.CDM then
         return
@@ -240,6 +249,7 @@ function addonTable.Display.LayoutManagerMixin:SyncAllCDMWidgets(noMissing)
   if not addonTable.State.CDM or self.barsAltered then
     return
   end
+  self.syncing = true
   self:SyncAuraIcons()
   self:SyncBars()
   if self.missingAcquired or self.missingWidget then
@@ -256,6 +266,8 @@ function addonTable.Display.LayoutManagerMixin:SyncAllCDMWidgets(noMissing)
         self:SyncAllCDMWidgets()
       end)
     end)
+  else
+    self.syncing = false
   end
 end
 
