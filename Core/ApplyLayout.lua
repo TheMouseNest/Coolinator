@@ -484,8 +484,11 @@ function addonTable.Core.GenerateCoolinatorLayoutFromExisting(layoutName)
 
   for _, id in ipairs(aurasSaved) do
     local entry = CopyTable(addonTable.Designer.Defaults.AuraIcon)
-    entry.resource.spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))
-    table.insert(result.entries[3].entries, entry)
+    local info = C_CooldownViewer.GetCooldownViewerCooldownInfo(id)
+    if info then
+      entry.resource.spellID = addonTable.Core.GetSpellFromCDMInfo()
+      table.insert(result.entries[3].entries, entry)
+    end
   end
 
   local barGroups = {
