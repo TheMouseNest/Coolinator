@@ -82,7 +82,11 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
     end)
   end)
   hooksecurefunc(BuffIconCooldownViewer, "OnUnitAura", IconCallback)
-  hooksecurefunc(BuffIconCooldownViewer, "OnUnitTarget", IconCallback)
+  if BuffIconCooldownViewer.OnUnitTarget then
+    hooksecurefunc(BuffIconCooldownViewer, "OnUnitTarget", IconCallback)
+  else
+    hooksecurefunc(BuffIconCooldownViewer, "OnPlayerTargetChanged", IconCallback)
+  end
 
   local function BarCallback()
     if self.queueTimeAuraBar == GetTime() then
@@ -101,7 +105,11 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
     end)
   end)
   hooksecurefunc(BuffBarCooldownViewer, "OnUnitAura", BarCallback)
-  hooksecurefunc(BuffBarCooldownViewer, "OnUnitTarget", BarCallback)
+  if BuffBarCooldownViewer.OnUnitTarget then
+    hooksecurefunc(BuffBarCooldownViewer, "OnUnitTarget", IconCallback)
+  else
+    hooksecurefunc(BuffBarCooldownViewer, "OnPlayerTargetChanged", IconCallback)
+  end
 
   hooksecurefunc(EssentialCooldownViewer, "RefreshLayout", function()
     C_Timer.After(0, function()
