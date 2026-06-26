@@ -86,7 +86,7 @@ function addonTable.Core.GetPreset(details)
   elseif details.kind == "bar" then
     if details.resource.kind == "aura" or details.resource.kind == "ability" then
       return presets[details.kind][details.resource.kind][details.preset]
-    elseif details.resouce.kind == "class" then
+    elseif details.resource.kind == "class" then
       return presets[details.kind][details.resource.kind][details.resource.resource][details.preset]
     end
   end
@@ -101,7 +101,7 @@ function addonTable.Core.GetApplicablePresets(details)
   elseif details.kind == "bar" then
     if details.resource.kind == "aura" or details.resource.kind == "ability" then
       return presets[details.kind] and presets[details.kind][details.resource.kind] or {}
-    elseif details.resouce.kind == "class" then
+    elseif details.resource.kind == "class" then
       return presets[details.kind] and presets[details.kind][details.resource.kind] and presets[details.kind][details.resource.kind][details.resource.resource] or {}
     end
   end
