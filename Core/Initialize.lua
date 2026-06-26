@@ -5,6 +5,16 @@ addonTable.CallbackRegistry = CreateFromMixins(CallbackRegistryMixin)
 addonTable.CallbackRegistry:OnLoad()
 addonTable.CallbackRegistry:GenerateCallbackEvents(addonTable.Constants.Events)
 
+local function RunInXFrames(x, callback)
+  if x == 0 then
+    callback()
+  else
+    C_Timer.After(0, function()
+      RunInXFrames(x - 1, callback)
+    end)
+  end
+end
+
 local hidden = CreateFrame("Frame")
 hidden:Hide()
 addonTable.hiddenFrame = hidden
@@ -68,7 +78,7 @@ local function TriggerUpdate()
   addonTable.CallbackRegistry:TriggerEvent("CDMUpdating", true)
   addonTable.CurrentNumberFont = addonTable.Core.GetFont()
 
-  C_Timer.After(0.1, function()
+  RunInXFrames(3, function()
     if not ValidateCDM() then
       return
     end
@@ -105,12 +115,21 @@ addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, r
     TriggerUpdate()
   end
 end)
+local missingCount = 0
+local isMissing = false
 addonTable.CallbackRegistry:RegisterCallback("MissingCDMWidgets", function(_, state)
   if CooldownViewerSettings:IsShown() then
     return
   end
+  missingCount = missingCount + 1
+  isMissing = state
   if state then
-    addonTable.Dialogs.ShowConfirm(addonTable.Locales.BLIZZARD_CDM_IS_MISSING_ICONS_SO_RELOAD_REQUIRED, RELOADUI, CANCEL, ReloadUI)
+    local count = missingCount
+    RunInXFrames(3, function()
+      if missingCount == count and isMissing then
+        addonTable.Dialogs.ShowConfirm(addonTable.Locales.BLIZZARD_CDM_IS_MISSING_ICONS_SO_RELOAD_REQUIRED, RELOADUI, CANCEL, ReloadUI)
+      end
+    end)
   end
 end)
 
@@ -153,7 +172,7 @@ EventUtil.ContinueAfterAllEvents(function()
 
   addonTable.Core.AutoGenerateLayout()
   addonTable.SpellEquivalence = addonTable.Core.GenerateSpellOverrides()
-  C_Timer.After(0.1, function()
+  RunInXFrames(3, function()
     ImportExisting()
     local layout = addonTable.Core.GetCurrentDesign()
     addonTable.Core.ApplyPresets(layout)
