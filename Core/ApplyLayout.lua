@@ -304,7 +304,7 @@ end
 
 function addonTable.Core.GetExistingLayoutName()
   local cdmData , tag = addonTable.Core.GetCDMData()
-  if not cdmData then
+  if not cdmData or not cdmData[SAVE_FIELD_ID_LAYOUT_ID_DATA] then
     return nil
   end
 
