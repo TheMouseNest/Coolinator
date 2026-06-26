@@ -29,6 +29,7 @@ addonTable.Constants.Events = {
 
   "AuraBarsChanged",
   "MissingCDMWidgets",
+  "CDMUpdating",
 
   "Layout",
   "Update.SpellIcons",

@@ -65,6 +65,7 @@ local function ValidateCDM()
 end
 
 local function TriggerUpdate()
+  addonTable.CallbackRegistry:TriggerEvent("CDMUpdating")
   addonTable.CurrentNumberFont = addonTable.Core.GetFont()
 
   C_Timer.After(0.1, function()
