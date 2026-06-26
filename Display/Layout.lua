@@ -64,7 +64,11 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
       self:SyncAuraIcons()
     end)
   end
-  hooksecurefunc(BuffIconCooldownViewer, "RefreshData", IconCallback)
+  hooksecurefunc(BuffIconCooldownViewer, "RefreshLayout", function()
+    C_Timer.After(0, function()
+      self:CacheAuraIcons()
+    end)
+  end)
   hooksecurefunc(BuffIconCooldownViewer, "OnUnitAura", IconCallback)
   hooksecurefunc(BuffIconCooldownViewer, "OnUnitTarget", IconCallback)
 
@@ -77,8 +81,13 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
       self:SyncBars()
     end)
   end
-  hooksecurefunc(BuffBarCooldownViewer, "RefreshData", BarCallback)
+  hooksecurefunc(BuffBarCooldownViewer, "RefreshLayout", function()
+    C_Timer.After(0, function()
+      self:CacheBars()
+    end)
+  end)
   hooksecurefunc(BuffBarCooldownViewer, "OnUnitAura", BarCallback)
+  hooksecurefunc(BuffBarCooldownViewer, "OnUnitTarget", BarCallback)
 
   hooksecurefunc(EssentialCooldownViewer, "RefreshData", function()
     C_Timer.After(0, function()
@@ -107,6 +116,10 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
 end
 
 function addonTable.Display.LayoutManagerMixin:CacheAuraIcons()
+  if not addonTable.State.CDM then
+    return
+  end
+
   self.hookedAuras = {}
   self.seenAuraForIndex = {}
   self.seenAuraByCooldownID = {}
@@ -135,8 +148,6 @@ function addonTable.Display.LayoutManagerMixin:SyncAuraIcons()
     return
   end
 
-  self:CacheAuraIcons()
-
   for _, icon in pairs(self.auraIcons) do
     icon:SetParent(addonTable.hiddenFrame)
   end
@@ -147,6 +158,10 @@ function addonTable.Display.LayoutManagerMixin:SyncAuraIcons()
 end
 
 function addonTable.Display.LayoutManagerMixin:CacheBars()
+  if not addonTable.State.CDM then
+    return
+  end
+
   local result = {}
 
   self.seenBarForIndex = {}
@@ -167,7 +182,7 @@ function addonTable.Display.LayoutManagerMixin:CacheBars()
     end
   end
   -- Detect missing bars
-  if count ~= addonTable.State.CDM.barCount then
+  if count ~= addonTable.State.CDM.barCount and not self.disabled.designer then
     addonTable.CallbackRegistry:TriggerEvent("MissingCDMWidgets")
   end
   self.auraBars = result
@@ -177,7 +192,6 @@ function addonTable.Display.LayoutManagerMixin:SyncBars()
   if not addonTable.State.CDM then
     return
   end
-  self:CacheBars()
 
   for i = 1, # self.auraBars do
     self.auraBars[i]:SetParent(addonTable.hiddenFrame)
