@@ -140,7 +140,7 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
 end
 
 function addonTable.Display.LayoutManagerMixin:CacheAuraIcons()
-  if not addonTable.State.CDM and not self.disable.cdmChanges then
+  if not addonTable.State.CDM or self.disabled.cdmChanges then
     return
   end
 
@@ -166,7 +166,7 @@ function addonTable.Display.LayoutManagerMixin:CacheAuraIcons()
 end
 
 function addonTable.Display.LayoutManagerMixin:SyncAuraIcons()
-  if not addonTable.State.CDM and not self.disable.cdmChanges then
+  if not addonTable.State.CDM or self.disabled.cdmChanges then
     return
   end
 
@@ -180,7 +180,7 @@ function addonTable.Display.LayoutManagerMixin:SyncAuraIcons()
 end
 
 function addonTable.Display.LayoutManagerMixin:CacheBars()
-  if not addonTable.State.CDM and not self.disable.cdmChanges then
+  if not addonTable.State.CDM or self.disabled.cdmChanges then
     return
   end
 
@@ -209,7 +209,7 @@ function addonTable.Display.LayoutManagerMixin:CacheBars()
 end
 
 function addonTable.Display.LayoutManagerMixin:SyncBars()
-  if not addonTable.State.CDM and not self.disable.cdmChanges then
+  if not addonTable.State.CDM or self.disabled.cdmChanges then
     return
   end
 
