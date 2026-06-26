@@ -125,7 +125,7 @@ addonTable.CallbackRegistry:RegisterCallback("MissingCDMWidgets", function(_, st
   isMissing = state
   if state then
     local count = missingCount
-    RunInXFrames(3, function()
+    RunInXFrames(6, function()
       if missingCount == count and isMissing then
         addonTable.Dialogs.ShowConfirm(addonTable.Locales.BLIZZARD_CDM_IS_MISSING_ICONS_SO_RELOAD_REQUIRED, RELOADUI, CANCEL, ReloadUI)
       end
