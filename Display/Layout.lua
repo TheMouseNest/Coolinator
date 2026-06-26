@@ -30,8 +30,12 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
     self.classPools[key] = addonTable.Display.GeneratePool(mixin)
   end
 
-  addonTable.CallbackRegistry:RegisterCallback("CDMUpdating", function()
-    self.disabled.cdmChanges = true
+  addonTable.CallbackRegistry:RegisterCallback("CDMUpdating", function(_, state)
+    self.disabled.cdmChanges = state or nil
+    if not state then
+      self:CacheAuraIcons()
+      self:CacheBars()
+    end
   end)
 
   addonTable.CallbackRegistry:RegisterCallback("Layout", function()
@@ -74,7 +78,7 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
       self:SyncBars()
     end)
   end)
-  hooksecurefunc(BuffIconCooldownViewer, "RefreshData", function()
+  hooksecurefunc(BuffIconCooldownViewer, "RefreshLayout", function()
     C_Timer.After(0, function()
       self:CacheAuraIcons()
       self:SyncAuraIcons()
@@ -97,7 +101,7 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
       self:SyncBars()
     end)
   end
-  hooksecurefunc(BuffBarCooldownViewer, "RefreshData", function()
+  hooksecurefunc(BuffBarCooldownViewer, "RefreshLayout", function()
     C_Timer.After(0, function()
       self:CacheBars()
       self:SyncBars()
@@ -132,13 +136,11 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
     end)
   end)
 
-  UtilityCooldownViewer:SetParent(addonTable.hiddenFrame)
-
   self:Layout()
 end
 
 function addonTable.Display.LayoutManagerMixin:CacheAuraIcons()
-  if not addonTable.State.CDM then
+  if not addonTable.State.CDM and not self.disable.cdmChanges then
     return
   end
 
@@ -160,14 +162,11 @@ function addonTable.Display.LayoutManagerMixin:CacheAuraIcons()
   end
   self.auraIcons = result
   -- Detect missing auras
-  if count ~= addonTable.State.CDM.auraCount and not self.disabled.designer and not self.disabled.cdmChanges then
-    print("fail auras", count, addonTable.State.CDM.auraCount)
-    addonTable.CallbackRegistry:TriggerEvent("MissingCDMWidgets", count, addonTable.State.CDM.auraCount)
-  end
+  addonTable.CallbackRegistry:TriggerEvent("MissingCDMWidgets", count ~= addonTable.State.CDM.auraCount and not self.disabled.designer and not self.disabled.cdmChanges)
 end
 
 function addonTable.Display.LayoutManagerMixin:SyncAuraIcons()
-  if not addonTable.State.CDM then
+  if not addonTable.State.CDM and not self.disable.cdmChanges then
     return
   end
 
@@ -181,7 +180,7 @@ function addonTable.Display.LayoutManagerMixin:SyncAuraIcons()
 end
 
 function addonTable.Display.LayoutManagerMixin:CacheBars()
-  if not addonTable.State.CDM then
+  if not addonTable.State.CDM and not self.disable.cdmChanges then
     return
   end
 
@@ -205,15 +204,12 @@ function addonTable.Display.LayoutManagerMixin:CacheBars()
     end
   end
   -- Detect missing bars
-  if count ~= addonTable.State.CDM.barCount and not self.disabled.designer and not self.disabled.cdmChanges then
-    print("fail bars", count, addonTable.State.CDM.barCount)
-    addonTable.CallbackRegistry:TriggerEvent("MissingCDMWidgets", count, addonTable.State.CDM.barCount)
-  end
+  addonTable.CallbackRegistry:TriggerEvent("MissingCDMWidgets", count ~= addonTable.State.CDM.barCount and not self.disabled.designer and not self.disabled.cdmChanges)
   self.auraBars = result
 end
 
 function addonTable.Display.LayoutManagerMixin:SyncBars()
-  if not addonTable.State.CDM then
+  if not addonTable.State.CDM and not self.disable.cdmChanges then
     return
   end
 
@@ -256,11 +252,6 @@ function addonTable.Display.LayoutManagerMixin:Layout()
 
   self.autoSize = addonTable.Config.Get(addonTable.Config.Options.COMPRESS_LAYOUT)
   self.useBlizzardWidgets = addonTable.Config.Get(addonTable.Config.Options.USE_BLIZZARD_WIDGETS)
-  if self.useBlizzardWidgets then
-    EssentialCooldownViewer:SetParent(UIParent)
-  else
-    EssentialCooldownViewer:SetParent(addonTable.hiddenFrame)
-  end
 
   self.currentLayout = addonTable.Core.GetCurrentDesign()
 

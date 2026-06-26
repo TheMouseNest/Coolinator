@@ -65,7 +65,7 @@ local function ValidateCDM()
 end
 
 local function TriggerUpdate()
-  addonTable.CallbackRegistry:TriggerEvent("CDMUpdating")
+  addonTable.CallbackRegistry:TriggerEvent("CDMUpdating", true)
   addonTable.CurrentNumberFont = addonTable.Core.GetFont()
 
   C_Timer.After(0.1, function()
@@ -83,6 +83,7 @@ local function TriggerUpdate()
         addonTable.Core.ApplyLayoutToCDM(layout)
         return
       end
+      addonTable.CallbackRegistry:TriggerEvent("CDMUpdating", false)
       addonTable.CallbackRegistry:TriggerEvent("Layout")
       addonTable.CallbackRegistry:TriggerEvent("Designer.Layout")
     end
@@ -104,8 +105,11 @@ addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, r
     TriggerUpdate()
   end
 end)
-addonTable.CallbackRegistry:RegisterCallback("MissingCDMWidgets", function()
-  if not CooldownViewerSettings:IsShown() then
+addonTable.CallbackRegistry:RegisterCallback("MissingCDMWidgets", function(_, state)
+  if CooldownViewerSettings:IsShown() then
+    return
+  end
+  if state then
     addonTable.Dialogs.ShowConfirm(addonTable.Locales.BLIZZARD_CDM_IS_MISSING_ICONS_SO_RELOAD_REQUIRED, RELOADUI, CANCEL, ReloadUI)
   end
 end)
