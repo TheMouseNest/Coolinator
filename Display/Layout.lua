@@ -64,9 +64,15 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
       self:SyncAuraIcons()
     end)
   end
-  hooksecurefunc(BuffIconCooldownViewer, "RefreshLayout", function()
+  EventRegistry:RegisterCallback("CooldownViewerSettings.OnShow", function()
+    self:SyncAuraIcons()
+    self:SyncAuraIcons()
+  end)
+  hooksecurefunc(BuffIconCooldownViewer, "RefreshData", function()
     C_Timer.After(0, function()
       self:CacheAuraIcons()
+      self:SyncAuraIcons()
+      self.queueTimeAuraIcon = GetTime()
     end)
   end)
   hooksecurefunc(BuffIconCooldownViewer, "OnUnitAura", IconCallback)
@@ -81,15 +87,17 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
       self:SyncBars()
     end)
   end
-  hooksecurefunc(BuffBarCooldownViewer, "RefreshLayout", function()
+  hooksecurefunc(BuffBarCooldownViewer, "RefreshData", function()
     C_Timer.After(0, function()
       self:CacheBars()
+      self:SyncBars()
+      self.queueTimeAuraBar = GetTime()
     end)
   end)
   hooksecurefunc(BuffBarCooldownViewer, "OnUnitAura", BarCallback)
   hooksecurefunc(BuffBarCooldownViewer, "OnUnitTarget", BarCallback)
 
-  hooksecurefunc(EssentialCooldownViewer, "RefreshData", function()
+  hooksecurefunc(EssentialCooldownViewer, "RefreshLayout", function()
     C_Timer.After(0, function()
       if not addonTable.State.CDM then
         return
@@ -138,8 +146,8 @@ function addonTable.Display.LayoutManagerMixin:CacheAuraIcons()
   end
   self.auraIcons = result
   -- Detect missing auras
-  if count ~= addonTable.State.CDM.auraCount then
-    addonTable.CallbackRegistry:TriggerEvent("MissingCDMWidgets")
+  if count ~= addonTable.State.CDM.auraCount and not self.disabled.designer then
+    addonTable.CallbackRegistry:TriggerEvent("MissingCDMWidgets", count, addonTable.State.CDM.auraCount)
   end
 end
 
@@ -183,7 +191,7 @@ function addonTable.Display.LayoutManagerMixin:CacheBars()
   end
   -- Detect missing bars
   if count ~= addonTable.State.CDM.barCount and not self.disabled.designer then
-    addonTable.CallbackRegistry:TriggerEvent("MissingCDMWidgets")
+    addonTable.CallbackRegistry:TriggerEvent("MissingCDMWidgets", count, addonTable.State.CDM.barCount)
   end
   self.auraBars = result
 end

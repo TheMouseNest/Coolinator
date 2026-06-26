@@ -104,7 +104,9 @@ addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, r
   end
 end)
 addonTable.CallbackRegistry:RegisterCallback("MissingCDMWidgets", function()
-  addonTable.Dialogs.ShowConfirm(addonTable.Locales.BLIZZARD_CDM_IS_MISSING_ICONS_SO_RELOAD_REQUIRED, RELOADUI, CANCEL, ReloadUI)
+  if not CooldownViewerSettings:IsShown() then
+    addonTable.Dialogs.ShowConfirm(addonTable.Locales.BLIZZARD_CDM_IS_MISSING_ICONS_SO_RELOAD_REQUIRED, RELOADUI, CANCEL, ReloadUI)
+  end
 end)
 
 local frame = CreateFrame("Frame")
@@ -160,9 +162,6 @@ EventUtil.ContinueAfterAllEvents(function()
     addonTable.Display.LayoutManager = addonTable.Utilities.InitFrameWithMixin(UIParent, addonTable.Display.LayoutManagerMixin)
     addonTable.Designer.LayoutManager = addonTable.Utilities.InitFrameWithMixin(UIParent, addonTable.Designer.LayoutManagerMixin)
 
-    EventRegistry:RegisterCallback("CooldownViewerSettings.OnShow", function()
-      addonTable.State.CDM = nil
-    end)
     EventRegistry:RegisterCallback("CooldownViewerSettings.OnHide", function()
       TriggerUpdate()
     end)
