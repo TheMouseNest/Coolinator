@@ -409,7 +409,7 @@ function addonTable.Core.GenerateCoolinatorLayoutFromExisting(layoutName)
     local flags = C_CooldownViewer.GetCooldownViewerCooldownInfo(cooldownID).flags
     if tIndexOf(aurasSaved, cooldownID) ~= nil then
       table.remove(barOrder, index)
-    elseif bit.band(flags, Enum.CooldownSetSpellFlags.HideByDefault) ~= 0 and bit.band(flags, Enum.CooldownSetSpellFlags.HideAura) == 0 and tIndexOf(barsSaved, cooldownID) == nil then
+    elseif bit.band(flags, Enum.CooldownSetSpellFlags.HideByDefault) == 0 and bit.band(flags, Enum.CooldownSetSpellFlags.HideAura) == 0 and tIndexOf(barsSaved, cooldownID) == nil then
       table.insert(barsSaved, cooldownID)
     end
   end
@@ -516,31 +516,35 @@ function addonTable.Core.GenerateCoolinatorLayoutFromExisting(layoutName)
     }
   }
   for _, id in ipairs(barsSaved) do
-    local spellID = addonTable.Core.GetSpellFromCDMInfo(C_CooldownViewer.GetCooldownViewerCooldownInfo(id))
-    table.insert(barGroups.entries, {
-      kind = "bar",
-      resource = {kind = "aura", spellID = spellID},
-      width = 1, --0 -- widest of the entries just above or just below in the layout
-      height = 1,
-      scale = 1.5,
-      layout = "horizontal",
-      direction = "right",
-      icon = {show = true, position = "left"},
-      alpha = 1,
-      preset = "DEFAULT",
-      foreground = {
-        asset = "Cooli: Fade Bottom",
-        color = {r = 0, g = 1, b = 0},
-      },
-      background = {
-        asset = "Cooli: Solid White",
-        color = GetColor("94ff21", 0.3),
-      },
-      border = {
-        asset = "Cooli: Blizzard Midnight",
-        color = {r = 1, g = 1, b = 1},
-      },
-    })
+    local info = C_CooldownViewer.GetCooldownViewerCooldownInfo(id)
+    if info then
+      local spellID = addonTable.Core.GetSpellFromCDMInfo(info)
+      print(C_Spell.GetSpellName(spellID))
+      table.insert(barGroups.entries, {
+        kind = "bar",
+        resource = {kind = "aura", spellID = spellID},
+        width = 1, --0 -- widest of the entries just above or just below in the layout
+        height = 1,
+        scale = 1.5,
+        layout = "horizontal",
+        direction = "right",
+        icon = {show = true, position = "left"},
+        alpha = 1,
+        preset = "DEFAULT",
+        foreground = {
+          asset = "Cooli: Fade Bottom",
+          color = {r = 0, g = 1, b = 0},
+        },
+        background = {
+          asset = "Cooli: Solid White",
+          color = GetColor("94ff21", 0.3),
+        },
+        border = {
+          asset = "Cooli: Blizzard Midnight",
+          color = {r = 1, g = 1, b = 1},
+        },
+      })
+    end
   end
 
   table.insert(result.entries, barGroups)
