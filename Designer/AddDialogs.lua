@@ -115,6 +115,20 @@ function addonTable.Designer.GetAbilityDialog()
   return dialog
 end
 
+function addonTable.Designer.GetAbilityChargesDialog()
+  local dialog = GetSpellIconDialog(function()
+    return tFilter(addonTable.Core.GetAllClassAbilities(), function(a)
+      local chargeInfo = C_Spell.GetSpellCharges(a)
+      return chargeInfo ~= nil and chargeInfo.maxCharges > 1
+    end, true)
+  end, function()
+    return addonTable.Designer.GetActiveAbilityCharges(addonTable.Designer.GetCurrent())
+  end, Kind.Spell)
+  dialog:SetTitle(addonTable.Locales.CHOOSE_ABILITY)
+
+  return dialog
+end
+
 function addonTable.Designer.GetPotionEffectDialog()
   local all = GetKeysArray(addonTable.Constants.AurasFromItems)
   local dialog = GetSpellIconDialog(function()

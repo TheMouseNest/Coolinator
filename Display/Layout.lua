@@ -24,6 +24,7 @@ function addonTable.Display.LayoutManagerMixin:OnLoad()
   self.cooldownPool = addonTable.Display.GeneratePool(addonTable.Display.CooldownMixin)
   self.auraFromItemPool = addonTable.Display.GeneratePool(addonTable.Display.AuraFromItemMixin)
   self.abilityBarPool = addonTable.Display.GeneratePool(addonTable.Display.AbilityStatusBarMixin)
+  self.abilityChargesPipPool = addonTable.Display.GeneratePool(addonTable.Display.AbilityChargesPipMixin)
   self.auraStatusBarPool = addonTable.Display.GeneratePool(addonTable.Display.AuraStatusBarMixin)
   self.classPools = {}
   for key, mixin in pairs(addonTable.Display.ClassResourceStatusBar) do
@@ -231,6 +232,7 @@ function addonTable.Display.LayoutManagerMixin:Delayout()
   self.cooldownPool:ReleaseAll()
   self.auraIconPool:ReleaseAll()
   self.abilityWrappersPool:ReleaseAll()
+  self.abilityChargesPipPool:ReleaseAll()
   self.auraFromItemPool:ReleaseAll()
   self.auraStatusBarPool:ReleaseAll()
   self.abilityBarPool:ReleaseAll()
@@ -403,6 +405,15 @@ function addonTable.Display.LayoutManagerMixin:GetBar(details)
     local frame = self.abilityBarPool:Acquire()
     frame:Show()
     frame:Enable()
+    frame:Setup(details)
+    return frame
+
+  elseif details.resource.kind == "abilityCharge" then
+    if not addonTable.Utilities.IsAbilitySpellKnown(details.resource.spellID) then
+      return
+    end
+    local frame = self.abilityChargesPipPool:Acquire()
+    frame:Show()
     frame:Setup(details)
     return frame
 

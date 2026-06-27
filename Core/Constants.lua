@@ -139,6 +139,7 @@ addonTable.Constants.BarResourceLabelMap = {
   ["class"] = addonTable.Locales.CLASS,
   ["aura"] = addonTable.Locales.AURA,
   ["ability"] = addonTable.Locales.ABILITY,
+  ["abilityCharge"] = addonTable.Locales.ABILITY_CHARGE,
 }
 
 addonTable.Constants.BarClassResourceLabelMap = {

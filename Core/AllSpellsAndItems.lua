@@ -43,7 +43,7 @@ if racialText == nil then
   end)
 end
 
-function addonTable.Core.GetAllAbilities()
+function addonTable.Core.GetAllClassAbilities()
   local abilityTracked = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.Essential, true)
   local abilityBars = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.Utility, true)
 
@@ -117,6 +117,16 @@ function addonTable.Core.GetAllAbilities()
     end
   end
 
+  table.insert(result, addonTable.Constants.GCD) -- Global Cooldown
+
+  return result
+end
+
+function addonTable.Core.GetAllAbilities()
+  local result = addonTable.Core.GetAllClassAbilities()
+
+  local seen = {}
+
   local skyridingFlyoutID = 229
   local _, _, skyridingSpellCount = GetFlyoutInfo(skyridingFlyoutID)
   for i = 1, skyridingSpellCount do
@@ -126,8 +136,6 @@ function addonTable.Core.GetAllAbilities()
       seen[spellID] = true
     end
   end
-
-  table.insert(result, addonTable.Constants.GCD) -- Global Cooldown
 
   return result
 end

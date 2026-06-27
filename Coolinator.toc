@@ -56,6 +56,7 @@ Display/AuraIcon.lua
 Display/AuraDebuffBorder.lua
 Display/Group.lua
 Display/BaseLayout.lua
+Display/AbilityChargesStatusBar.lua
 Display/Layout.lua
 
 Assets.lua

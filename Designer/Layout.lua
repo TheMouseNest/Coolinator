@@ -82,6 +82,7 @@ function addonTable.Designer.LayoutManagerMixin:OnLoad()
   self.auraFrame = addonTable.Designer.GetAuraDialog()
   self.itemFrame = addonTable.Designer.GetItemDialog()
   self.abilityFrame = addonTable.Designer.GetAbilityDialog()
+  self.abilityChargesFrame = addonTable.Designer.GetAbilityChargesDialog()
   self.potionFrame = addonTable.Designer.GetPotionEffectDialog()
   self.equipmentFrame = addonTable.Designer.GetEquipmentDialog()
   self.selectParentButton = GetButton(self, "Interface/AddOns/Coolinator/Assets/Buttons/chain.png")
@@ -702,6 +703,15 @@ function addonTable.Designer.LayoutManagerMixin:AddEntryToInsert(rootDescription
       inserter(new)
     end)
   end)
+  rootDescription:CreateButton(addonTable.Locales.ABILITY_CHARGES, function()
+    self.abilityChargesFrame:Update(function(data)
+      local new = CopyTable(addonTable.Designer.Defaults.AbilityCharges)
+      for _, entry in ipairs(new.entries) do
+        entry.resource.spellID = data
+      end
+      inserter(new)
+    end)
+  end)
   rootDescription:CreateButton(addonTable.Locales.AURA, function()
     self.auraFrame:Update(function(data)
       local new = CopyTable(addonTable.Designer.Defaults.AuraIcon)
@@ -778,7 +788,8 @@ function addonTable.Designer.LayoutManagerMixin:MarkSelected(details)
       not details.resource or
       (current.resource.kind == "class" and tCompare(details.resource, current.resource)) or
       (current.resource.kind == "aura" and details.resource.kind == current.resource.kind) or
-      (current.resource.kind == "ability" and details.resource.kind == current.resource.kind)
+      (current.resource.kind == "ability" and details.resource.kind == current.resource.kind) or
+      (current.resource.kind == "abilityCharge" and details.resource.kind == current.resource.kind)
     ) then
       table.insert(self.selection, details)
       addonTable.CallbackRegistry:TriggerEvent("Designer.Options", self.selection)

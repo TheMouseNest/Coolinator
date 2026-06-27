@@ -560,6 +560,11 @@ addonTable.Designer.WidgetConfiguration = {
         fullBarTextures,
       },
     },
+    ["abilityCharge"] = {
+      ["*"] = {
+        fullBarTextures,
+      }
+    },
     ["class"] = {
       ["icicles"] = {
         fullBarTextures
