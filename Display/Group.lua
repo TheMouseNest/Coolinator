@@ -87,4 +87,5 @@ end
 function addonTable.Display.GroupMixin:Setup(details)
   self.details = details
   self.width, self.height = 0, 0
+  self.autoSize = addonTable.Config.Get(addonTable.Config.Options.COMPRESS_LAYOUT)
 end
