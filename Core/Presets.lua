@@ -66,9 +66,8 @@ function addonTable.Core.SavePreset(label, details, overwrite)
     elseif details.resource.kind == "class" then
       presets[details.kind][details.resource.kind][details.resource.resource] = presets[details.kind][details.resource.kind][details.resource.resource] or {}
       new.resource = nil
-      presets[details.kind][details.resource.kind][details.resource.resource] = new
       if overwrite or not presets[details.kind][details.resource.kind][details.resource.resource][label] then
-        presets[details.kind][details.resource.kind][label] = new
+        presets[details.kind][details.resource.kind][details.resource.resource][label] = new
       end
     end
   end
