@@ -217,41 +217,4 @@ function addonTable.Designer.BarWithIconMixin:ApplySize(width, height)
   end
 end
 
-addonTable.Designer.GroupMixin = {}
-
-function addonTable.Designer.GroupMixin:OnLoad()
-end
-
-function addonTable.Designer.GroupMixin:GetDefaultSize()
-  return self.width, self.height
-end
-
-function addonTable.Designer.GroupMixin:SetDefaultSize(width, height)
-  self.width, self.height = width, height
-end
-
-function addonTable.Designer.GroupMixin:ApplySize(width, height)
-  self:SetSize(self.width, self.height)
-
-  if self.details.layout == "horizontal" then
-    width = nil
-    height = height and math.max(self.height, height) or self.height
-  elseif self.details.layout == "vertical" then
-    height = nil
-    width = width and math.max(self.width, width) or self.width
-  else
-    width = width and math.max(self.width, width) or self.width
-    height = height and math.max(self.height, height) or self.height
-  end
-
-  for _, w in ipairs(self.children) do
-    if w.ApplySize then
-      w:ApplySize(width, height)
-    end
-  end
-end
-
-function addonTable.Designer.GroupMixin:Setup(details)
-  self.details = details
-  self.width, self.height = 0, 0
-end
+addonTable.Designer.GroupMixin = CreateFromMixins(addonTable.Display.GroupMixin)
