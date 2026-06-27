@@ -423,6 +423,7 @@ function addonTable.Core.GenerateCoolinatorLayoutFromExisting(layoutName)
     kind = "group",
     layout = "vertical",
     anchor = {"BOTTOM", "UIParent", "BOTTOM", 0, 200},
+    preset = "DEFAULT",
     padding = 0.2,
     alpha = 1,
     scale = 1,
@@ -435,6 +436,7 @@ function addonTable.Core.GenerateCoolinatorLayoutFromExisting(layoutName)
         padding = 0.1,
         alpha = 1,
         scale = 0.8,
+        preset = "UTILITY",
         alignment = "CENTER",
         entries = {},
       },
@@ -445,6 +447,7 @@ function addonTable.Core.GenerateCoolinatorLayoutFromExisting(layoutName)
         padding = 0.1,
         alpha = 1,
         scale = 1.25,
+        preset = "ESSENTIAL",
         alignment = "CENTER",
         entries = {},
       },
@@ -455,6 +458,7 @@ function addonTable.Core.GenerateCoolinatorLayoutFromExisting(layoutName)
         padding = 0.1,
         alpha = 1,
         scale = 1,
+        preset = "AURAS",
         alignment = "CENTER",
         entries = {},
       },
@@ -468,6 +472,7 @@ function addonTable.Core.GenerateCoolinatorLayoutFromExisting(layoutName)
       local spellID = addonTable.Core.GetSpellFromCDMInfo(info)
       if not seen[spellID] then
         local entry = CopyTable(addonTable.Designer.Defaults.AbilityIcon)
+        entry.preset = "UTILITY"
         entry.resource.spellID = spellID
         table.insert(result.entries[1].entries, entry)
       end
@@ -481,6 +486,7 @@ function addonTable.Core.GenerateCoolinatorLayoutFromExisting(layoutName)
       local spellID = addonTable.Core.GetSpellFromCDMInfo(info)
       if not seen[spellID] then
         local entry = CopyTable(addonTable.Designer.Defaults.AbilityIcon)
+        entry.preset = "ESSENTIAL"
         entry.resource.spellID = spellID
         table.insert(result.entries[2].entries, entry)
       end
@@ -492,6 +498,7 @@ function addonTable.Core.GenerateCoolinatorLayoutFromExisting(layoutName)
     local entry = CopyTable(addonTable.Designer.Defaults.AuraIcon)
     local info = C_CooldownViewer.GetCooldownViewerCooldownInfo(id)
     if info then
+      entry.preset = "AURA"
       entry.resource.spellID = addonTable.Core.GetSpellFromCDMInfo(info)
       table.insert(result.entries[3].entries, entry)
     end
@@ -504,6 +511,7 @@ function addonTable.Core.GenerateCoolinatorLayoutFromExisting(layoutName)
     alpha = 1,
     alignment = "CENTER",
     scale = 1,
+    preset = "AURA_BARS",
     entries = {
     }
   }
@@ -519,6 +527,7 @@ function addonTable.Core.GenerateCoolinatorLayoutFromExisting(layoutName)
       direction = "right",
       icon = {show = true, position = "left"},
       alpha = 1,
+      preset = "DEFAULT",
       foreground = {
         asset = "Cooli: Fade Bottom",
         color = {r = 0, g = 1, b = 0},
@@ -568,6 +577,7 @@ function addonTable.Core.GenerateCoolinatorLayoutFromExisting(layoutName)
       result
     },
   }
+  addonTable.Core.GeneratePresetsFromDesign(final, false)
   addonTable.Core.RemoveDeadGroups(final)
   return final
 end
